@@ -218,8 +218,10 @@
       counter.textContent = current + 1;
       thumbs.forEach(t => t.classList.remove('active'));
       thumbs[current].classList.add('active');
-      // scroll active thumb into view
-      thumbs[current].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      // scroll thumb strip (not the page) to show active thumb
+      const thumb = thumbs[current];
+      const strip = document.getElementById('gcThumbs');
+      strip.scrollTo({ left: thumb.offsetLeft - strip.offsetWidth / 2 + thumb.offsetWidth / 2, behavior: 'smooth' });
     }
 
     document.getElementById('gcPrev').addEventListener('click', () => goTo(current - 1));
