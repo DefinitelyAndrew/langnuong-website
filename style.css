@@ -825,7 +825,7 @@ img {
 .footer-brand {
   font-family: var(--font);
   font-size: 1.3rem;
-  color: var(--white);
+  color: #180e08;
   margin-bottom: .5rem;
   font-weight: 600;
   letter-spacing: .04em;
@@ -834,8 +834,12 @@ img {
 
 .footer-tagline {
   font-size: .85rem;
-  color: rgba(255,255,255,.7);
+  color: #2b1b10;
   margin-bottom: 1rem;
+}
+
+.site-footer p {
+  color: #2b1b10 !important;
 }
 
 .footer-social {
@@ -850,23 +854,26 @@ img {
   justify-content: center;
   width: 38px;
   height: 38px;
-  background: rgba(255,255,255,.15);
+  background: rgba(255,255,255,.55);
   border-radius: 50%;
-  color: var(--white);
-  font-size: .85rem;
-  font-weight: 600;
-  text-transform: uppercase;
+  color: #180e08;
   transition: background .2s, color .2s;
+}
+
+.footer-social svg {
+  width: 19px;
+  height: 19px;
+  fill: currentColor;
 }
 
 .footer-social a:hover {
   background: var(--gold);
-  color: var(--black);
+  color: #180e08;
 }
 
 .footer-col h4 {
   font-family: var(--font);
-  color: var(--gold);
+  color: #180e08;
   font-size: .82rem;
   letter-spacing: .12em;
   text-transform: uppercase;
@@ -883,19 +890,19 @@ img {
 
 .footer-col ul li a {
   font-size: .85rem;
-  color: rgba(255,255,255,.7);
+  color: #2b1b10;
   transition: color .2s;
 }
 
-.footer-col ul li a:hover { color: var(--gold); }
+.footer-col ul li a:hover { color: #000000; }
 
 .footer-bottom {
   max-width: var(--max-w);
   margin: 2rem auto 0;
   padding-top: 1rem;
-  border-top: 1px solid rgba(255,255,255,.2);
+  border-top: 1px solid rgba(24,14,8,.25);
   font-size: .75rem;
-  color: rgba(255,255,255,.55);
+  color: #2b1b10;
   text-align: center;
 }
 
