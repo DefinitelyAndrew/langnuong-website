@@ -997,6 +997,39 @@ img {
   color: rgba(255,255,255,.85);
 }
 
+.shop-cart-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  margin-top: .75rem;
+  padding: .55rem 1rem;
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  color: var(--gold);
+  font-size: .8rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.shop-cart-link:hover {
+  background: var(--gold);
+  color: var(--brown-dark);
+}
+
+.shop-cart-link span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  padding: 0 .25rem;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--brown-dark);
+  font-size: .7rem;
+}
+
 /* =============================================
    PRODUCT / SHOP GRID
    ============================================= */

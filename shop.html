@@ -33,6 +33,7 @@
       <span class="hero-eyebrow">Imported Straight from Vietnam</span>
       <h1 class="hero-title" style="color:var(--white);">Shop <em>Lang Nuong Vietnam</em></h1>
       <p class="hero-sub">Authentic Vietnamese ingredients, sauces, noodles and drinks — the same products used in our restaurants, now available to bring home.</p>
+      <a href="#cart-placeholder" class="shop-cart-link">View Cart <span id="cartCount">0</span></a>
     </div>
   </section>
 
@@ -234,6 +235,7 @@
       button.addEventListener('click', () => {
         document.getElementById('cartMessage').textContent =
           `${button.dataset.product} has been added to your cart. Checkout is coming soon.`;
+        document.getElementById('cartCount').textContent = '1';
       });
     });
   </script>
