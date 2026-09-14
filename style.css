@@ -84,35 +84,42 @@ img {
   position: sticky;
   top: 0;
   z-index: 100;
-  background-color: var(--brown);
-  background-image: url("kraftbg.jpg");
-  background-size: cover;
-  background-position: center;
-  border-bottom: 3px solid var(--gold);
+  background: rgba(49, 23, 0, .96);
+  border-bottom: 1px solid rgba(246,216,121,.45);
+  box-shadow: 0 8px 24px rgba(49,23,0,.18);
+  backdrop-filter: blur(12px);
 }
 
 .nav-inner {
   max-width: var(--max-w);
   margin: 0 auto;
-  padding: 0 1.25rem;
+  padding: .7rem 1.25rem;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  min-height: 70px;
+  min-height: 76px;
 }
 
 .nav-logo {
   font-family: var(--font);
-  font-size: 1.25rem;
+  display: inline-flex;
+  flex-direction: column;
+  gap: .1rem;
+  font-size: 1.18rem;
   color: var(--white);
   font-weight: 600;
-  letter-spacing: .04em;
+  letter-spacing: .08em;
   white-space: nowrap;
+  line-height: 1.05;
   text-transform: uppercase;
 }
 
 .nav-logo span {
+  font-size: .62rem;
   color: var(--gold);
+  letter-spacing: .25em;
+  line-height: 1;
 }
 
 /* Hamburger */
@@ -126,6 +133,7 @@ img {
   background: none;
   border: none;
   padding: 0;
+  margin-left: 1rem;
 }
 
 .nav-toggle span {
@@ -144,9 +152,12 @@ img {
 .nav-menu {
   display: none;
   flex-direction: column;
-  background: var(--brown);
-  border-top: 1px solid rgba(255,255,255,.15);
-  padding: .5rem 0;
+  flex-basis: 100%;
+  width: 100%;
+  margin: 0;
+  background: rgba(49,23,0,.98);
+  border-top: 1px solid rgba(246,216,121,.18);
+  padding: .35rem 1.25rem .75rem;
 }
 
 .nav-menu.open {
@@ -154,21 +165,25 @@ img {
 }
 
 .nav-menu a {
-  padding: .85rem 1.5rem;
+  padding: .8rem .75rem;
   font-size: .82rem;
   font-weight: 600;
-  letter-spacing: .1em;
+  letter-spacing: .08em;
   text-transform: uppercase;
   color: var(--white);
   border-bottom: 1px solid rgba(255,255,255,.1);
-  transition: background .2s, color .2s;
+  transition: background .2s, color .2s, transform .2s;
 }
 
 .nav-menu a:last-child { border-bottom: none; }
 .nav-menu a:hover,
 .nav-menu a.active {
-  background: rgba(0,0,0,.2);
+  background: rgba(246,216,121,.12);
   color: var(--gold);
+}
+
+.nav-menu a.active {
+  box-shadow: inset 3px 0 0 var(--gold);
 }
 
 /* Desktop nav */
@@ -178,25 +193,30 @@ img {
   .nav-menu {
     display: flex !important;
     flex-direction: row;
+    flex-basis: auto;
+    width: auto;
+    max-width: none;
+    margin: 0;
     background: none;
     border: none;
     padding: 0;
-    gap: .1rem;
+    gap: .2rem;
     align-items: center;
   }
 
   .nav-menu a {
-    padding: .45rem .85rem;
-    font-size: .72rem;
+    padding: .55rem .7rem;
+    font-size: .68rem;
     border-bottom: none;
-    border-radius: var(--radius);
+    border-radius: 999px;
     color: var(--white);
   }
 
   .nav-menu a:hover,
   .nav-menu a.active {
-    background: rgba(0,0,0,.25);
-    color: var(--gold);
+    background: var(--gold);
+    color: var(--brown-dark);
+    box-shadow: none;
   }
 }
 
@@ -256,7 +276,8 @@ img {
   text-shadow: 0 2px 12px rgba(0,0,0,.6);
   margin-bottom: .6rem;
   text-transform: uppercase;
-  letter-spacing: .03em;
+  letter-spacing: .015em;
+  text-wrap: balance;
 }
 
 .hero-title em {
@@ -414,7 +435,8 @@ img {
   margin-bottom: .4rem;
   line-height: 1.2;
   text-transform: uppercase;
-  letter-spacing: .05em;
+  letter-spacing: .025em;
+  text-wrap: balance;
 }
 
 /* White title variant for dark sections */
