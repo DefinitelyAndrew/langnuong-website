@@ -43,6 +43,7 @@
   --light-gray:  #c4c4c4;
   --section-bg:  #ffffff;
   --font:        "Gilroy", Arial, Helvetica, sans-serif;
+  --font-vietnamese: Arial, "Helvetica Neue", sans-serif;
   --radius:      4px;
   --shadow:      0 4px 20px rgba(0,0,0,.15);
   --max-w:       1140px;
@@ -60,6 +61,11 @@ body {
   font-weight: 400;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Use a full Vietnamese glyph set for brand names and accented words. */
+[lang="vi"] {
+  font-family: var(--font-vietnamese);
 }
 
 a {
