@@ -102,24 +102,16 @@ img {
 }
 
 .nav-logo {
-  font-family: var(--font);
   display: inline-flex;
-  flex-direction: column;
-  gap: .1rem;
-  font-size: 1.18rem;
-  color: var(--white);
-  font-weight: 600;
-  letter-spacing: .08em;
+  align-items: center;
   white-space: nowrap;
-  line-height: 1.05;
-  text-transform: uppercase;
 }
 
-.nav-logo span {
-  font-size: .62rem;
-  color: var(--gold);
-  letter-spacing: .25em;
-  line-height: 1;
+.nav-logo img {
+  width: auto;
+  height: 58px;
+  max-width: 170px;
+  object-fit: contain;
 }
 
 /* Hamburger */
