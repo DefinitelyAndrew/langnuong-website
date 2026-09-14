@@ -112,19 +112,33 @@
       <h2 class="section-title">Gallery</h2>
       <div class="section-divider"></div>
 
-      <div class="gallery-grid">
-        <a href="https://langnuonggroup.com/wp-content/uploads/2023/10/g1.jpg" target="_blank"><img src="https://langnuonggroup.com/wp-content/uploads/2023/10/g1.jpg" alt="Gallery 1" loading="lazy"></a>
-        <a href="https://langnuonggroup.com/wp-content/uploads/2023/10/g2.jpg" target="_blank"><img src="https://langnuonggroup.com/wp-content/uploads/2023/10/g2.jpg" alt="Gallery 2" loading="lazy"></a>
-        <a href="https://langnuonggroup.com/wp-content/uploads/2023/10/g3.jpg" target="_blank"><img src="https://langnuonggroup.com/wp-content/uploads/2023/10/g3.jpg" alt="Gallery 3" loading="lazy"></a>
-        <a href="https://langnuonggroup.com/wp-content/uploads/2023/10/G4-2.jpg" target="_blank"><img src="https://langnuonggroup.com/wp-content/uploads/2023/10/G4-2.jpg" alt="Gallery 4" loading="lazy"></a>
-        <a href="https://langnuonggroup.com/wp-content/uploads/2023/10/G5.jpg" target="_blank"><img src="https://langnuonggroup.com/wp-content/uploads/2023/10/G5.jpg" alt="Gallery 5" loading="lazy"></a>
-        <a href="https://langnuonggroup.com/wp-content/uploads/2023/11/G6.jpg" target="_blank"><img src="https://langnuonggroup.com/wp-content/uploads/2023/11/G6.jpg" alt="Gallery 6" loading="lazy"></a>
-        <a href="https://langnuonggroup.com/wp-content/uploads/2023/11/G7.jpg" target="_blank"><img src="https://langnuonggroup.com/wp-content/uploads/2023/11/G7.jpg" alt="Gallery 7" loading="lazy"></a>
-        <a href="https://langnuonggroup.com/wp-content/uploads/2023/11/G8.jpg" target="_blank"><img src="https://langnuonggroup.com/wp-content/uploads/2023/11/G8.jpg" alt="Gallery 8" loading="lazy"></a>
-        <a href="https://langnuonggroup.com/wp-content/uploads/2023/11/G9.jpg" target="_blank"><img src="https://langnuonggroup.com/wp-content/uploads/2023/11/G9.jpg" alt="Gallery 9" loading="lazy"></a>
-        <a href="https://langnuonggroup.com/wp-content/uploads/2023/11/G10.jpg" target="_blank"><img src="https://langnuonggroup.com/wp-content/uploads/2023/11/G10.jpg" alt="Gallery 10" loading="lazy"></a>
-        <a href="https://langnuonggroup.com/wp-content/uploads/2023/11/G11.jpg" target="_blank"><img src="https://langnuonggroup.com/wp-content/uploads/2023/11/G11.jpg" alt="Gallery 11" loading="lazy"></a>
-        <a href="https://langnuonggroup.com/wp-content/uploads/2023/11/G12.jpg" target="_blank"><img src="https://langnuonggroup.com/wp-content/uploads/2023/11/G12.jpg" alt="Gallery 12" loading="lazy"></a>
+      <!-- Carousel -->
+      <div class="gallery-carousel" id="galleryCarousel">
+        <!-- Main viewer -->
+        <div class="gc-main">
+          <button class="gc-arrow gc-prev" id="gcPrev" aria-label="Previous">&#8249;</button>
+          <div class="gc-main-img-wrap">
+            <img id="gcMainImg" src="https://langnuonggroup.com/wp-content/uploads/2023/10/g1.jpg" alt="Gallery 1">
+          </div>
+          <button class="gc-arrow gc-next" id="gcNext" aria-label="Next">&#8250;</button>
+        </div>
+        <!-- Counter -->
+        <div class="gc-counter"><span id="gcCurrent">1</span> / <span id="gcTotal">12</span></div>
+        <!-- Thumbnail strip -->
+        <div class="gc-thumbs" id="gcThumbs">
+          <img src="https://langnuonggroup.com/wp-content/uploads/2023/10/g1.jpg"   alt="1"  class="gc-thumb active" data-index="0" loading="lazy">
+          <img src="https://langnuonggroup.com/wp-content/uploads/2023/10/g2.jpg"   alt="2"  class="gc-thumb" data-index="1" loading="lazy">
+          <img src="https://langnuonggroup.com/wp-content/uploads/2023/10/g3.jpg"   alt="3"  class="gc-thumb" data-index="2" loading="lazy">
+          <img src="https://langnuonggroup.com/wp-content/uploads/2023/10/G4-2.jpg" alt="4"  class="gc-thumb" data-index="3" loading="lazy">
+          <img src="https://langnuonggroup.com/wp-content/uploads/2023/10/G5.jpg"   alt="5"  class="gc-thumb" data-index="4" loading="lazy">
+          <img src="https://langnuonggroup.com/wp-content/uploads/2023/11/G6.jpg"   alt="6"  class="gc-thumb" data-index="5" loading="lazy">
+          <img src="https://langnuonggroup.com/wp-content/uploads/2023/11/G7.jpg"   alt="7"  class="gc-thumb" data-index="6" loading="lazy">
+          <img src="https://langnuonggroup.com/wp-content/uploads/2023/11/G8.jpg"   alt="8"  class="gc-thumb" data-index="7" loading="lazy">
+          <img src="https://langnuonggroup.com/wp-content/uploads/2023/11/G9.jpg"   alt="9"  class="gc-thumb" data-index="8" loading="lazy">
+          <img src="https://langnuonggroup.com/wp-content/uploads/2023/11/G10.jpg"  alt="10" class="gc-thumb" data-index="9" loading="lazy">
+          <img src="https://langnuonggroup.com/wp-content/uploads/2023/11/G11.jpg"  alt="11" class="gc-thumb" data-index="10" loading="lazy">
+          <img src="https://langnuonggroup.com/wp-content/uploads/2023/11/G12.jpg"  alt="12" class="gc-thumb" data-index="11" loading="lazy">
+        </div>
       </div>
     </div>
   </div>
@@ -170,6 +184,62 @@
     toggle.addEventListener('click', () => {
       toggle.classList.toggle('open');
       menu.classList.toggle('open');
+    });
+
+    // Gallery carousel
+    const images = [
+      'https://langnuonggroup.com/wp-content/uploads/2023/10/g1.jpg',
+      'https://langnuonggroup.com/wp-content/uploads/2023/10/g2.jpg',
+      'https://langnuonggroup.com/wp-content/uploads/2023/10/g3.jpg',
+      'https://langnuonggroup.com/wp-content/uploads/2023/10/G4-2.jpg',
+      'https://langnuonggroup.com/wp-content/uploads/2023/10/G5.jpg',
+      'https://langnuonggroup.com/wp-content/uploads/2023/11/G6.jpg',
+      'https://langnuonggroup.com/wp-content/uploads/2023/11/G7.jpg',
+      'https://langnuonggroup.com/wp-content/uploads/2023/11/G8.jpg',
+      'https://langnuonggroup.com/wp-content/uploads/2023/11/G9.jpg',
+      'https://langnuonggroup.com/wp-content/uploads/2023/11/G10.jpg',
+      'https://langnuonggroup.com/wp-content/uploads/2023/11/G11.jpg',
+      'https://langnuonggroup.com/wp-content/uploads/2023/11/G12.jpg',
+    ];
+    let current = 0;
+    const mainImg   = document.getElementById('gcMainImg');
+    const counter   = document.getElementById('gcCurrent');
+    const thumbs    = document.querySelectorAll('.gc-thumb');
+    const thumbStrip = document.getElementById('gcThumbs');
+
+    function goTo(idx) {
+      current = (idx + images.length) % images.length;
+      mainImg.style.opacity = '0';
+      setTimeout(() => {
+        mainImg.src = images[current];
+        mainImg.alt = 'Gallery ' + (current + 1);
+        mainImg.style.opacity = '1';
+      }, 150);
+      counter.textContent = current + 1;
+      thumbs.forEach(t => t.classList.remove('active'));
+      thumbs[current].classList.add('active');
+      // scroll active thumb into view
+      thumbs[current].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+
+    document.getElementById('gcPrev').addEventListener('click', () => goTo(current - 1));
+    document.getElementById('gcNext').addEventListener('click', () => goTo(current + 1));
+
+    thumbs.forEach(t => {
+      t.addEventListener('click', () => goTo(parseInt(t.dataset.index)));
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft')  goTo(current - 1);
+      if (e.key === 'ArrowRight') goTo(current + 1);
+    });
+
+    // Auto-advance every 4s
+    let autoplay = setInterval(() => goTo(current + 1), 4000);
+    document.getElementById('galleryCarousel').addEventListener('mouseenter', () => clearInterval(autoplay));
+    document.getElementById('galleryCarousel').addEventListener('mouseleave', () => {
+      autoplay = setInterval(() => goTo(current + 1), 4000);
     });
   </script>
 </body>
