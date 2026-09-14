@@ -294,8 +294,8 @@ img {
   position: absolute;
   left: -3%;
   width: 106%;
-  height: .22em;
-  min-height: 6px;
+  height: .48em;
+  min-height: 14px;
   background-repeat: repeat-x;
   transform: translateX(var(--underline-offset, 0)) scaleX(0);
   transform-origin: left;
@@ -305,10 +305,10 @@ img {
 
 .underline-back {
   --underline-offset: 5px;
-  bottom: .02em;
+  bottom: .04em;
   opacity: .45;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 10' preserveAspectRatio='none'%3E%3Cpath d='M0 6 C5 0 10 0 16 5 S27 10 32 5 S43 0 48 5 S59 10 64 4' fill='none' stroke='%23F6D879' stroke-width='2'/%3E%3C/svg%3E");
-  background-size: 38px 100%;
+  background-size: 54px 100%;
   animation-delay: .15s;
 }
 
@@ -317,15 +317,15 @@ img {
   bottom: -.07em;
   opacity: .72;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 10' preserveAspectRatio='none'%3E%3Cpath d='M0 4 C6 9 11 9 17 4 S28 0 32 5 S43 10 48 5 S58 0 64 4' fill='none' stroke='%23F6D879' stroke-width='2.4'/%3E%3C/svg%3E");
-  background-size: 34px 100%;
+  background-size: 50px 100%;
   animation-delay: .25s;
 }
 
 .underline-front {
   --underline-offset: 0;
-  bottom: -.16em;
+  bottom: -.23em;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 10' preserveAspectRatio='none'%3E%3Cpath d='M0 5 C4 1 9 1 15 5 S26 9 32 5 S43 1 49 5 S59 9 64 4' fill='none' stroke='%23F6D879' stroke-width='2.8'/%3E%3C/svg%3E");
-  background-size: 31px 100%;
+  background-size: 46px 100%;
   animation-delay: .35s;
 }
 
