@@ -780,3 +780,133 @@ img {
   font-size: .88rem;
   color: var(--text);
 }
+
+/* =============================================
+   SHOP HERO
+   ============================================= */
+.shop-hero {
+  background: linear-gradient(135deg, var(--dark2) 0%, var(--dark3) 100%);
+  border-bottom: 2px solid var(--red);
+  padding: 4rem 1.25rem 3.5rem;
+}
+
+.shop-hero-inner {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.shop-hero .hero-title {
+  color: var(--white);
+  font-family: var(--font-head);
+  font-size: clamp(1.8rem, 7vw, 3rem);
+  line-height: 1.15;
+  margin-bottom: .5rem;
+}
+
+.shop-hero .hero-sub {
+  font-size: clamp(.85rem, 2.5vw, 1.05rem);
+  color: var(--text);
+  opacity: .9;
+}
+
+/* =============================================
+   PRODUCT / SHOP GRID
+   ============================================= */
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 600px) {
+  .shop-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 900px) {
+  .shop-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.product-card {
+  background: var(--dark3);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  transition: transform .25s, box-shadow .25s;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 28px rgba(0,0,0,.7);
+}
+
+.product-img-wrap {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--dark4);
+}
+
+.product-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .4s ease;
+}
+
+.product-card:hover .product-img-wrap img {
+  transform: scale(1.07);
+}
+
+.product-badge {
+  position: absolute;
+  top: .6rem;
+  left: .6rem;
+  background: var(--red);
+  color: var(--white);
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: .2rem .55rem;
+  border-radius: 2px;
+}
+
+.product-body {
+  padding: .9rem 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: .5rem;
+}
+
+.product-name {
+  font-family: var(--font-head);
+  font-size: .9rem;
+  color: var(--white);
+  line-height: 1.35;
+  margin: 0;
+}
+
+.product-name-zh {
+  color: var(--muted);
+  font-size: .8rem;
+  font-family: var(--font-body);
+  font-weight: 400;
+}
+
+.product-price {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--gold);
+  margin: 0;
+}
+
+.product-btn {
+  margin-top: auto;
+  text-align: center;
+  font-size: .78rem;
+  padding: .55rem 1rem;
+}
