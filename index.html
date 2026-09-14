@@ -114,7 +114,17 @@
 
       <!-- Carousel -->
       <div class="gallery-carousel" id="galleryCarousel">
-        <!-- Thumbnail strip (top) -->
+        <!-- Main viewer -->
+        <div class="gc-main">
+          <button class="gc-arrow gc-prev" id="gcPrev" aria-label="Previous">&#8249;</button>
+          <div class="gc-main-img-wrap">
+            <img id="gcMainImg" src="https://langnuonggroup.com/wp-content/uploads/2023/10/g1.jpg" alt="Gallery 1">
+          </div>
+          <button class="gc-arrow gc-next" id="gcNext" aria-label="Next">&#8250;</button>
+        </div>
+        <!-- Counter -->
+        <div class="gc-counter"><span id="gcCurrent">1</span> / <span id="gcTotal">12</span></div>
+        <!-- Thumbnail strip (bottom) -->
         <div class="gc-thumbs" id="gcThumbs">
           <img src="https://langnuonggroup.com/wp-content/uploads/2023/10/g1.jpg"   alt="1"  class="gc-thumb active" data-index="0" loading="lazy">
           <img src="https://langnuonggroup.com/wp-content/uploads/2023/10/g2.jpg"   alt="2"  class="gc-thumb" data-index="1" loading="lazy">
@@ -128,16 +138,6 @@
           <img src="https://langnuonggroup.com/wp-content/uploads/2023/11/G10.jpg"  alt="10" class="gc-thumb" data-index="9" loading="lazy">
           <img src="https://langnuonggroup.com/wp-content/uploads/2023/11/G11.jpg"  alt="11" class="gc-thumb" data-index="10" loading="lazy">
           <img src="https://langnuonggroup.com/wp-content/uploads/2023/11/G12.jpg"  alt="12" class="gc-thumb" data-index="11" loading="lazy">
-        </div>
-        <!-- Counter -->
-        <div class="gc-counter"><span id="gcCurrent">1</span> / <span id="gcTotal">12</span></div>
-        <!-- Main viewer -->
-        <div class="gc-main">
-          <button class="gc-arrow gc-prev" id="gcPrev" aria-label="Previous">&#8249;</button>
-          <div class="gc-main-img-wrap">
-            <img id="gcMainImg" src="https://langnuonggroup.com/wp-content/uploads/2023/10/g1.jpg" alt="Gallery 1">
-          </div>
-          <button class="gc-arrow gc-next" id="gcNext" aria-label="Next">&#8250;</button>
         </div>
       </div>
     </div>
