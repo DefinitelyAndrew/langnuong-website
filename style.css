@@ -1151,12 +1151,14 @@ img {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
   background: #111;
 }
 
 .hc-slides {
   position: absolute;
   inset: 0;
+  z-index: 0;
 }
 
 .hc-slides img {
@@ -1169,16 +1171,15 @@ img {
 .hc-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,.45);
+  background: rgba(0,0,0,.5);
 }
 
 /* Hero text sits above the image */
 .hero-carousel .hero-content {
   position: relative;
   z-index: 2;
-  margin: auto 0 0;
   text-align: center;
-  padding: 3rem 1.5rem 1rem;
+  padding: 2rem 1.5rem 1.25rem;
 }
 
 /* Thumbnails pinned to bottom of hero */
@@ -1186,12 +1187,15 @@ img {
   position: relative;
   z-index: 2;
   padding: .6rem .75rem;
-  background: rgba(0,0,0,.35);
+  background: rgba(0,0,0,.4);
   border-top: 1px solid rgba(255,255,255,.15);
   margin: 0;
+  flex-shrink: 0;
 }
 
 /* Arrows on hero */
 .hero-carousel .gc-arrow {
+  position: absolute;
   top: 45%;
+  z-index: 3;
 }
