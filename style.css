@@ -825,7 +825,7 @@ img {
 .footer-brand {
   font-family: var(--font);
   font-size: 1.3rem;
-  color: #180e08;
+  color: #000000;
   margin-bottom: .5rem;
   font-weight: 600;
   letter-spacing: .04em;
@@ -834,7 +834,7 @@ img {
 
 .footer-tagline {
   font-size: .85rem;
-  color: #2b1b10;
+  color: #000000;
   margin-bottom: 1rem;
 }
 
