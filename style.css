@@ -1061,8 +1061,6 @@ img {
   object-fit: cover;
   transition: opacity .15s ease;
 }
-
-/* Prev / Next arrows */
 .gc-arrow {
   position: absolute;
   top: 50%;
