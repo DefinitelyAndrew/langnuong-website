@@ -839,7 +839,7 @@ img {
 }
 
 .site-footer p {
-  color: #2b1b10 !important;
+  color: #000000 !important;
 }
 
 .footer-social {
@@ -873,7 +873,7 @@ img {
 
 .footer-col h4 {
   font-family: var(--font);
-  color: #180e08;
+  color: #000000;
   font-size: .82rem;
   letter-spacing: .12em;
   text-transform: uppercase;
@@ -890,11 +890,11 @@ img {
 
 .footer-col ul li a {
   font-size: .85rem;
-  color: #2b1b10;
+  color: #000000;
   transition: color .2s;
 }
 
-.footer-col ul li a:hover { color: #000000; }
+.footer-col ul li a:hover { color: var(--brown); }
 
 .footer-bottom {
   max-width: var(--max-w);
@@ -902,7 +902,7 @@ img {
   padding-top: 1rem;
   border-top: 1px solid rgba(24,14,8,.25);
   font-size: .75rem;
-  color: #2b1b10;
+  color: #000000;
   text-align: center;
 }
 
