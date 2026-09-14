@@ -1053,6 +1053,29 @@ img {
   padding: .55rem 1rem;
 }
 
+.cart-placeholder {
+  margin-top: 2rem;
+  padding: 2rem 1.5rem;
+  background: rgba(255,255,255,.72);
+  border: 2px dashed var(--gold);
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.cart-placeholder .section-title {
+  margin-bottom: .4rem;
+}
+
+.cart-placeholder .section-divider {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cart-placeholder p {
+  margin-bottom: 1.25rem;
+  color: #333;
+}
+
 /* =============================================
    GALLERY CAROUSEL
    ============================================= */
