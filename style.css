@@ -1,6 +1,26 @@
 /* =============================================
-   Lang Nuong Vietnam – Mobile-First Stylesheet
+   Lang Nuong Vietnam – Stylesheet
+   Matching langnuonggroup.com exactly
+   Font: Gilroy (self-hosted)
+   Palette: #492200 (nav), #F6D879 (gold), kraft bg
    ============================================= */
+
+/* --- Gilroy Self-Hosted Font --- */
+@font-face {
+  font-family: "Gilroy";
+  src: url("Gilroy-Light.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Gilroy";
+  src: url("Gilroy-ExtraBold.woff") format("woff");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
 
 /* --- Reset & Base --- */
 *, *::before, *::after {
@@ -10,21 +30,22 @@
 }
 
 :root {
-  --red:       #c0392b;
-  --red-dark:  #922b21;
-  --gold:      #d4a017;
-  --gold-light:#f0c040;
-  --dark:      #111111;
-  --dark2:     #1a1a1a;
-  --dark3:     #222222;
-  --dark4:     #2d2d2d;
-  --text:      #e8e0d0;
-  --muted:     #a09080;
-  --white:     #ffffff;
-  --font-head: 'Playfair Display', Georgia, serif;
-  --font-body: 'Lato', 'Helvetica Neue', Arial, sans-serif;
-  --radius:    6px;
-  --shadow:    0 4px 20px rgba(0,0,0,.6);
+  --brown:       #492200;
+  --brown-dark:  #311700;
+  --gold:        #F6D879;
+  --gold-dark:   #F5D063;
+  --gold-hover:  #e8c04a;
+  --kraft-bg:    #F0DABD;
+  --white:       #ffffff;
+  --black:       #000000;
+  --text:        #000000;
+  --muted:       #555555;
+  --light-gray:  #c4c4c4;
+  --section-bg:  #ffffff;
+  --font:        "Gilroy", Arial, Helvetica, sans-serif;
+  --radius:      4px;
+  --shadow:      0 4px 20px rgba(0,0,0,.15);
+  --max-w:       1140px;
 }
 
 html {
@@ -32,21 +53,22 @@ html {
 }
 
 body {
-  background-color: var(--dark);
+  background-color: var(--white);
   color: var(--text);
-  font-family: var(--font-body);
-  font-size: 16px;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 400;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
 }
 
 a {
-  color: var(--gold);
+  color: var(--brown);
   text-decoration: none;
 }
 
 a:hover {
-  color: var(--gold-light);
+  color: var(--gold-dark);
 }
 
 img {
@@ -55,9 +77,6 @@ img {
   display: block;
 }
 
-/* --- Google Fonts --- */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@300;400;700&display=swap');
-
 /* =============================================
    NAVIGATION
    ============================================= */
@@ -65,32 +84,35 @@ img {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(17,17,17,.97);
-  border-bottom: 2px solid var(--red);
-  backdrop-filter: blur(6px);
+  background-color: var(--brown);
+  background-image: url("kraftbg.jpg");
+  background-size: cover;
+  background-position: center;
+  border-bottom: 3px solid var(--gold);
 }
 
 .nav-inner {
-  max-width: 1100px;
+  max-width: var(--max-w);
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 1.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 64px;
+  min-height: 70px;
 }
 
 .nav-logo {
-  font-family: var(--font-head);
-  font-size: 1.1rem;
-  color: var(--gold);
-  font-weight: 700;
-  letter-spacing: .03em;
+  font-family: var(--font);
+  font-size: 1.25rem;
+  color: var(--white);
+  font-weight: 600;
+  letter-spacing: .04em;
   white-space: nowrap;
+  text-transform: uppercase;
 }
 
 .nav-logo span {
-  color: var(--red);
+  color: var(--gold);
 }
 
 /* Hamburger */
@@ -122,8 +144,8 @@ img {
 .nav-menu {
   display: none;
   flex-direction: column;
-  background: var(--dark2);
-  border-top: 1px solid var(--dark4);
+  background: var(--brown);
+  border-top: 1px solid rgba(255,255,255,.15);
   padding: .5rem 0;
 }
 
@@ -133,18 +155,21 @@ img {
 
 .nav-menu a {
   padding: .85rem 1.5rem;
-  font-size: .95rem;
-  font-weight: 700;
-  letter-spacing: .06em;
+  font-size: .82rem;
+  font-weight: 600;
+  letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--text);
-  border-bottom: 1px solid var(--dark4);
+  color: var(--white);
+  border-bottom: 1px solid rgba(255,255,255,.1);
   transition: background .2s, color .2s;
 }
 
 .nav-menu a:last-child { border-bottom: none; }
 .nav-menu a:hover,
-.nav-menu a.active { background: var(--dark4); color: var(--gold); }
+.nav-menu a.active {
+  background: rgba(0,0,0,.2);
+  color: var(--gold);
+}
 
 /* Desktop nav */
 @media (min-width: 768px) {
@@ -156,14 +181,22 @@ img {
     background: none;
     border: none;
     padding: 0;
-    gap: .15rem;
+    gap: .1rem;
+    align-items: center;
   }
 
   .nav-menu a {
-    padding: .4rem .8rem;
-    font-size: .78rem;
+    padding: .45rem .85rem;
+    font-size: .72rem;
     border-bottom: none;
     border-radius: var(--radius);
+    color: var(--white);
+  }
+
+  .nav-menu a:hover,
+  .nav-menu a.active {
+    background: rgba(0,0,0,.25);
+    color: var(--gold);
   }
 }
 
@@ -172,12 +205,13 @@ img {
    ============================================= */
 .hero {
   position: relative;
-  min-height: 60vw;
-  max-height: 640px;
+  min-height: 55vw;
+  max-height: 700px;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
-  background: var(--dark2);
+  background: var(--brown);
 }
 
 .hero-bg {
@@ -185,7 +219,7 @@ img {
   inset: 0;
   background-size: cover;
   background-position: center;
-  filter: brightness(.45);
+  filter: brightness(.55);
   transition: transform 8s ease;
 }
 
@@ -195,42 +229,54 @@ img {
 
 .hero-content {
   position: relative;
-  padding: 2rem 1.5rem 2.5rem;
-  max-width: 700px;
+  padding: 2.5rem 2rem 3rem;
+  max-width: 800px;
+  text-align: center;
 }
 
 .hero-eyebrow {
   display: inline-block;
-  background: var(--red);
-  color: var(--white);
-  font-size: .7rem;
-  font-weight: 700;
-  letter-spacing: .15em;
+  background: var(--gold);
+  color: var(--black);
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .18em;
   text-transform: uppercase;
-  padding: .25rem .75rem;
+  padding: .3rem .9rem;
   border-radius: 2px;
-  margin-bottom: .85rem;
+  margin-bottom: 1rem;
 }
 
 .hero-title {
-  font-family: var(--font-head);
-  font-size: clamp(1.8rem, 7vw, 3.5rem);
+  font-family: var(--font);
+  font-size: clamp(1.8rem, 6vw, 3.5rem);
+  font-weight: 400;
   line-height: 1.15;
   color: var(--white);
-  text-shadow: 0 2px 12px rgba(0,0,0,.8);
-  margin-bottom: .5rem;
+  text-shadow: 0 2px 12px rgba(0,0,0,.6);
+  margin-bottom: .6rem;
+  text-transform: uppercase;
+  letter-spacing: .03em;
 }
 
 .hero-title em {
   color: var(--gold);
   font-style: normal;
+  text-transform: none;
 }
 
 .hero-sub {
-  font-size: clamp(.85rem, 2.5vw, 1.1rem);
-  color: var(--text);
-  margin-bottom: 1.4rem;
+  font-size: clamp(.9rem, 2.5vw, 1.1rem);
+  color: var(--white);
+  margin-bottom: 1.75rem;
   opacity: .9;
+  letter-spacing: .04em;
+}
+
+/* Page hero (inner pages — shorter) */
+.page-hero {
+  min-height: 40vw;
+  max-height: 500px;
 }
 
 /* =============================================
@@ -238,44 +284,35 @@ img {
    ============================================= */
 .btn {
   display: inline-block;
-  padding: .75rem 1.75rem;
-  font-size: .85rem;
-  font-weight: 700;
-  letter-spacing: .1em;
+  padding: .75rem 2rem;
+  font-family: var(--font);
+  font-size: .82rem;
+  font-weight: 600;
+  letter-spacing: .12em;
   text-transform: uppercase;
   border-radius: var(--radius);
   cursor: pointer;
-  transition: background .25s, transform .2s, box-shadow .2s;
+  transition: background .2s, transform .2s, box-shadow .2s, color .2s, border-color .2s;
   border: 2px solid transparent;
+  white-space: nowrap;
 }
 
+/* Primary: gold fill / black text — matches live site buttons */
 .btn-primary {
-  background: var(--red);
-  color: var(--white);
-  border-color: var(--red);
-}
-
-.btn-primary:hover {
-  background: var(--red-dark);
-  border-color: var(--red-dark);
-  color: var(--white);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(192,57,43,.45);
-}
-
-.btn-gold {
   background: var(--gold);
-  color: var(--dark);
+  color: var(--black);
   border-color: var(--gold);
 }
 
-.btn-gold:hover {
-  background: var(--gold-light);
-  border-color: var(--gold-light);
-  color: var(--dark);
+.btn-primary:hover {
+  background: var(--gold-hover);
+  border-color: var(--gold-hover);
+  color: var(--black);
   transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(246,216,121,.5);
 }
 
+/* Gold outline */
 .btn-outline {
   background: transparent;
   color: var(--gold);
@@ -284,7 +321,35 @@ img {
 
 .btn-outline:hover {
   background: var(--gold);
-  color: var(--dark);
+  color: var(--black);
+  transform: translateY(-2px);
+}
+
+/* White outline — used in heroes */
+.btn-white {
+  background: transparent;
+  color: var(--white);
+  border-color: var(--white);
+}
+
+.btn-white:hover {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--black);
+  transform: translateY(-2px);
+}
+
+/* Gold filled (download/menu links) */
+.btn-gold {
+  background: var(--gold);
+  color: var(--black);
+  border-color: var(--gold);
+}
+
+.btn-gold:hover {
+  background: var(--gold-hover);
+  border-color: var(--gold-hover);
+  color: var(--black);
   transform: translateY(-2px);
 }
 
@@ -309,57 +374,82 @@ img {
    SECTIONS
    ============================================= */
 .section {
-  padding: 3rem 1.25rem;
-  max-width: 1100px;
+  padding: 3.5rem 1.25rem;
+  max-width: var(--max-w);
   margin: 0 auto;
 }
 
 .section-full {
-  padding: 3rem 1.25rem;
+  width: 100%;
 }
 
+/* Light kraft background — matches live site main content areas */
+.section-light {
+  background-color: var(--kraft-bg);
+  background-image: url("kraftbg.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+/* White background sections */
+.section-white {
+  background-color: var(--white);
+}
+
+/* Dark brown sections */
 .section-dark {
-  background: var(--dark2);
+  background-color: var(--brown);
 }
 
+/* Slightly lighter brown */
 .section-darker {
-  background: var(--dark3);
+  background-color: var(--brown-dark);
 }
 
 .section-title {
-  font-family: var(--font-head);
+  font-family: var(--font);
   font-size: clamp(1.5rem, 5vw, 2.4rem);
-  color: var(--gold);
-  margin-bottom: .5rem;
+  font-weight: 600;
+  color: var(--black);
+  margin-bottom: .4rem;
   line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: .05em;
 }
 
+/* White title variant for dark sections */
 .section-title-white {
   color: var(--white);
+}
+
+/* Gold title variant */
+.section-title-gold {
+  color: var(--gold);
 }
 
 .section-divider {
   width: 60px;
   height: 3px;
-  background: var(--red);
-  margin: .6rem 0 1.4rem;
+  background: var(--gold);
+  margin: .5rem 0 1.5rem;
   border-radius: 2px;
 }
 
 .section-lead {
   font-size: 1.05rem;
-  color: var(--text);
-  margin-bottom: 1rem;
+  color: var(--black);
+  margin-bottom: 1.25rem;
   max-width: 750px;
+  line-height: 1.8;
 }
 
 /* =============================================
-   BRAND CARDS (Home page grid)
+   BRAND CARDS (home page grid)
    ============================================= */
 .brands-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.25rem;
+  gap: 1rem;
   margin-top: 1.5rem;
 }
 
@@ -376,9 +466,10 @@ img {
   overflow: hidden;
   border-radius: var(--radius);
   aspect-ratio: 4/3;
-  background: var(--dark4);
+  background: #ccc;
   box-shadow: var(--shadow);
   cursor: pointer;
+  display: block;
 }
 
 .brand-card img {
@@ -393,27 +484,35 @@ img {
 .brand-card-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,.85) 0%, transparent 55%);
+  background: rgba(0,0,0,.6);
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
   padding: 1.1rem;
+  transition: background .3s;
+}
+
+.brand-card:hover .brand-card-overlay {
+  background: rgba(0,0,0,.45);
 }
 
 .brand-card-name {
-  font-family: var(--font-head);
-  font-size: 1.1rem;
+  font-family: var(--font);
+  font-size: 1.2rem;
+  font-weight: 600;
   color: var(--white);
-  font-weight: 700;
-  line-height: 1.2;
-  margin-bottom: .35rem;
+  text-align: center;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-bottom: .4rem;
 }
 
 .brand-card-cta {
   font-size: .75rem;
   color: var(--gold);
-  font-weight: 700;
-  letter-spacing: .08em;
+  font-weight: 600;
+  letter-spacing: .1em;
   text-transform: uppercase;
 }
 
@@ -440,7 +539,7 @@ img {
   overflow: hidden;
   border-radius: 4px;
   aspect-ratio: 1;
-  background: var(--dark4);
+  background: #ddd;
 }
 
 .gallery-grid a img {
@@ -452,31 +551,34 @@ img {
 
 .gallery-grid a:hover img {
   transform: scale(1.1);
-  filter: brightness(.8);
+  filter: brightness(.85);
 }
 
 /* =============================================
-   INFO BLOCKS (about / location)
+   INFO BLOCKS (location / details)
    ============================================= */
 .info-block {
-  background: var(--dark3);
-  border-left: 4px solid var(--red);
+  background: rgba(255,255,255,.8);
+  border-left: 4px solid var(--gold);
   border-radius: 0 var(--radius) var(--radius) 0;
   padding: 1.4rem 1.5rem;
   margin-bottom: 1.5rem;
 }
 
 .info-block h3 {
-  font-family: var(--font-head);
-  color: var(--gold);
-  font-size: 1.15rem;
+  font-family: var(--font);
+  color: var(--brown);
+  font-size: 1.05rem;
+  font-weight: 600;
   margin-bottom: .6rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
 }
 
 .info-block p,
 .info-block li {
   font-size: .93rem;
-  color: var(--text);
+  color: var(--black);
   margin-bottom: .4rem;
 }
 
@@ -487,15 +589,15 @@ img {
 
 .info-block li::before {
   content: "→ ";
-  color: var(--gold);
+  color: var(--brown);
 }
 
 .info-block strong {
-  color: var(--gold-light);
+  color: var(--brown);
 }
 
 /* =============================================
-   LOCATION / MAP EMBED
+   MAP EMBED
    ============================================= */
 .map-wrap {
   border-radius: var(--radius);
@@ -512,7 +614,7 @@ img {
 }
 
 /* =============================================
-   SPECIALTY CARDS (horizontal scroll on mobile)
+   SPECIALTY CARDS (horizontal scroll)
    ============================================= */
 .specialty-scroll {
   display: flex;
@@ -521,22 +623,23 @@ img {
   padding-bottom: .75rem;
   margin-top: 1rem;
   scrollbar-width: thin;
-  scrollbar-color: var(--red) var(--dark4);
+  scrollbar-color: var(--brown) #ddd;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x mandatory;
 }
 
 .specialty-scroll::-webkit-scrollbar { height: 4px; }
-.specialty-scroll::-webkit-scrollbar-track { background: var(--dark4); }
-.specialty-scroll::-webkit-scrollbar-thumb { background: var(--red); border-radius: 2px; }
+.specialty-scroll::-webkit-scrollbar-track { background: #ddd; }
+.specialty-scroll::-webkit-scrollbar-thumb { background: var(--brown); border-radius: 2px; }
 
 .specialty-card {
   flex: 0 0 220px;
   scroll-snap-align: start;
-  background: var(--dark3);
+  background: var(--white);
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: var(--shadow);
+  border: 1px solid #e8d8c0;
 }
 
 .specialty-card img {
@@ -550,14 +653,52 @@ img {
 }
 
 .specialty-card-body h4 {
-  font-family: var(--font-head);
-  color: var(--gold);
+  font-family: var(--font);
+  color: var(--brown);
   font-size: .95rem;
+  font-weight: 600;
   margin-bottom: .3rem;
 }
 
 /* =============================================
-   MEDIA / PRESS MENTIONS
+   SPECIALTY TEXT GRID (feature cards)
+   ============================================= */
+.specialty-text-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 600px) {
+  .specialty-text-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.specialty-text-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.4rem;
+  border-top: 3px solid var(--gold);
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+.specialty-text-card h4 {
+  font-family: var(--font);
+  color: var(--brown);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: .4rem;
+  letter-spacing: .03em;
+}
+
+.specialty-text-card p {
+  font-size: .9rem;
+  color: #333;
+  line-height: 1.65;
+}
+
+/* =============================================
+   PRESS / MEDIA MENTIONS
    ============================================= */
 .press-grid {
   display: grid;
@@ -571,49 +712,84 @@ img {
 }
 
 .press-card {
-  background: var(--dark3);
+  background: var(--white);
   border-radius: var(--radius);
   padding: 1.25rem;
-  border: 1px solid var(--dark4);
+  border: 1px solid #e8d8c0;
   display: flex;
   flex-direction: column;
   gap: .6rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
 }
 
 .press-card h4 {
-  font-family: var(--font-head);
-  color: var(--gold);
+  font-family: var(--font);
+  color: var(--brown);
   font-size: 1rem;
+  font-weight: 600;
 }
 
 .press-card p {
-  font-size: .85rem;
+  font-size: .88rem;
   color: var(--muted);
   flex: 1;
 }
 
 .press-card a {
   font-size: .8rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: .06em;
   text-transform: uppercase;
-  color: var(--red);
+  color: var(--brown);
 }
 
-.press-card a:hover { color: var(--gold); }
+.press-card a:hover { color: var(--gold-dark); }
+
+/* =============================================
+   ABOUT COLS (home page 2-col layout)
+   ============================================= */
+.about-cols {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  align-items: start;
+  margin-top: 1rem;
+}
+
+@media (min-width: 800px) {
+  .about-cols { grid-template-columns: 1fr 1fr; }
+}
+
+/* =============================================
+   EMPHASIS BLOCK (italic highlight)
+   ============================================= */
+.emphasis-block {
+  border-left: 3px solid var(--gold);
+  padding: .85rem 1.25rem;
+  background: rgba(246,216,121,.12);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-style: italic;
+  font-size: .92rem;
+  color: var(--black);
+  margin: 1.25rem 0;
+  line-height: 1.7;
+}
 
 /* =============================================
    FOOTER
    ============================================= */
 .site-footer {
-  background: #0a0a0a;
-  border-top: 2px solid var(--red);
-  padding: 2.5rem 1.25rem 1.5rem;
-  margin-top: 4rem;
+  background-color: var(--brown);
+  background-image: url("footerbgkraft.jpg");
+  background-size: cover;
+  background-position: center;
+  border-top: 3px solid var(--gold);
+  padding: 3rem 1.25rem 1.5rem;
+  margin-top: 0;
 }
 
 .footer-inner {
-  max-width: 1100px;
+  max-width: var(--max-w);
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr;
@@ -625,16 +801,18 @@ img {
 }
 
 .footer-brand {
-  font-family: var(--font-head);
+  font-family: var(--font);
   font-size: 1.3rem;
-  color: var(--gold);
+  color: var(--white);
   margin-bottom: .5rem;
-  font-weight: 700;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
 }
 
 .footer-tagline {
   font-size: .85rem;
-  color: var(--muted);
+  color: rgba(255,255,255,.7);
   margin-bottom: 1rem;
 }
 
@@ -650,24 +828,28 @@ img {
   justify-content: center;
   width: 38px;
   height: 38px;
-  background: var(--dark3);
+  background: rgba(255,255,255,.15);
   border-radius: 50%;
-  color: var(--text);
+  color: var(--white);
   font-size: .85rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   transition: background .2s, color .2s;
 }
 
-.footer-social a:hover { background: var(--red); color: var(--white); }
+.footer-social a:hover {
+  background: var(--gold);
+  color: var(--black);
+}
 
 .footer-col h4 {
-  font-family: var(--font-head);
+  font-family: var(--font);
   color: var(--gold);
-  font-size: .9rem;
-  letter-spacing: .08em;
+  font-size: .82rem;
+  letter-spacing: .12em;
   text-transform: uppercase;
   margin-bottom: .75rem;
+  font-weight: 600;
 }
 
 .footer-col ul {
@@ -679,35 +861,20 @@ img {
 
 .footer-col ul li a {
   font-size: .85rem;
-  color: var(--muted);
+  color: rgba(255,255,255,.7);
   transition: color .2s;
 }
 
 .footer-col ul li a:hover { color: var(--gold); }
 
 .footer-bottom {
-  max-width: 1100px;
+  max-width: var(--max-w);
   margin: 2rem auto 0;
   padding-top: 1rem;
-  border-top: 1px solid var(--dark4);
+  border-top: 1px solid rgba(255,255,255,.2);
   font-size: .75rem;
-  color: var(--muted);
+  color: rgba(255,255,255,.55);
   text-align: center;
-}
-
-/* =============================================
-   PAGE-SPECIFIC: About Us (home) columns
-   ============================================= */
-.about-cols {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2rem;
-  align-items: start;
-  margin-top: 1rem;
-}
-
-@media (min-width: 800px) {
-  .about-cols { grid-template-columns: 1fr 1fr; }
 }
 
 /* =============================================
@@ -718,76 +885,24 @@ img {
 .mt-2 { margin-top: 2rem; }
 .mb-1 { margin-bottom: 1rem; }
 .mb-2 { margin-bottom: 2rem; }
-.red { color: var(--red); }
-.gold { color: var(--gold); }
-
-/* Horizontal rule */
 .rule {
   border: none;
-  border-top: 1px solid var(--dark4);
+  border-top: 1px solid #e8d8c0;
   margin: 2rem 0;
 }
 
-/* Italic emphasis blocks */
-.emphasis-block {
-  border-left: 3px solid var(--gold);
-  padding: .75rem 1.25rem;
-  background: rgba(212,160,23,.08);
-  border-radius: 0 var(--radius) var(--radius) 0;
-  font-style: italic;
-  font-size: .9rem;
-  color: var(--text);
-  margin: 1.25rem 0;
-}
-
-/* Menu PDF link */
-.menu-btn-wrap {
-  margin-top: 1.5rem;
-}
-
-/* Page hero for inner pages */
-.page-hero {
-  min-height: 45vw;
-  max-height: 500px;
-}
-
-/* Responsive 2-col text layout for BBQ page specialty items */
-.specialty-text-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-  margin-top: 1.5rem;
-}
-
-@media (min-width: 600px) {
-  .specialty-text-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-.specialty-text-card {
-  background: var(--dark3);
-  border-radius: var(--radius);
-  padding: 1.1rem 1.25rem;
-  border-top: 3px solid var(--red);
-}
-
-.specialty-text-card h4 {
-  font-family: var(--font-head);
-  color: var(--gold);
-  margin-bottom: .4rem;
-}
-
-.specialty-text-card p {
-  font-size: .88rem;
-  color: var(--text);
-}
+.menu-btn-wrap { margin-top: 1.5rem; }
 
 /* =============================================
    SHOP HERO
    ============================================= */
 .shop-hero {
-  background: linear-gradient(135deg, var(--dark2) 0%, var(--dark3) 100%);
-  border-bottom: 2px solid var(--red);
+  background-color: var(--brown);
+  background-image: url("kraftbg.jpg");
+  background-size: cover;
+  background-position: center;
   padding: 4rem 1.25rem 3.5rem;
+  text-align: center;
 }
 
 .shop-hero-inner {
@@ -797,16 +912,15 @@ img {
 
 .shop-hero .hero-title {
   color: var(--white);
-  font-family: var(--font-head);
-  font-size: clamp(1.8rem, 7vw, 3rem);
+  font-family: var(--font);
+  font-size: clamp(1.8rem, 6vw, 3rem);
   line-height: 1.15;
   margin-bottom: .5rem;
 }
 
 .shop-hero .hero-sub {
-  font-size: clamp(.85rem, 2.5vw, 1.05rem);
-  color: var(--text);
-  opacity: .9;
+  font-size: 1rem;
+  color: rgba(255,255,255,.85);
 }
 
 /* =============================================
@@ -828,25 +942,26 @@ img {
 }
 
 .product-card {
-  background: var(--dark3);
+  background: var(--white);
   border-radius: var(--radius);
   overflow: hidden;
-  box-shadow: var(--shadow);
+  box-shadow: 0 2px 10px rgba(0,0,0,.1);
   display: flex;
   flex-direction: column;
+  border: 1px solid #e8d8c0;
   transition: transform .25s, box-shadow .25s;
 }
 
 .product-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 28px rgba(0,0,0,.7);
+  box-shadow: 0 8px 24px rgba(0,0,0,.15);
 }
 
 .product-img-wrap {
   position: relative;
   aspect-ratio: 1;
   overflow: hidden;
-  background: var(--dark4);
+  background: #eee;
 }
 
 .product-img-wrap img {
@@ -864,10 +979,10 @@ img {
   position: absolute;
   top: .6rem;
   left: .6rem;
-  background: var(--red);
+  background: var(--brown);
   color: var(--white);
   font-size: .65rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: .1em;
   text-transform: uppercase;
   padding: .2rem .55rem;
@@ -883,9 +998,10 @@ img {
 }
 
 .product-name {
-  font-family: var(--font-head);
+  font-family: var(--font);
   font-size: .9rem;
-  color: var(--white);
+  font-weight: 600;
+  color: var(--black);
   line-height: 1.35;
   margin: 0;
 }
@@ -893,14 +1009,13 @@ img {
 .product-name-zh {
   color: var(--muted);
   font-size: .8rem;
-  font-family: var(--font-body);
   font-weight: 400;
 }
 
 .product-price {
   font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--gold);
+  font-weight: 600;
+  color: var(--brown);
   margin: 0;
 }
 
