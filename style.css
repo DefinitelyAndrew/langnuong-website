@@ -284,6 +284,29 @@ img {
   text-transform: none;
 }
 
+.animated-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.animated-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -.12em;
+  height: .08em;
+  min-height: 3px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: underline-draw 1.1s .35s ease-out forwards;
+}
+
+@keyframes underline-draw {
+  to { transform: scaleX(1); }
+}
+
 .hero-sub {
   font-size: clamp(.9rem, 2.5vw, 1.1rem);
   color: var(--white);
