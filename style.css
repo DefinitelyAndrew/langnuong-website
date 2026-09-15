@@ -509,6 +509,32 @@ img {
   text-wrap: balance;
 }
 
+.bbq-page .hero-title,
+.bbq-page .hero-eyebrow,
+.bbq-page .section-title {
+  text-transform: none;
+}
+
+.bbq-page .section-title {
+  position: relative;
+  display: inline-block;
+  isolation: isolate;
+  padding: 0 .12em .08em;
+}
+
+.bbq-page .section-title::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  right: -.08em;
+  bottom: .08em;
+  height: .34em;
+  background: var(--gold);
+  opacity: .62;
+  transform: rotate(-1.2deg);
+}
+
 /* White title variant for dark sections */
 .section-title-white {
   color: var(--white);
