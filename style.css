@@ -293,11 +293,11 @@ img {
 
 .underline-layer {
   position: absolute;
-  left: -3%;
-  width: 106%;
-  height: .62em;
-  min-height: 18px;
-  transform: translateX(var(--underline-offset, 0));
+  left: -2%;
+  bottom: -.08em;
+  width: 104%;
+  height: .5em;
+  min-height: 15px;
   pointer-events: none;
   z-index: -1;
 }
@@ -312,43 +312,13 @@ img {
 .underline-layer path {
   fill: none;
   stroke: var(--gold);
-  stroke-linecap: butt;
+  stroke-width: 5;
+  stroke-linecap: round;
   stroke-linejoin: round;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  animation: underline-draw .48s linear forwards;
-}
-
-.underline-back {
-  --underline-offset: 4px;
-  bottom: .01em;
-  opacity: .7;
-}
-
-.underline-back path {
-  stroke-width: 4.5;
-  animation-delay: 0s;
-}
-
-.underline-mid {
-  --underline-offset: 2px;
-  bottom: -.035em;
-  opacity: .85;
-}
-
-.underline-mid path {
-  stroke-width: 5;
-  animation-delay: .06s;
-}
-
-.underline-front {
-  --underline-offset: 0;
-  bottom: -.08em;
-}
-
-.underline-front path {
-  stroke-width: 5.5;
-  animation-delay: .12s;
+  animation: underline-draw .65s linear forwards;
+  will-change: stroke-dashoffset;
 }
 
 @keyframes underline-draw {
