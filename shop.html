@@ -378,7 +378,7 @@
       const { error } = await supabaseClient.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}${window.location.pathname}`
+          redirectTo: `${window.location.origin}${window.location.pathname.replace('shop.html', 'account.html')}`
         }
       });
       if (error) accountStatus.textContent = `Google sign-in failed: ${error.message}`;

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Your Lang Nuong Vietnam account.">
+  <title>My Account | Lang Nuong Vietnam</title>
+  <link rel="stylesheet" href="style.css?v=20260915-26">
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" aria-label="Làng Nướng Vietnam home">
+        <img src="https://langnuonggroup.com/wp-content/uploads/2024/07/LNGROUP.png" alt="Làng Nướng Vietnam">
+      </a>
+      <nav class="nav-menu">
+        <a href="index.html">Home</a>
+        <a href="shop.html">Shop Now</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section-full section-light">
+    <div class="section account-page">
+      <span class="hero-eyebrow">Lang Nuong Vietnam</span>
+      <h1 class="section-title">My Account</h1>
+      <div class="section-divider"></div>
+      <p id="accountPageStatus" class="account-status">Loading your account…</p>
+      <section class="account-profile-card" id="accountProfile" hidden>
+        <img id="accountAvatar" class="account-avatar" src="" alt="">
+        <div>
+          <h2 id="accountName"></h2>
+          <p id="accountEmail"></p>
+          <p class="account-page-note">Your account is securely managed with Google and Supabase.</p>
+        </div>
+      </section>
+      <div class="account-page-actions">
+        <a href="shop.html" class="btn btn-outline">Continue Shopping</a>
+        <button type="button" class="btn btn-primary" id="accountPageSignOut" hidden>Sign Out</button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-bottom">© Lang Nuong Vietnam | All Rights Reserved · <a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms and Conditions</a></div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1"></script>
+  <script>
+    const supabaseClient = window.supabase.createClient(
+      'https://egggnxmzxbqdsqqlnvig.supabase.co',
+      'sb_publishable_jostM0x7NIGiLikFjVHLwA_I_x0IpS8'
+    );
+    const status = document.getElementById('accountPageStatus');
+    const profile = document.getElementById('accountProfile');
+    const signOut = document.getElementById('accountPageSignOut');
+
+    const displayAccount = user => {
+      if (!user) {
+        status.textContent = 'You are not signed in. Open the account sign-in from the shop.';
+        signOut.hidden = true;
+        return;
+      }
+      const name = user.user_metadata.full_name || user.user_metadata.name || user.email;
+      const avatar = user.user_metadata.avatar_url || user.user_metadata.picture;
+      document.getElementById('accountName').textContent = name;
+      document.getElementById('accountEmail').textContent = user.email;
+      if (avatar) {
+        document.getElementById('accountAvatar').src = avatar;
+        document.getElementById('accountAvatar').alt = `${name} profile photo`;
+      } else {
+        document.getElementById('accountAvatar').hidden = true;
+      }
+      status.hidden = true;
+      profile.hidden = false;
+      signOut.hidden = false;
+    };
+
+    supabaseClient.auth.getSession().then(({ data, error }) => {
+      if (error) {
+        status.textContent = `Unable to load your account: ${error.message}`;
+        return;
+      }
+      displayAccount(data.session?.user || null);
+    });
+
+    signOut.addEventListener('click', async () => {
+      const { error } = await supabaseClient.auth.signOut();
+      if (error) {
+        status.hidden = false;
+        status.textContent = `Sign out failed: ${error.message}`;
+        return;
+      }
+      window.location.href = 'shop.html';
+    });
+  </script>
+</body>
+</html>
