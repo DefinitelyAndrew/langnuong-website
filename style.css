@@ -1261,6 +1261,14 @@ img {
   border-radius: 999px;
 }
 
+.price-scale-inputs input:first-child {
+  z-index: 2;
+}
+
+.price-scale-inputs input:last-child {
+  z-index: 1;
+}
+
 .price-scale-inputs input::-webkit-slider-thumb {
   width: 1rem;
   height: 1rem;
