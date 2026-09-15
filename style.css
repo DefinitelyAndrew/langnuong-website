@@ -312,11 +312,11 @@ img {
 .underline-layer path {
   fill: none;
   stroke: var(--gold);
-  stroke-linecap: round;
+  stroke-linecap: butt;
   stroke-linejoin: round;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  animation: underline-draw .9s linear forwards;
+  animation: underline-draw .75s linear forwards;
   will-change: stroke-dashoffset;
 }
 
