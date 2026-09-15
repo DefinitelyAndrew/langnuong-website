@@ -25,6 +25,7 @@
       <span class="hero-eyebrow">Lang Nuong Vietnam</span>
       <h1 class="section-title">My Account</h1>
       <div class="section-divider"></div>
+      <p class="account-greeting">Hello! Thank you for using Lang Nuong.</p>
       <p id="accountPageStatus" class="account-status">Loading your account…</p>
       <section class="account-profile-card" id="accountProfile" hidden>
         <img id="accountAvatar" class="account-avatar" src="" alt="">
@@ -35,8 +36,8 @@
         </div>
       </section>
       <div class="account-page-actions">
-        <a href="shop.html" class="btn btn-outline">Continue Shopping</a>
         <button type="button" class="btn btn-primary" id="accountPageSignOut" hidden>Sign Out</button>
+        <button type="button" class="btn btn-danger" id="accountDelete" hidden>Delete Account</button>
       </div>
     </div>
   </main>
@@ -54,11 +55,13 @@
     const status = document.getElementById('accountPageStatus');
     const profile = document.getElementById('accountProfile');
     const signOut = document.getElementById('accountPageSignOut');
+    const deleteAccount = document.getElementById('accountDelete');
 
     const displayAccount = user => {
       if (!user) {
         status.textContent = 'You are not signed in. Open the account sign-in from the shop.';
         signOut.hidden = true;
+        deleteAccount.hidden = true;
         return;
       }
       const name = user.user_metadata.full_name || user.user_metadata.name || user.email;
@@ -74,6 +77,7 @@
       status.hidden = true;
       profile.hidden = false;
       signOut.hidden = false;
+      deleteAccount.hidden = false;
     };
 
     supabaseClient.auth.getSession().then(({ data, error }) => {
@@ -92,6 +96,25 @@
         return;
       }
       window.location.href = 'shop.html';
+    });
+
+    deleteAccount.addEventListener('click', async () => {
+      const confirmed = window.confirm('Delete your Lang Nuong account permanently? This cannot be undone.');
+      if (!confirmed) return;
+      deleteAccount.disabled = true;
+      status.hidden = false;
+      status.textContent = 'Deleting your account…';
+      const { error } = await supabaseClient.rpc('delete_own_account');
+      if (error) {
+        deleteAccount.disabled = false;
+        status.textContent = `Account deletion failed: ${error.message}`;
+        return;
+      }
+      await supabaseClient.auth.signOut();
+      status.textContent = 'Your account has been deleted.';
+      profile.hidden = true;
+      signOut.hidden = true;
+      deleteAccount.hidden = true;
     });
   </script>
 </body>

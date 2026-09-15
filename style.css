@@ -1787,6 +1787,13 @@ img {
   max-width: 760px;
 }
 
+.account-greeting {
+  margin: 1rem 0;
+  color: var(--brown-dark);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
 .account-profile-card {
   display: flex;
   align-items: center;
@@ -1827,6 +1834,18 @@ img {
   display: flex;
   flex-wrap: wrap;
   gap: .75rem;
+}
+
+.btn-danger {
+  border: 2px solid #9d2d20;
+  background: #9d2d20;
+  color: var(--white);
+}
+
+.btn-danger:hover {
+  border-color: #7b2118;
+  background: #7b2118;
+  color: var(--white);
 }
 
 body.account-open {
