@@ -1627,10 +1627,10 @@ img {
   font-weight: 600;
 }
 
-.google-sign-in span {
-  color: #4285f4;
-  font-size: 1.2rem;
-  font-weight: 700;
+.google-logo {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: 0 0 auto;
 }
 
 .account-divider {
