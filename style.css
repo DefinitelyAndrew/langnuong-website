@@ -252,6 +252,15 @@ img {
   text-align: center;
 }
 
+.branch-hero-logo {
+  display: block;
+  width: min(250px, 62vw);
+  max-height: 100px;
+  object-fit: contain;
+  margin: 0 auto 1rem;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .45));
+}
+
 .hero-eyebrow {
   display: inline-block;
   background: var(--gold);
