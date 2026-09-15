@@ -55,6 +55,21 @@
     </section>
   </div>
 
+  <div class="quick-view-modal" id="quickViewModal" hidden>
+    <div class="account-backdrop" data-close-quick-view></div>
+    <section class="quick-view-panel" role="dialog" aria-modal="true" aria-labelledby="quickViewName">
+      <button type="button" class="account-close" id="closeQuickView" aria-label="Close quick view">×</button>
+      <img id="quickViewImage" src="" alt="">
+      <div class="quick-view-details">
+        <span class="hero-eyebrow">Product Details</span>
+        <h2 id="quickViewName"></h2>
+        <p class="quick-view-price" id="quickViewPrice"></p>
+        <p class="quick-view-stock" id="quickViewStock"></p>
+        <button type="button" class="btn btn-primary" id="quickViewAdd">Add to Cart</button>
+      </div>
+    </section>
+  </div>
+
   <!-- ===== SHOP HERO ===== -->
   <section class="shop-hero">
     <div class="shop-hero-inner">
@@ -68,9 +83,22 @@
   <!-- ===== PRODUCT GRID ===== -->
   <div class="section-full section-light">
     <div class="section">
-      <h2 class="section-title">Showing all 10 results</h2>
+      <h2 class="section-title" id="resultsSummary">Showing all 10 results</h2>
       <div class="section-divider"></div>
       <div class="shop-toolbar">
+        <label for="priceFilter">Price</label>
+        <select id="priceFilter" class="shop-filter">
+          <option value="all">All prices</option>
+          <option value="under-5">Under $5</option>
+          <option value="5-10">$5 - $10</option>
+          <option value="over-10">Over $10</option>
+        </select>
+        <label for="stockFilter">Stock</label>
+        <select id="stockFilter" class="shop-filter">
+          <option value="all">All products</option>
+          <option value="instock">In stock</option>
+          <option value="outofstock">Out of stock</option>
+        </select>
         <label for="shopSort">Sort by</label>
         <select id="shopSort" class="shop-sort">
           <option value="menu_order">Default sorting</option>
@@ -321,6 +349,9 @@
 
     const shopGrid = document.querySelector('.shop-grid');
     const shopSort = document.getElementById('shopSort');
+    const priceFilter = document.getElementById('priceFilter');
+    const stockFilter = document.getElementById('stockFilter');
+    const resultsSummary = document.getElementById('resultsSummary');
     const productCards = Array.from(shopGrid.querySelectorAll('.product-card'));
     const cartItems = document.getElementById('cartItems');
     const cartEmpty = document.getElementById('cartEmpty');
@@ -329,6 +360,7 @@
     const cartCount = document.getElementById('cartCount');
     const checkoutCart = document.getElementById('checkoutCart');
     const cartStorageKey = 'langnuong-shop-cart';
+    const quickViewModal = document.getElementById('quickViewModal');
     let cart = [];
 
     const savedCart = localStorage.getItem(cartStorageKey);
@@ -385,6 +417,60 @@
       saveCart();
     };
 
+    const updateResults = () => {
+      const priceRange = priceFilter.value;
+      const stockStatus = stockFilter.value;
+      let visibleCount = 0;
+      productCards.forEach(card => {
+        const price = Number(card.dataset.price);
+        const matchesPrice = priceRange === 'all' ||
+          (priceRange === 'under-5' && price < 5) ||
+          (priceRange === '5-10' && price >= 5 && price <= 10) ||
+          (priceRange === 'over-10' && price > 10);
+        const matchesStock = stockStatus === 'all' || stockStatus === card.dataset.stock;
+        const visible = matchesPrice && matchesStock;
+        card.hidden = !visible;
+        if (visible) visibleCount += 1;
+      });
+      resultsSummary.textContent = `Showing ${visibleCount} of ${productCards.length} results`;
+    };
+
+    const openQuickView = card => {
+      const image = card.querySelector('img');
+      document.getElementById('quickViewImage').src = image.src;
+      document.getElementById('quickViewImage').alt = image.alt;
+      document.getElementById('quickViewName').textContent = card.dataset.productName;
+      document.getElementById('quickViewPrice').textContent = `$${Number(card.dataset.price).toFixed(2)}`;
+      document.getElementById('quickViewStock').textContent = card.dataset.stock === 'instock' ? 'In stock' : 'Out of stock';
+      document.getElementById('quickViewAdd').disabled = card.dataset.stock !== 'instock';
+      document.getElementById('quickViewAdd').dataset.product = card.dataset.productName;
+      document.getElementById('quickViewAdd').dataset.price = card.dataset.price;
+      quickViewModal.hidden = false;
+      document.body.classList.add('account-open');
+    };
+
+    const closeQuickView = () => {
+      quickViewModal.hidden = true;
+      document.body.classList.remove('account-open');
+    };
+
+    document.getElementById('closeQuickView').addEventListener('click', closeQuickView);
+    quickViewModal.addEventListener('click', event => {
+      if (event.target.hasAttribute('data-close-quick-view')) closeQuickView();
+    });
+
+    productCards.forEach(card => {
+      const productButton = card.querySelector('.product-btn');
+      card.dataset.productName = productButton.dataset.product;
+      card.dataset.stock = 'instock';
+      const quickViewButton = document.createElement('button');
+      quickViewButton.type = 'button';
+      quickViewButton.className = 'btn btn-outline quick-view-btn';
+      quickViewButton.textContent = 'Quick View';
+      quickViewButton.addEventListener('click', () => openQuickView(card));
+      productButton.insertAdjacentElement('beforebegin', quickViewButton);
+    });
+
     document.querySelectorAll('.product-btn').forEach(button => {
       button.addEventListener('click', event => {
         event.preventDefault();
@@ -400,6 +486,16 @@
         renderCart();
         document.getElementById('cart-placeholder').scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
+    });
+
+    document.getElementById('quickViewAdd').addEventListener('click', event => {
+      const productButton = productCards
+        .map(card => card.querySelector('.product-btn'))
+        .find(button => button.dataset.product === event.currentTarget.dataset.product);
+      if (productButton) {
+        productButton.click();
+        closeQuickView();
+      }
     });
 
     cartItems.addEventListener('click', event => {
@@ -419,7 +515,7 @@
       renderCart();
     });
 
-    shopSort.addEventListener('change', () => {
+    const sortProducts = () => {
       const sortedCards = [...productCards].sort((a, b) => {
         const sort = shopSort.value;
         if (sort === 'price') return Number(a.dataset.price) - Number(b.dataset.price);
@@ -428,9 +524,14 @@
         return Number(a.dataset.index) - Number(b.dataset.index);
       });
       sortedCards.forEach(card => shopGrid.appendChild(card));
-    });
+      updateResults();
+    };
 
+    shopSort.addEventListener('change', sortProducts);
+    priceFilter.addEventListener('change', updateResults);
+    stockFilter.addEventListener('change', updateResults);
     renderCart();
+    sortProducts();
   </script>
 </body>
 </html>

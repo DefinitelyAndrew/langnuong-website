@@ -1158,6 +1158,7 @@ img {
 .shop-toolbar {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: .65rem;
   margin: 1rem 0 0;
@@ -1168,6 +1169,16 @@ img {
 
 .shop-sort {
   min-width: 190px;
+  padding: .65rem .8rem;
+  border: 1px solid #d8c3a7;
+  border-radius: 3px;
+  background: var(--white);
+  color: var(--brown-dark);
+  font: inherit;
+}
+
+.shop-filter {
+  min-width: 125px;
   padding: .65rem .8rem;
   border: 1px solid #d8c3a7;
   border-radius: 3px;
@@ -1278,6 +1289,81 @@ img {
   text-align: center;
   font-size: .78rem;
   padding: .55rem 1rem;
+}
+
+.quick-view-btn {
+  width: 100%;
+  margin-top: auto;
+  padding: .55rem 1rem;
+  font-size: .78rem;
+}
+
+.product-btn + .quick-view-btn {
+  margin-top: .4rem;
+}
+
+.product-card[hidden] {
+  display: none;
+}
+
+.quick-view-modal[hidden] {
+  display: none;
+}
+
+.quick-view-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.quick-view-panel {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  width: min(100%, 720px);
+  overflow: hidden;
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.quick-view-panel > img {
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  object-fit: cover;
+}
+
+.quick-view-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.quick-view-details h2 {
+  margin: .35rem 0 .75rem;
+  color: var(--brown-dark);
+  font-family: var(--font);
+  font-size: 1.5rem;
+  line-height: 1.25;
+}
+
+.quick-view-price {
+  color: var(--brown);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.quick-view-stock {
+  margin: .3rem 0 1.25rem;
+  color: #287a3d;
+  font-size: .85rem;
+  font-weight: 600;
 }
 
 .cart-placeholder {
@@ -1566,6 +1652,21 @@ body.account-open {
   .cart-actions {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .quick-view-panel {
+    grid-template-columns: 1fr;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .quick-view-panel > img {
+    min-height: 220px;
+    max-height: 280px;
+  }
+
+  .quick-view-details {
+    padding: 1.5rem;
   }
 }
 
