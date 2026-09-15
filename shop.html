@@ -87,13 +87,13 @@
       <h2 class="section-title" id="resultsSummary">Showing all 10 results</h2>
       <div class="section-divider"></div>
       <div class="shop-toolbar">
-        <label for="priceFilter">Price</label>
-        <select id="priceFilter" class="shop-filter">
-          <option value="all">All prices</option>
-          <option value="under-5">Under $5</option>
-          <option value="5-10">$5 - $10</option>
-          <option value="over-10">Over $10</option>
-        </select>
+        <fieldset class="price-scale">
+          <legend>Price <span id="priceRangeLabel">$0.00 - $11.90</span></legend>
+          <div class="price-scale-inputs">
+            <input id="priceMin" type="range" min="0" max="11.9" step="0.1" value="0" aria-label="Minimum price">
+            <input id="priceMax" type="range" min="0" max="11.9" step="0.1" value="11.9" aria-label="Maximum price">
+          </div>
+        </fieldset>
         <label for="stockFilter">Stock</label>
         <select id="stockFilter" class="shop-filter">
           <option value="all">All products</option>
@@ -404,7 +404,9 @@
 
     const shopGrid = document.querySelector('.shop-grid');
     const shopSort = document.getElementById('shopSort');
-    const priceFilter = document.getElementById('priceFilter');
+    const priceMin = document.getElementById('priceMin');
+    const priceMax = document.getElementById('priceMax');
+    const priceRangeLabel = document.getElementById('priceRangeLabel');
     const stockFilter = document.getElementById('stockFilter');
     const resultsSummary = document.getElementById('resultsSummary');
     const productCards = Array.from(shopGrid.querySelectorAll('.product-card'));
@@ -473,20 +475,19 @@
     };
 
     const updateResults = () => {
-      const priceRange = priceFilter.value;
+      const minimumPrice = Number(priceMin.value);
+      const maximumPrice = Number(priceMax.value);
       const stockStatus = stockFilter.value;
       let visibleCount = 0;
       productCards.forEach(card => {
         const price = Number(card.dataset.price);
-        const matchesPrice = priceRange === 'all' ||
-          (priceRange === 'under-5' && price < 5) ||
-          (priceRange === '5-10' && price >= 5 && price <= 10) ||
-          (priceRange === 'over-10' && price > 10);
+        const matchesPrice = price >= minimumPrice && price <= maximumPrice;
         const matchesStock = stockStatus === 'all' || stockStatus === card.dataset.stock;
         const visible = matchesPrice && matchesStock;
         card.hidden = !visible;
         if (visible) visibleCount += 1;
       });
+      priceRangeLabel.textContent = `$${minimumPrice.toFixed(2)} - $${maximumPrice.toFixed(2)}`;
       resultsSummary.textContent = `Showing ${visibleCount} of ${productCards.length} results`;
     };
 
@@ -583,7 +584,15 @@
     };
 
     shopSort.addEventListener('change', sortProducts);
-    priceFilter.addEventListener('change', updateResults);
+    const syncPriceScale = event => {
+      if (Number(priceMin.value) > Number(priceMax.value)) {
+        if (event.target === priceMin) priceMax.value = priceMin.value;
+        else priceMin.value = priceMax.value;
+      }
+      updateResults();
+    };
+    priceMin.addEventListener('input', syncPriceScale);
+    priceMax.addEventListener('input', syncPriceScale);
     stockFilter.addEventListener('change', updateResults);
     renderCart();
     sortProducts();
