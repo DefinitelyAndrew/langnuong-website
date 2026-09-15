@@ -27,6 +27,22 @@
       <div class="section-divider"></div>
       <p class="account-greeting">Hello! Thank you for using Lang Nuong.</p>
       <p id="accountPageStatus" class="account-status">Loading your account…</p>
+      <section class="account-auth-card" id="accountAuth" hidden>
+        <h2 id="authModeTitle">Sign in</h2>
+        <button type="button" class="google-sign-in" id="googleSignIn">
+          <span aria-hidden="true">G</span>
+          <span>Continue with Google</span>
+        </button>
+        <div class="account-divider"><span>or</span></div>
+        <form class="account-form" id="accountAuthForm">
+          <label for="authEmail">Email address</label>
+          <input id="authEmail" type="email" autocomplete="email" required>
+          <label for="authPassword">Password</label>
+          <input id="authPassword" type="password" minlength="6" autocomplete="current-password" required>
+          <button type="submit" class="btn btn-primary" id="authSubmit">Sign In</button>
+        </form>
+        <button type="button" class="account-mode-link" id="toggleAuthMode">Create an account</button>
+      </section>
       <section class="account-profile-card" id="accountProfile" hidden>
         <img id="accountAvatar" class="account-avatar" src="" alt="">
         <div>
@@ -70,7 +86,8 @@
 
     const displayAccount = user => {
       if (!user) {
-        status.textContent = 'You are not signed in. Open the account sign-in from the shop.';
+        status.textContent = 'Choose a sign-in option below.';
+        document.getElementById('accountAuth').hidden = false;
         signOut.hidden = true;
         deleteAccount.hidden = true;
         return;
@@ -117,7 +134,7 @@
         status.textContent = `Sign out failed: ${error.message}`;
         return;
       }
-      window.location.replace('shop.html');
+      window.location.replace('account.html');
     });
 
     deleteAccount.addEventListener('click', async () => {
@@ -137,6 +154,62 @@
       profile.hidden = true;
       signOut.hidden = true;
       deleteAccount.hidden = true;
+    });
+
+    const auth = document.getElementById('accountAuth');
+    const authForm = document.getElementById('accountAuthForm');
+    const authSubmit = document.getElementById('authSubmit');
+    const authModeTitle = document.getElementById('authModeTitle');
+    const toggleAuthMode = document.getElementById('toggleAuthMode');
+    const googleSignIn = document.getElementById('googleSignIn');
+    let signUpMode = false;
+
+    const showAuth = () => {
+      auth.hidden = false;
+      profile.hidden = true;
+      signOut.hidden = true;
+      deleteAccount.hidden = true;
+      status.hidden = false;
+      status.textContent = '';
+    };
+
+    const updateAuthMode = () => {
+      signUpMode = !signUpMode;
+      authModeTitle.textContent = signUpMode ? 'Create an account' : 'Sign in';
+      authSubmit.textContent = signUpMode ? 'Sign Up' : 'Sign In';
+      toggleAuthMode.textContent = signUpMode ? 'Already have an account? Sign in' : 'Create an account';
+    };
+
+    googleSignIn.addEventListener('click', async () => {
+      status.textContent = 'Opening Google sign-in…';
+      const { error } = await supabaseClient.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: `${window.location.origin}${window.location.pathname}` }
+      });
+      if (error) status.textContent = `Google sign-in failed: ${error.message}`;
+    });
+
+    authForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      authSubmit.disabled = true;
+      const email = document.getElementById('authEmail').value.trim();
+      const password = document.getElementById('authPassword').value;
+      const result = signUpMode
+        ? await supabaseClient.auth.signUp({ email, password, options: { emailRedirectTo: `${window.location.origin}${window.location.pathname}` } })
+        : await supabaseClient.auth.signInWithPassword({ email, password });
+      authSubmit.disabled = false;
+      if (result.error) {
+        status.textContent = result.error.message;
+        return;
+      }
+      if (signUpMode && !result.data.session) {
+        status.textContent = 'Account created. Check your email to confirm your address.';
+      }
+    });
+
+    toggleAuthMode.addEventListener('click', updateAuthMode);
+    supabaseClient.auth.onAuthStateChange((_event, session) => {
+      if (!session?.user) showAuth();
     });
   </script>
 </body>

@@ -1807,6 +1807,33 @@ img {
   box-shadow: var(--shadow);
 }
 
+.account-auth-card {
+  max-width: 430px;
+  margin: 1.5rem 0;
+  padding: 1.5rem;
+  background: var(--white);
+  border: 1px solid #e8d8c0;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.account-auth-card h2 {
+  margin-bottom: 1rem;
+  color: var(--brown-dark);
+}
+
+.account-mode-link {
+  display: block;
+  margin: 1rem auto 0;
+  border: 0;
+  background: transparent;
+  color: var(--brown);
+  cursor: pointer;
+  font: inherit;
+  font-size: .85rem;
+  text-decoration: underline;
+}
+
 .account-avatar {
   width: 84px;
   height: 84px;
