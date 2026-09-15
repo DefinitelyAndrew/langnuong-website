@@ -314,9 +314,10 @@ img {
   stroke: var(--gold);
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-dasharray: 260;
-  stroke-dashoffset: 260;
-  animation: underline-draw 1.2s ease-out forwards;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: underline-draw .9s linear forwards;
+  will-change: stroke-dashoffset;
 }
 
 .underline-back {
@@ -338,7 +339,7 @@ img {
 
 .underline-mid path {
   stroke-width: 5;
-  animation-delay: .12s;
+  animation-delay: .1s;
 }
 
 .underline-front {
@@ -348,7 +349,7 @@ img {
 
 .underline-front path {
   stroke-width: 5.5;
-  animation-delay: .24s;
+  animation-delay: .2s;
 }
 
 @keyframes underline-draw {
