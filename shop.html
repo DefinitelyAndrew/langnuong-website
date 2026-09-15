@@ -190,8 +190,19 @@
       <div class="cart-placeholder" id="cart-placeholder" aria-live="polite">
         <h2 class="section-title">Your Cart</h2>
         <div class="section-divider"></div>
-        <p id="cartMessage">Your selected products will appear here. Checkout is coming soon.</p>
-        <a href="#cart-placeholder" class="btn btn-outline">Continue Shopping</a>
+        <p id="cartEmpty">Your cart is empty. Add products above to get started.</p>
+        <div class="cart-items" id="cartItems"></div>
+        <div class="cart-summary" id="cartSummary" hidden>
+          <div class="cart-total">
+            <span>Subtotal</span>
+            <strong id="cartTotal">$0.00</strong>
+          </div>
+          <div class="cart-actions">
+            <button type="button" class="btn btn-outline" id="clearCart">Clear Cart</button>
+            <a class="btn btn-primary" id="checkoutCart" href="https://wa.me/6592353548" target="_blank" rel="noopener">Checkout via WhatsApp</a>
+          </div>
+        </div>
+        <a href="#shopSort" class="btn btn-outline cart-continue">Continue Shopping</a>
       </div>
     </div>
   </div>
@@ -241,17 +252,105 @@
       toggle.setAttribute('aria-expanded', menu.classList.contains('open'));
     });
 
-    document.querySelectorAll('.product-btn').forEach(button => {
-      button.addEventListener('click', () => {
-        document.getElementById('cartMessage').textContent =
-          `${button.dataset.product} has been added to your cart. Checkout is coming soon.`;
-        document.getElementById('cartCount').textContent = '1';
-      });
-    });
-
     const shopGrid = document.querySelector('.shop-grid');
     const shopSort = document.getElementById('shopSort');
     const productCards = Array.from(shopGrid.querySelectorAll('.product-card'));
+    const cartItems = document.getElementById('cartItems');
+    const cartEmpty = document.getElementById('cartEmpty');
+    const cartSummary = document.getElementById('cartSummary');
+    const cartTotal = document.getElementById('cartTotal');
+    const cartCount = document.getElementById('cartCount');
+    const checkoutCart = document.getElementById('checkoutCart');
+    const cartStorageKey = 'langnuong-shop-cart';
+    let cart = [];
+
+    const savedCart = localStorage.getItem(cartStorageKey);
+    if (savedCart) {
+      try {
+        const parsedCart = JSON.parse(savedCart);
+        if (Array.isArray(parsedCart)) {
+          cart = parsedCart.filter(item =>
+            item && typeof item.name === 'string' &&
+            typeof item.price === 'number' && Number.isFinite(item.price) &&
+            Number.isInteger(item.quantity) && item.quantity > 0
+          );
+        }
+      } catch (error) {
+        console.warn('Unable to restore the saved cart.', error);
+      }
+    }
+
+    const saveCart = () => {
+      localStorage.setItem(cartStorageKey, JSON.stringify(cart));
+    };
+
+    const escapeHtml = value => value.replace(/[&<>"']/g, character => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    }[character]));
+
+    const renderCart = () => {
+      const itemCount = cart.reduce((total, item) => total + item.quantity, 0);
+      const subtotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+      cartCount.textContent = itemCount;
+      cartEmpty.hidden = cart.length > 0;
+      cartSummary.hidden = cart.length === 0;
+      cartItems.innerHTML = cart.map((item, index) => `
+        <div class="cart-item">
+          <div>
+            <strong>${escapeHtml(item.name)}</strong>
+            <span>$${item.price.toFixed(2)} each</span>
+          </div>
+          <div class="cart-item-controls">
+            <button type="button" class="cart-quantity" data-cart-action="decrease" data-cart-index="${index}" aria-label="Decrease ${escapeHtml(item.name)} quantity">−</button>
+            <span>${item.quantity}</span>
+            <button type="button" class="cart-quantity" data-cart-action="increase" data-cart-index="${index}" aria-label="Increase ${escapeHtml(item.name)} quantity">+</button>
+            <button type="button" class="cart-remove" data-cart-action="remove" data-cart-index="${index}">Remove</button>
+          </div>
+        </div>
+      `).join('');
+      cartTotal.textContent = `$${subtotal.toFixed(2)}`;
+      const order = cart.map(item => `${item.name} x${item.quantity}`).join(', ');
+      checkoutCart.href = `https://wa.me/6592353548?text=${encodeURIComponent(`Hi, I would like to order: ${order}. Subtotal: $${subtotal.toFixed(2)}`)}`;
+      saveCart();
+    };
+
+    document.querySelectorAll('.product-btn').forEach(button => {
+      button.addEventListener('click', event => {
+        event.preventDefault();
+        const card = button.closest('.product-card');
+        const name = button.dataset.product;
+        const price = Number(card.dataset.price);
+        const existingItem = cart.find(item => item.name === name);
+        if (existingItem) {
+          existingItem.quantity += 1;
+        } else {
+          cart.push({ name, price, quantity: 1 });
+        }
+        renderCart();
+        document.getElementById('cart-placeholder').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    cartItems.addEventListener('click', event => {
+      const actionButton = event.target.closest('[data-cart-action]');
+      if (!actionButton) return;
+      const index = Number(actionButton.dataset.cartIndex);
+      const item = cart[index];
+      if (!item) return;
+      if (actionButton.dataset.cartAction === 'increase') item.quantity += 1;
+      if (actionButton.dataset.cartAction === 'decrease') item.quantity -= 1;
+      if (actionButton.dataset.cartAction === 'remove' || item.quantity < 1) cart.splice(index, 1);
+      renderCart();
+    });
+
+    document.getElementById('clearCart').addEventListener('click', () => {
+      cart = [];
+      renderCart();
+    });
 
     shopSort.addEventListener('change', () => {
       const sortedCards = [...productCards].sort((a, b) => {
@@ -263,6 +362,8 @@
       });
       sortedCards.forEach(card => shopGrid.appendChild(card));
     });
+
+    renderCart();
   </script>
 </body>
 </html>
