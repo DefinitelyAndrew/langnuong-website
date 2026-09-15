@@ -57,6 +57,17 @@
     const signOut = document.getElementById('accountPageSignOut');
     const deleteAccount = document.getElementById('accountDelete');
 
+    const saveProfile = async user => {
+      const { error } = await supabaseClient.from('profiles').upsert({
+        id: user.id,
+        email: user.email,
+        full_name: user.user_metadata.full_name || user.user_metadata.name || null,
+        avatar_url: user.user_metadata.avatar_url || user.user_metadata.picture || null,
+        updated_at: new Date().toISOString()
+      });
+      if (error) throw error;
+    };
+
     const displayAccount = user => {
       if (!user) {
         status.textContent = 'You are not signed in. Open the account sign-in from the shop.';
@@ -80,12 +91,21 @@
       deleteAccount.hidden = false;
     };
 
-    supabaseClient.auth.getSession().then(({ data, error }) => {
+    supabaseClient.auth.getSession().then(async ({ data, error }) => {
       if (error) {
         status.textContent = `Unable to load your account: ${error.message}`;
         return;
       }
-      displayAccount(data.session?.user || null);
+      const user = data.session?.user || null;
+      displayAccount(user);
+      if (user) {
+        try {
+          await saveProfile(user);
+        } catch (profileError) {
+          status.hidden = false;
+          status.textContent = `Signed in, but profile saving failed: ${profileError.message}`;
+        }
+      }
     });
 
     signOut.addEventListener('click', async () => {
