@@ -138,7 +138,7 @@
         status.textContent = `Sign out failed: ${error.message}`;
         return;
       }
-      window.location.replace('account.html');
+      window.location.reload();
     });
 
     deleteAccount.addEventListener('click', async () => {
