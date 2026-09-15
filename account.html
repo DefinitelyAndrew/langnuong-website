@@ -109,13 +109,15 @@
     });
 
     signOut.addEventListener('click', async () => {
-      const { error } = await supabaseClient.auth.signOut();
+      signOut.disabled = true;
+      const { error } = await supabaseClient.auth.signOut({ scope: 'local' });
       if (error) {
+        signOut.disabled = false;
         status.hidden = false;
         status.textContent = `Sign out failed: ${error.message}`;
         return;
       }
-      window.location.href = 'shop.html';
+      window.location.replace('shop.html');
     });
 
     deleteAccount.addEventListener('click', async () => {

@@ -44,18 +44,6 @@
         </svg>
         <span>Continue with Google</span>
       </button>
-      <div class="account-divider"><span>or</span></div>
-      <form id="signInForm" class="account-form">
-        <label for="accountEmail">Email address</label>
-        <input id="accountEmail" name="email" type="email" autocomplete="email" required>
-        <label for="accountPassword">Password</label>
-        <input id="accountPassword" name="password" type="password" autocomplete="current-password" required>
-        <label class="remember-me">
-          <input id="rememberMe" name="remember" type="checkbox">
-          <span>Remember me</span>
-        </label>
-        <button type="submit" class="btn btn-primary account-submit">Sign In</button>
-      </form>
       <p class="account-status" id="accountStatus" role="status"></p>
       <button type="button" class="btn btn-outline account-sign-out" id="accountSignOut" hidden>Sign Out</button>
       <p class="account-config-note">Your Google account profile is stored securely in our servers and will not be shared or sold to others. <a href="terms.html">View our Terms and Conditions here.</a></p>
@@ -326,13 +314,6 @@
 
     const accountModal = document.getElementById('accountModal');
     const accountStatus = document.getElementById('accountStatus');
-    const rememberMe = document.getElementById('rememberMe');
-    const rememberedEmail = localStorage.getItem('langnuong-remembered-email');
-    if (rememberedEmail) {
-      document.getElementById('accountEmail').value = rememberedEmail;
-      rememberMe.checked = true;
-    }
-
     const closeAccount = () => {
       accountModal.hidden = true;
       document.body.classList.remove('account-open');
@@ -340,7 +321,7 @@
 
     document.getElementById('openAccount').addEventListener('click', () => {
       accountModal.hidden = false;
-      document.getElementById('accountEmail').focus();
+      googleSignIn.focus();
       document.body.classList.add('account-open');
     });
     document.getElementById('closeAccount').addEventListener('click', closeAccount);
@@ -350,7 +331,6 @@
 
     const accountTitle = document.getElementById('accountTitle');
     const googleSignIn = document.getElementById('googleSignIn');
-    const signInForm = document.getElementById('signInForm');
     const accountSignOut = document.getElementById('accountSignOut');
 
     const saveProfile = async user => {
@@ -368,7 +348,6 @@
       const signedIn = Boolean(user);
       accountTitle.textContent = signedIn ? `Welcome, ${user.user_metadata.full_name || user.user_metadata.name || user.email}` : 'Sign in to your account';
       googleSignIn.hidden = signedIn;
-      signInForm.hidden = signedIn;
       accountSignOut.hidden = !signedIn;
       if (signedIn) accountStatus.textContent = `Signed in as ${user.email}.`;
     };
@@ -385,20 +364,11 @@
     });
 
     accountSignOut.addEventListener('click', async () => {
-      const { error } = await supabaseClient.auth.signOut();
+      accountSignOut.disabled = true;
+      const { error } = await supabaseClient.auth.signOut({ scope: 'local' });
       accountStatus.textContent = error ? `Sign out failed: ${error.message}` : 'You have been signed out.';
       if (!error) updateAccountUi(null);
-    });
-
-    document.getElementById('signInForm').addEventListener('submit', async event => {
-      event.preventDefault();
-      const email = document.getElementById('accountEmail').value.trim();
-      if (rememberMe.checked) {
-        localStorage.setItem('langnuong-remembered-email', email);
-      } else {
-        localStorage.removeItem('langnuong-remembered-email');
-      }
-      accountStatus.textContent = 'Manual sign-in is not enabled yet. Use Google sign-in for now.';
+      accountSignOut.disabled = false;
     });
 
     supabaseClient.auth.onAuthStateChange(async (_event, session) => {
