@@ -1113,6 +1113,25 @@ img {
   color: var(--brown-dark);
 }
 
+.nav-account {
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  padding: .45rem .8rem;
+  background: transparent;
+  color: var(--gold);
+  cursor: pointer;
+  font: inherit;
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.nav-account:hover {
+  background: var(--gold);
+  color: var(--brown-dark);
+}
+
 .shop-cart-link span {
   display: inline-flex;
   align-items: center;
@@ -1382,6 +1401,155 @@ img {
 
 .cart-continue {
   margin-top: 1rem;
+}
+
+.account-modal[hidden] {
+  display: none;
+}
+
+.account-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.account-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(49,23,0,.72);
+}
+
+.account-panel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 430px);
+  padding: 2rem;
+  background: var(--white);
+  border-top: 5px solid var(--gold);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.account-panel h2 {
+  margin: .25rem 0 .35rem;
+  color: var(--brown-dark);
+  font-family: var(--font);
+  font-size: 1.65rem;
+}
+
+.account-note,
+.account-config-note {
+  color: var(--muted);
+  font-size: .88rem;
+}
+
+.account-config-note {
+  margin-top: 1rem;
+  font-size: .75rem;
+  line-height: 1.5;
+}
+
+.account-close {
+  position: absolute;
+  top: .6rem;
+  right: .8rem;
+  border: 0;
+  background: transparent;
+  color: var(--brown);
+  cursor: pointer;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.google-sign-in {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .6rem;
+  width: 100%;
+  margin-top: 1.25rem;
+  padding: .7rem 1rem;
+  border: 1px solid #c9c9c9;
+  border-radius: 3px;
+  background: var(--white);
+  color: #333;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+}
+
+.google-sign-in span {
+  color: #4285f4;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.account-divider {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin: 1.25rem 0;
+  color: var(--muted);
+  font-size: .8rem;
+}
+
+.account-divider::before,
+.account-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #ddd;
+}
+
+.account-form {
+  display: grid;
+  gap: .45rem;
+}
+
+.account-form label {
+  color: var(--brown-dark);
+  font-size: .82rem;
+  font-weight: 600;
+}
+
+.account-form input[type="email"],
+.account-form input[type="password"] {
+  width: 100%;
+  margin-bottom: .5rem;
+  padding: .65rem .75rem;
+  border: 1px solid #d8c3a7;
+  border-radius: 3px;
+  font: inherit;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  margin: .15rem 0 .5rem;
+  cursor: pointer;
+}
+
+.remember-me input {
+  accent-color: var(--brown);
+}
+
+.account-submit {
+  width: 100%;
+}
+
+.account-status {
+  min-height: 1.5em;
+  margin-top: .8rem;
+  color: var(--brown);
+  font-size: .8rem;
+}
+
+body.account-open {
+  overflow: hidden;
 }
 
 @media (max-width: 600px) {

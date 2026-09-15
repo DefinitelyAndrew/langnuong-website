@@ -23,9 +23,37 @@
       <a href="little-hanoi.html">Little Hanoi</a>
       <a href="exclusive.html" lang="vi">Làng Nướng Exclusive</a>
       <a href="shop.html" class="active">Shop Now</a>
+      <button type="button" class="nav-account" id="openAccount">Account</button>
     </nav>
     </div>
   </header>
+
+  <div class="account-modal" id="accountModal" hidden>
+    <div class="account-backdrop" data-close-account></div>
+    <section class="account-panel" role="dialog" aria-modal="true" aria-labelledby="accountTitle">
+      <button type="button" class="account-close" id="closeAccount" aria-label="Close account dialog">×</button>
+      <span class="hero-eyebrow">Lang Nuong Vietnam</span>
+      <h2 id="accountTitle">Sign in to your account</h2>
+      <p class="account-note">Sign in to save your details and make checkout faster.</p>
+      <button type="button" class="google-sign-in" id="googleSignIn">
+        <span aria-hidden="true">G</span> Continue with Google
+      </button>
+      <div class="account-divider"><span>or</span></div>
+      <form id="signInForm" class="account-form">
+        <label for="accountEmail">Email address</label>
+        <input id="accountEmail" name="email" type="email" autocomplete="email" required>
+        <label for="accountPassword">Password</label>
+        <input id="accountPassword" name="password" type="password" autocomplete="current-password" required>
+        <label class="remember-me">
+          <input id="rememberMe" name="remember" type="checkbox">
+          <span>Remember me</span>
+        </label>
+        <button type="submit" class="btn btn-primary account-submit">Sign In</button>
+      </form>
+      <p class="account-status" id="accountStatus" role="status"></p>
+      <p class="account-config-note">Account sign-in is being connected. Google OAuth and secure server authentication will be enabled once the site credentials are configured.</p>
+    </section>
+  </div>
 
   <!-- ===== SHOP HERO ===== -->
   <section class="shop-hero">
@@ -250,6 +278,45 @@
       toggle.classList.toggle('open');
       menu.classList.toggle('open');
       toggle.setAttribute('aria-expanded', menu.classList.contains('open'));
+    });
+
+    const accountModal = document.getElementById('accountModal');
+    const accountStatus = document.getElementById('accountStatus');
+    const rememberMe = document.getElementById('rememberMe');
+    const rememberedEmail = localStorage.getItem('langnuong-remembered-email');
+    if (rememberedEmail) {
+      document.getElementById('accountEmail').value = rememberedEmail;
+      rememberMe.checked = true;
+    }
+
+    const closeAccount = () => {
+      accountModal.hidden = true;
+      document.body.classList.remove('account-open');
+    };
+
+    document.getElementById('openAccount').addEventListener('click', () => {
+      accountModal.hidden = false;
+      document.getElementById('accountEmail').focus();
+      document.body.classList.add('account-open');
+    });
+    document.getElementById('closeAccount').addEventListener('click', closeAccount);
+    accountModal.addEventListener('click', event => {
+      if (event.target.hasAttribute('data-close-account')) closeAccount();
+    });
+
+    document.getElementById('googleSignIn').addEventListener('click', () => {
+      accountStatus.textContent = 'Google Sign-In will be available after the Google OAuth client is configured.';
+    });
+
+    document.getElementById('signInForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const email = document.getElementById('accountEmail').value.trim();
+      if (rememberMe.checked) {
+        localStorage.setItem('langnuong-remembered-email', email);
+      } else {
+        localStorage.removeItem('langnuong-remembered-email');
+      }
+      accountStatus.textContent = 'Manual sign-in will be available after the secure authentication server is connected.';
     });
 
     const shopGrid = document.querySelector('.shop-grid');
