@@ -330,9 +330,9 @@ img {
   will-change: stroke-dashoffset;
 }
 
-.1980s-page .animated-underline .underline-layer {
-  left: 8%;
-  width: 84%;
+.brand-1980s-page .animated-underline .underline-layer {
+  left: 15%;
+  width: 70%;
 }
 
 @keyframes underline-draw {
