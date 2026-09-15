@@ -87,7 +87,7 @@
     const displayAccount = user => {
       if (!user) {
         status.textContent = 'Choose a sign-in option below.';
-        document.getElementById('accountAuth').hidden = false;
+        auth.hidden = false;
         signOut.hidden = true;
         deleteAccount.hidden = true;
         return;
@@ -103,9 +103,22 @@
         document.getElementById('accountAvatar').hidden = true;
       }
       status.hidden = true;
+      auth.hidden = true;
       profile.hidden = false;
       signOut.hidden = false;
       deleteAccount.hidden = false;
+    };
+
+    const loadAndSaveSession = async session => {
+      const user = session?.user || null;
+      displayAccount(user);
+      if (!user) return;
+      try {
+        await saveProfile(user);
+      } catch (profileError) {
+        status.hidden = false;
+        status.textContent = `Signed in, but profile saving failed: ${profileError.message}`;
+      }
     };
 
     supabaseClient.auth.getSession().then(async ({ data, error }) => {
@@ -113,16 +126,7 @@
         status.textContent = `Unable to load your account: ${error.message}`;
         return;
       }
-      const user = data.session?.user || null;
-      displayAccount(user);
-      if (user) {
-        try {
-          await saveProfile(user);
-        } catch (profileError) {
-          status.hidden = false;
-          status.textContent = `Signed in, but profile saving failed: ${profileError.message}`;
-        }
-      }
+      await loadAndSaveSession(data.session);
     });
 
     signOut.addEventListener('click', async () => {
@@ -209,7 +213,7 @@
 
     toggleAuthMode.addEventListener('click', updateAuthMode);
     supabaseClient.auth.onAuthStateChange((_event, session) => {
-      if (!session?.user) showAuth();
+      window.setTimeout(() => loadAndSaveSession(session), 0);
     });
   </script>
 </body>
