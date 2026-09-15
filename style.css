@@ -254,8 +254,8 @@ img {
 
 .branch-hero-logo {
   display: block;
-  width: min(250px, 62vw);
-  max-height: 100px;
+  width: min(420px, 86vw);
+  max-height: 140px;
   object-fit: contain;
   margin: 0 auto 1rem;
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .45));
