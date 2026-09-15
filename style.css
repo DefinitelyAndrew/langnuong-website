@@ -513,6 +513,64 @@ img {
   transform: rotate(-1.2deg);
 }
 
+.brand-page .hero-eyebrow,
+.brand-page .hero-title,
+.brand-page .section-title {
+  text-transform: none;
+}
+
+.brand-page .hero-title em {
+  position: relative;
+  display: inline-block;
+  z-index: 0;
+  padding: 0 .08em .14em;
+}
+
+.brand-page .hero-title em::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  right: 0;
+  bottom: .13em;
+  height: .28em;
+  background: var(--gold);
+  opacity: .62;
+  transform: rotate(-1.2deg);
+}
+
+.brand-page .hero-title em::after {
+  content: "";
+  position: absolute;
+  left: -2%;
+  right: -2%;
+  bottom: -.02em;
+  height: .12em;
+  background: var(--gold);
+  border-radius: 50%;
+  transform: rotate(-1deg);
+}
+
+.brand-page .section-title {
+  position: relative;
+  display: inline-block;
+  isolation: isolate;
+  padding: 0 .12em .08em;
+}
+
+.brand-page .section-title::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  right: -.08em;
+  bottom: .08em;
+  height: .34em;
+  background: var(--gold);
+  opacity: .62;
+  transform: rotate(-1.2deg);
+}
+
 /* White title variant for dark sections */
 .section-title-white {
   color: var(--white);
