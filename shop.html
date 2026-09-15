@@ -7,7 +7,7 @@
   <title>Shop Now | Lang Nuong Vietnam Group</title>
   <link rel="stylesheet" href="style.css?v=20260915-25">
 </head>
-<body>
+<body class="shop-page">
 
   <!-- ===== HEADER / NAV ===== -->
   <header class="site-header">
@@ -93,8 +93,8 @@
       <h2 class="section-title" id="resultsSummary">Showing all 10 results</h2>
       <div class="section-divider"></div>
       <div class="shop-toolbar">
-        <fieldset class="price-scale">
-          <legend>Filter by price</legend>
+        <div class="price-scale" role="group" aria-labelledby="priceFilterLabel">
+          <div class="price-scale-title" id="priceFilterLabel">Filter by price</div>
           <div class="price-scale-inputs">
             <input id="priceMin" type="range" min="0" max="11.9" step="0.1" value="0" aria-label="Minimum price">
             <input id="priceMax" type="range" min="0" max="11.9" step="0.1" value="11.9" aria-label="Maximum price">
@@ -103,7 +103,7 @@
             <span id="priceRangeLabel">$0.00 - $11.90</span>
             <button type="button" class="price-filter-button" id="applyPriceFilter">Filter</button>
           </div>
-        </fieldset>
+        </div>
         <label for="stockFilter">Stock</label>
         <select id="stockFilter" class="shop-filter">
           <option value="all">All products</option>

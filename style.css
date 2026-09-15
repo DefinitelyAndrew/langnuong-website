@@ -461,6 +461,15 @@ img {
   background-position: center;
 }
 
+.shop-page .section-light,
+.shop-page .shop-hero {
+  background-image: none;
+}
+
+.shop-page .section-light {
+  background-color: var(--kraft-bg);
+}
+
 /* White background sections */
 .section-white {
   background-color: var(--white);
@@ -1198,8 +1207,7 @@ img {
   font-size: .85rem;
 }
 
-.price-scale legend {
-  padding: 0 .25rem;
+.price-scale-title {
   margin-bottom: .5rem;
   color: var(--brown-dark);
   font-weight: 600;
