@@ -23,32 +23,9 @@
       <a href="little-hanoi.html">Little Hanoi</a>
       <a href="exclusive.html" lang="vi">Làng Nướng Exclusive</a>
       <a href="shop.html" class="active">Shop Now</a>
-      <button type="button" class="nav-account" id="openAccount">Account</button>
     </nav>
     </div>
   </header>
-
-  <div class="account-modal" id="accountModal" hidden>
-    <div class="account-backdrop" data-close-account></div>
-    <section class="account-panel" role="dialog" aria-modal="true" aria-labelledby="accountTitle">
-      <button type="button" class="account-close" id="closeAccount" aria-label="Close account dialog">×</button>
-      <span class="hero-eyebrow">Lang Nuong Vietnam</span>
-      <h2 id="accountTitle">Sign in to your account</h2>
-      <p class="account-note">Sign in to save your details and make checkout faster.</p>
-      <button type="button" class="google-sign-in" id="googleSignIn">
-        <svg class="google-logo" viewBox="0 0 24 24" aria-hidden="true">
-          <path fill="#4285F4" d="M21.35 12.27c0-.79-.07-1.55-.2-2.27H12v4.3h5.24a4.48 4.48 0 0 1-1.94 2.94v2.45h3.14c1.84-1.69 2.91-4.18 2.91-7.42Z"/>
-          <path fill="#34A853" d="M12 21.67c2.63 0 4.84-.87 6.45-2.35l-3.14-2.45c-.87.58-1.98.92-3.31.92-2.54 0-4.7-1.72-5.47-4.03H3.29v2.53A9.74 9.74 0 0 0 12 21.67Z"/>
-          <path fill="#FBBC05" d="M6.53 13.76A5.85 5.85 0 0 1 6.22 12c0-.61.11-1.2.31-1.76V7.71H3.29A9.72 9.72 0 0 0 2.25 12c0 1.56.37 3.03 1.04 4.29l3.24-2.53Z"/>
-          <path fill="#EA4335" d="M12 6.21c1.43 0 2.71.49 3.72 1.45l2.79-2.79C16.84 3.3 14.63 2.33 12 2.33a9.74 9.74 0 0 0-8.71 5.38l3.24 2.53C7.3 7.93 9.46 6.21 12 6.21Z"/>
-        </svg>
-        <span>Continue with Google</span>
-      </button>
-      <p class="account-status" id="accountStatus" role="status"></p>
-      <button type="button" class="btn btn-outline account-sign-out" id="accountSignOut" hidden>Sign Out</button>
-      <p class="account-config-note">Your Google account profile is stored securely in our servers and will not be shared or sold to others. <a href="terms.html">View our Terms and Conditions here.</a></p>
-    </section>
-  </div>
 
   <div class="quick-view-modal" id="quickViewModal" hidden>
     <div class="account-backdrop" data-close-quick-view></div>
@@ -298,88 +275,13 @@
     </div>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1"></script>
   <script>
-    const supabaseClient = window.supabase.createClient(
-      'https://egggnxmzxbqdsqqlnvig.supabase.co',
-      'sb_publishable_jostM0x7NIGiLikFjVHLwA_I_x0IpS8'
-    );
     const toggle = document.getElementById('navToggle');
     const menu = document.getElementById('navMenu');
     toggle.addEventListener('click', () => {
       toggle.classList.toggle('open');
       menu.classList.toggle('open');
       toggle.setAttribute('aria-expanded', menu.classList.contains('open'));
-    });
-
-    const accountModal = document.getElementById('accountModal');
-    const accountStatus = document.getElementById('accountStatus');
-    const closeAccount = () => {
-      accountModal.hidden = true;
-      document.body.classList.remove('account-open');
-    };
-
-    document.getElementById('openAccount').addEventListener('click', () => {
-      accountModal.hidden = false;
-      googleSignIn.focus();
-      document.body.classList.add('account-open');
-    });
-    document.getElementById('closeAccount').addEventListener('click', closeAccount);
-    accountModal.addEventListener('click', event => {
-      if (event.target.hasAttribute('data-close-account')) closeAccount();
-    });
-
-    const accountTitle = document.getElementById('accountTitle');
-    const googleSignIn = document.getElementById('googleSignIn');
-    const accountSignOut = document.getElementById('accountSignOut');
-
-    const saveProfile = async user => {
-      const { error } = await supabaseClient.from('profiles').upsert({
-        id: user.id,
-        email: user.email,
-        full_name: user.user_metadata.full_name || user.user_metadata.name || null,
-        avatar_url: user.user_metadata.avatar_url || user.user_metadata.picture || null,
-        updated_at: new Date().toISOString()
-      });
-      if (error) throw error;
-    };
-
-    const updateAccountUi = user => {
-      const signedIn = Boolean(user);
-      accountTitle.textContent = signedIn ? `Welcome, ${user.user_metadata.full_name || user.user_metadata.name || user.email}` : 'Sign in to your account';
-      googleSignIn.hidden = signedIn;
-      accountSignOut.hidden = !signedIn;
-      if (signedIn) accountStatus.textContent = `Signed in as ${user.email}.`;
-    };
-
-    document.getElementById('googleSignIn').addEventListener('click', async () => {
-      accountStatus.textContent = 'Opening Google sign-in…';
-      const { error } = await supabaseClient.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}${window.location.pathname.replace('shop.html', 'account.html')}`
-        }
-      });
-      if (error) accountStatus.textContent = `Google sign-in failed: ${error.message}`;
-    });
-
-    accountSignOut.addEventListener('click', async () => {
-      accountSignOut.disabled = true;
-      const { error } = await supabaseClient.auth.signOut({ scope: 'local' });
-      accountStatus.textContent = error ? `Sign out failed: ${error.message}` : 'You have been signed out.';
-      if (!error) updateAccountUi(null);
-      accountSignOut.disabled = false;
-    });
-
-    supabaseClient.auth.onAuthStateChange(async (_event, session) => {
-      updateAccountUi(session?.user || null);
-      if (session?.user) {
-        try {
-          await saveProfile(session.user);
-        } catch (error) {
-          accountStatus.textContent = `Signed in, but profile saving failed: ${error.message}`;
-        }
-      }
     });
 
     const shopGrid = document.querySelector('.shop-grid');
