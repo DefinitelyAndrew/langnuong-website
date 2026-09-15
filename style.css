@@ -1136,6 +1136,38 @@ img {
   margin-top: 1.5rem;
 }
 
+.shop-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: .65rem;
+  margin: 1rem 0 0;
+  color: var(--brown);
+  font-size: .85rem;
+  font-weight: 600;
+}
+
+.shop-sort {
+  min-width: 190px;
+  padding: .65rem .8rem;
+  border: 1px solid #d8c3a7;
+  border-radius: 3px;
+  background: var(--white);
+  color: var(--brown-dark);
+  font: inherit;
+}
+
+@media (max-width: 480px) {
+  .shop-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .shop-sort {
+    width: 100%;
+  }
+}
+
 @media (min-width: 600px) {
   .shop-grid { grid-template-columns: repeat(3, 1fr); }
 }

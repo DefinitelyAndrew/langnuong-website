@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Shop authentic Vietnamese ingredients, sauces, noodles and drinks direct from Lang Nuong Vietnam. Imported straight from Vietnam.">
   <title>Shop Now | Lang Nuong Vietnam Group</title>
-  <link rel="stylesheet" href="style.css?v=20260915-4">
+  <link rel="stylesheet" href="style.css?v=20260915-25">
 </head>
 <body>
 
@@ -42,11 +42,21 @@
     <div class="section">
       <h2 class="section-title">Showing all 10 results</h2>
       <div class="section-divider"></div>
+      <div class="shop-toolbar">
+        <label for="shopSort">Sort by</label>
+        <select id="shopSort" class="shop-sort">
+          <option value="menu_order">Default sorting</option>
+          <option value="popularity">Sort by popularity</option>
+          <option value="date">Sort by latest</option>
+          <option value="price">Sort by price: low to high</option>
+          <option value="price-desc">Sort by price: high to low</option>
+        </select>
+      </div>
 
       <div class="shop-grid">
 
         <!-- Product 1 -->
-        <div class="product-card">
+        <div class="product-card" data-price="4.90" data-popularity="1" data-index="0">
           <div class="product-img-wrap">
             <img src="assets/shop/bot-chien-gion.jpeg" alt="Bot Chien Gion Fried Powder" loading="lazy">
             <span class="product-badge">Powder</span>
@@ -59,7 +69,7 @@
         </div>
 
         <!-- Product 2 -->
-        <div class="product-card">
+        <div class="product-card" data-price="4.90" data-popularity="2" data-index="1">
           <div class="product-img-wrap">
             <img src="assets/shop/bun-tuoi.jpeg" alt="Bun Tuoi Vermicelli" loading="lazy">
             <span class="product-badge">Food</span>
@@ -72,7 +82,7 @@
         </div>
 
         <!-- Product 3 -->
-        <div class="product-card">
+        <div class="product-card" data-price="3.50" data-popularity="3" data-index="2">
           <div class="product-img-wrap">
             <img src="assets/shop/dau-red.jpeg" alt="Dau Red Energy Drink" loading="lazy">
             <span class="product-badge">Drink</span>
@@ -85,7 +95,7 @@
         </div>
 
         <!-- Product 4 -->
-        <div class="product-card">
+        <div class="product-card" data-price="5.90" data-popularity="4" data-index="3">
           <div class="product-img-wrap">
             <img src="assets/shop/mi-fudo.jpeg" alt="Mi Fudo Noodle" loading="lazy">
             <span class="product-badge">Food</span>
@@ -98,7 +108,7 @@
         </div>
 
         <!-- Product 5 -->
-        <div class="product-card">
+        <div class="product-card" data-price="1.60" data-popularity="5" data-index="4">
           <div class="product-img-wrap">
             <img src="assets/shop/mi-hao-hao.jpeg" alt="Mi Hao Hao Chua Cay Sour &amp; Spicy Noodle" loading="lazy">
             <span class="product-badge">Food</span>
@@ -111,7 +121,7 @@
         </div>
 
         <!-- Product 6 -->
-        <div class="product-card">
+        <div class="product-card" data-price="6.90" data-popularity="6" data-index="5">
           <div class="product-img-wrap">
             <img src="assets/shop/mi-trung.jpeg" alt="Mi Trung Egg Noodle" loading="lazy">
             <span class="product-badge">Food</span>
@@ -124,7 +134,7 @@
         </div>
 
         <!-- Product 7 -->
-        <div class="product-card">
+        <div class="product-card" data-price="8.90" data-popularity="7" data-index="6">
           <div class="product-img-wrap">
             <img src="assets/shop/nam-ngu.jpeg" alt="Nam Ngu Nuoc Mam Fish Sauce" loading="lazy">
             <span class="product-badge">Sauce</span>
@@ -137,7 +147,7 @@
         </div>
 
         <!-- Product 8 -->
-        <div class="product-card">
+        <div class="product-card" data-price="11.90" data-popularity="8" data-index="7">
           <div class="product-img-wrap">
             <img src="assets/shop/nuoc-mam.jpeg" alt="Nuoc Mam Fish Sauce" loading="lazy">
             <span class="product-badge">Sauce</span>
@@ -150,7 +160,7 @@
         </div>
 
         <!-- Product 9 -->
-        <div class="product-card">
+        <div class="product-card" data-price="3.50" data-popularity="9" data-index="8">
           <div class="product-img-wrap">
             <img src="assets/shop/tra-thanh-nhiet.jpeg" alt="Tra Thanh Nhiet Herbal Tea" loading="lazy">
             <span class="product-badge">Drink</span>
@@ -163,7 +173,7 @@
         </div>
 
         <!-- Product 10 -->
-        <div class="product-card">
+        <div class="product-card" data-price="8.90" data-popularity="10" data-index="9">
           <div class="product-img-wrap">
             <img src="assets/shop/tuong-ot.jpeg" alt="Tuong Ot Chili Sauce" loading="lazy">
             <span class="product-badge">Sauce</span>
@@ -237,6 +247,21 @@
           `${button.dataset.product} has been added to your cart. Checkout is coming soon.`;
         document.getElementById('cartCount').textContent = '1';
       });
+    });
+
+    const shopGrid = document.querySelector('.shop-grid');
+    const shopSort = document.getElementById('shopSort');
+    const productCards = Array.from(shopGrid.querySelectorAll('.product-card'));
+
+    shopSort.addEventListener('change', () => {
+      const sortedCards = [...productCards].sort((a, b) => {
+        const sort = shopSort.value;
+        if (sort === 'price') return Number(a.dataset.price) - Number(b.dataset.price);
+        if (sort === 'price-desc') return Number(b.dataset.price) - Number(a.dataset.price);
+        if (sort === 'popularity') return Number(b.dataset.popularity) - Number(a.dataset.popularity);
+        return Number(a.dataset.index) - Number(b.dataset.index);
+      });
+      sortedCards.forEach(card => shopGrid.appendChild(card));
     });
   </script>
 </body>
