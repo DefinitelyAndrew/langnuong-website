@@ -1627,6 +1627,11 @@ img {
   width: 100%;
 }
 
+.account-sign-out {
+  width: 100%;
+  margin-top: .5rem;
+}
+
 .account-status {
   min-height: 1.5em;
   margin-top: .8rem;

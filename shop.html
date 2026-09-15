@@ -51,7 +51,8 @@
         <button type="submit" class="btn btn-primary account-submit">Sign In</button>
       </form>
       <p class="account-status" id="accountStatus" role="status"></p>
-      <p class="account-config-note">Account sign-in is being connected. Google OAuth and secure server authentication will be enabled once the site credentials are configured.</p>
+      <button type="button" class="btn btn-outline account-sign-out" id="accountSignOut" hidden>Sign Out</button>
+      <p class="account-config-note">Your Google account profile is stored securely in Supabase after sign-in.</p>
     </section>
   </div>
 
@@ -299,7 +300,12 @@
     </div>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1"></script>
   <script>
+    const supabaseClient = window.supabase.createClient(
+      'https://egggnxmzxbqdsqqlnvig.supabase.co',
+      'sb_publishable_jostM0x7NIGiLikFjVHLwA_I_x0IpS8'
+    );
     const toggle = document.getElementById('navToggle');
     const menu = document.getElementById('navMenu');
     toggle.addEventListener('click', () => {
@@ -332,11 +338,49 @@
       if (event.target.hasAttribute('data-close-account')) closeAccount();
     });
 
-    document.getElementById('googleSignIn').addEventListener('click', () => {
-      accountStatus.textContent = 'Google Sign-In will be available after the Google OAuth client is configured.';
+    const accountTitle = document.getElementById('accountTitle');
+    const googleSignIn = document.getElementById('googleSignIn');
+    const signInForm = document.getElementById('signInForm');
+    const accountSignOut = document.getElementById('accountSignOut');
+
+    const saveProfile = async user => {
+      const { error } = await supabaseClient.from('profiles').upsert({
+        id: user.id,
+        email: user.email,
+        full_name: user.user_metadata.full_name || user.user_metadata.name || null,
+        avatar_url: user.user_metadata.avatar_url || user.user_metadata.picture || null,
+        updated_at: new Date().toISOString()
+      });
+      if (error) throw error;
+    };
+
+    const updateAccountUi = user => {
+      const signedIn = Boolean(user);
+      accountTitle.textContent = signedIn ? `Welcome, ${user.user_metadata.full_name || user.user_metadata.name || user.email}` : 'Sign in to your account';
+      googleSignIn.hidden = signedIn;
+      signInForm.hidden = signedIn;
+      accountSignOut.hidden = !signedIn;
+      if (signedIn) accountStatus.textContent = `Signed in as ${user.email}.`;
+    };
+
+    document.getElementById('googleSignIn').addEventListener('click', async () => {
+      accountStatus.textContent = 'Opening Google sign-in…';
+      const { error } = await supabaseClient.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}${window.location.pathname}`
+        }
+      });
+      if (error) accountStatus.textContent = `Google sign-in failed: ${error.message}`;
     });
 
-    document.getElementById('signInForm').addEventListener('submit', event => {
+    accountSignOut.addEventListener('click', async () => {
+      const { error } = await supabaseClient.auth.signOut();
+      accountStatus.textContent = error ? `Sign out failed: ${error.message}` : 'You have been signed out.';
+      if (!error) updateAccountUi(null);
+    });
+
+    document.getElementById('signInForm').addEventListener('submit', async event => {
       event.preventDefault();
       const email = document.getElementById('accountEmail').value.trim();
       if (rememberMe.checked) {
@@ -344,7 +388,18 @@
       } else {
         localStorage.removeItem('langnuong-remembered-email');
       }
-      accountStatus.textContent = 'Manual sign-in will be available after the secure authentication server is connected.';
+      accountStatus.textContent = 'Manual sign-in is not enabled yet. Use Google sign-in for now.';
+    });
+
+    supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+      updateAccountUi(session?.user || null);
+      if (session?.user) {
+        try {
+          await saveProfile(session.user);
+        } catch (error) {
+          accountStatus.textContent = `Signed in, but profile saving failed: ${error.message}`;
+        }
+      }
     });
 
     const shopGrid = document.querySelector('.shop-grid');
