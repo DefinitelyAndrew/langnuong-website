@@ -68,22 +68,22 @@
       <h2 class="section-title">Our Food</h2>
       <div class="section-divider"></div>
 
-      <div class="gallery-grid">
-        <a href="assets/brands/little-hanoi-food1.jpg" target="_blank">
-          <img src="assets/brands/little-hanoi-food1.jpg" alt="Little Hanoi food 1" loading="lazy">
-        </a>
-        <a href="assets/brands/little-hanoi-food2.jpg" target="_blank">
-          <img src="assets/brands/little-hanoi-food2.jpg" alt="Little Hanoi food 2" loading="lazy">
-        </a>
-        <a href="assets/brands/little-hanoi-food3.jpg" target="_blank">
-          <img src="assets/brands/little-hanoi-food3.jpg" alt="Little Hanoi food 3" loading="lazy">
-        </a>
-        <a href="assets/brands/little-hanoi-food4.jpg" target="_blank">
-          <img src="assets/brands/little-hanoi-food4.jpg" alt="Little Hanoi food 4" loading="lazy">
-        </a>
-        <a href="assets/brands/little-hanoi-food5.jpg" target="_blank">
-          <img src="assets/brands/little-hanoi-food5.jpg" alt="Little Hanoi food 5" loading="lazy">
-        </a>
+      <div class="gallery-carousel" id="hanoiFoodCarousel">
+        <div class="gc-main">
+          <button class="gc-arrow gc-prev" id="hanoiFoodPrev" type="button" aria-label="Previous food photo">&#8249;</button>
+          <div class="gc-main-img-wrap">
+            <img id="hanoiFoodMainImg" src="assets/brands/little-hanoi-food1.jpg" alt="Little Hanoi food 1">
+          </div>
+          <button class="gc-arrow gc-next" id="hanoiFoodNext" type="button" aria-label="Next food photo">&#8250;</button>
+        </div>
+        <div class="gc-counter"><span id="hanoiFoodCurrent">1</span> / <span id="hanoiFoodTotal">5</span></div>
+        <div class="gc-thumbs" id="hanoiFoodThumbs">
+          <img src="assets/brands/little-hanoi-food1.jpg" alt="Little Hanoi food 1" class="gc-thumb active" data-index="0" loading="lazy">
+          <img src="assets/brands/little-hanoi-food2.jpg" alt="Little Hanoi food 2" class="gc-thumb" data-index="1" loading="lazy">
+          <img src="assets/brands/little-hanoi-food3.jpg" alt="Little Hanoi food 3" class="gc-thumb" data-index="2" loading="lazy">
+          <img src="assets/brands/little-hanoi-food4.jpg" alt="Little Hanoi food 4" class="gc-thumb" data-index="3" loading="lazy">
+          <img src="assets/brands/little-hanoi-food5.jpg" alt="Little Hanoi food 5" class="gc-thumb" data-index="4" loading="lazy">
+        </div>
       </div>
     </div>
   </div>
@@ -202,6 +202,33 @@
       menu.classList.toggle('open');
       toggle.setAttribute('aria-expanded', menu.classList.contains('open'));
     });
+
+      const hanoiFoodImages = [
+        'assets/brands/little-hanoi-food1.jpg',
+        'assets/brands/little-hanoi-food2.jpg',
+        'assets/brands/little-hanoi-food3.jpg',
+        'assets/brands/little-hanoi-food4.jpg',
+        'assets/brands/little-hanoi-food5.jpg'
+      ];
+      let hanoiFoodCurrent = 0;
+      const hanoiFoodMainImg = document.getElementById('hanoiFoodMainImg');
+      const hanoiFoodCounter = document.getElementById('hanoiFoodCurrent');
+      const hanoiFoodThumbs = document.querySelectorAll('#hanoiFoodThumbs .gc-thumb');
+
+      const showHanoiFood = index => {
+        hanoiFoodCurrent = (index + hanoiFoodImages.length) % hanoiFoodImages.length;
+        hanoiFoodMainImg.src = hanoiFoodImages[hanoiFoodCurrent];
+        hanoiFoodMainImg.alt = `Little Hanoi food ${hanoiFoodCurrent + 1}`;
+        hanoiFoodCounter.textContent = hanoiFoodCurrent + 1;
+        hanoiFoodThumbs.forEach((thumb, thumbIndex) => thumb.classList.toggle('active', thumbIndex === hanoiFoodCurrent));
+        hanoiFoodThumbs[hanoiFoodCurrent].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      };
+
+      document.getElementById('hanoiFoodPrev').addEventListener('click', () => showHanoiFood(hanoiFoodCurrent - 1));
+      document.getElementById('hanoiFoodNext').addEventListener('click', () => showHanoiFood(hanoiFoodCurrent + 1));
+      hanoiFoodThumbs.forEach(thumb => {
+        thumb.addEventListener('click', () => showHanoiFood(Number(thumb.dataset.index)));
+      });
   </script>
 </body>
 </html>
