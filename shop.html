@@ -94,10 +94,14 @@
       <div class="section-divider"></div>
       <div class="shop-toolbar">
         <fieldset class="price-scale">
-          <legend>Price <span id="priceRangeLabel">$0.00 - $11.90</span></legend>
+          <legend>Filter by price</legend>
           <div class="price-scale-inputs">
             <input id="priceMin" type="range" min="0" max="11.9" step="0.1" value="0" aria-label="Minimum price">
             <input id="priceMax" type="range" min="0" max="11.9" step="0.1" value="11.9" aria-label="Maximum price">
+          </div>
+          <div class="price-scale-footer">
+            <span id="priceRangeLabel">$0.00 - $11.90</span>
+            <button type="button" class="price-filter-button" id="applyPriceFilter">Filter</button>
           </div>
         </fieldset>
         <label for="stockFilter">Stock</label>

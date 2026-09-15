@@ -1188,33 +1188,62 @@ img {
 }
 
 .price-scale {
-  min-width: 210px;
-  padding: 0;
-  border: 0;
+  min-width: 250px;
+  padding: .8rem 1rem .65rem;
+  border: 1px solid #e3d2ba;
+  border-radius: 3px;
+  background: var(--white);
   color: var(--brown);
   font: inherit;
   font-size: .85rem;
 }
 
 .price-scale legend {
-  margin-bottom: .25rem;
+  padding: 0 .25rem;
+  margin-bottom: .5rem;
+  color: var(--brown-dark);
   font-weight: 600;
 }
 
-.price-scale legend span {
+.price-scale-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  margin-top: .2rem;
+}
+
+.price-scale-footer span {
   color: var(--muted);
-  font-weight: 400;
+  font-size: .78rem;
   white-space: nowrap;
+}
+
+.price-filter-button {
+  padding: .35rem .7rem;
+  border: 0;
+  border-radius: 2px;
+  background: var(--brown);
+  color: var(--white);
+  cursor: pointer;
+  font: inherit;
+  font-size: .75rem;
+  font-weight: 600;
+}
+
+.price-filter-button:hover {
+  background: var(--gold-hover);
+  color: var(--brown-dark);
 }
 
 .price-scale-inputs {
   position: relative;
-  height: 1.35rem;
+  height: 1.1rem;
 }
 
 .price-scale-inputs input {
   position: absolute;
-  inset: .2rem 0 0;
+  inset: .15rem 0 0;
   width: 100%;
   height: .45rem;
   margin: 0;
