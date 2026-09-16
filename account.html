@@ -43,6 +43,11 @@
         </form>
         <button type="button" class="account-mode-link" id="toggleAuthMode">Create an account</button>
       </section>
+      <section class="order-history" id="orderHistory" hidden>
+        <h2>Previous Shop Orders</h2>
+        <p class="account-page-note">Order requests sent through WhatsApp are shown here.</p>
+        <div id="orderHistoryItems"></div>
+      </section>
       <section class="account-profile-card" id="accountProfile" hidden>
         <img id="accountAvatar" class="account-avatar" src="" alt="">
         <div>
@@ -72,6 +77,8 @@
     const profile = document.getElementById('accountProfile');
     const signOut = document.getElementById('accountPageSignOut');
     const deleteAccount = document.getElementById('accountDelete');
+    const orderHistory = document.getElementById('orderHistory');
+    const orderHistoryItems = document.getElementById('orderHistoryItems');
 
     const saveProfile = async user => {
       const { error } = await supabaseClient.from('profiles').upsert({
@@ -83,6 +90,34 @@
       });
       if (error) throw error;
     };
+
+    const loadOrderHistory = async userId => {
+      const { data, error } = await supabaseClient
+        .from('orders')
+        .select('id, items, total, status, created_at')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+      if (error) {
+        orderHistoryItems.textContent = `Unable to load order history: ${error.message}`;
+        return;
+      }
+      orderHistoryItems.innerHTML = data.length ? data.map(order => `
+        <article class="order-history-item">
+          <div>
+            <strong>${new Date(order.created_at).toLocaleDateString()}</strong>
+            <span>${order.items.map(item => `${escapeHtml(item.name)} ×${item.quantity}`).join(', ')}</span>
+          </div>
+          <div>
+            <strong>$${Number(order.total).toFixed(2)}</strong>
+            <span>${escapeHtml(order.status.replace('_', ' '))}</span>
+          </div>
+        </article>
+      `).join('') : '<p class="account-page-note">No previous shop orders yet.</p>';
+    };
+
+    const escapeHtml = value => String(value).replace(/[&<>"']/g, character => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+    }[character]));
 
     const displayAccount = user => {
       if (!user) {
@@ -105,6 +140,7 @@
       status.hidden = true;
       auth.hidden = true;
       profile.hidden = false;
+      orderHistory.hidden = false;
       signOut.hidden = false;
       deleteAccount.hidden = false;
     };
@@ -115,6 +151,7 @@
       if (!user) return;
       try {
         await saveProfile(user);
+        await loadOrderHistory(user.id);
       } catch (profileError) {
         status.hidden = false;
         status.textContent = `Signed in, but profile saving failed: ${profileError.message}`;
@@ -156,6 +193,7 @@
       await supabaseClient.auth.signOut();
       status.textContent = 'Your account has been deleted.';
       profile.hidden = true;
+      orderHistory.hidden = true;
       signOut.hidden = true;
       deleteAccount.hidden = true;
     });
@@ -171,6 +209,7 @@
     const showAuth = () => {
       auth.hidden = false;
       profile.hidden = true;
+      orderHistory.hidden = true;
       signOut.hidden = true;
       deleteAccount.hidden = true;
       status.hidden = false;

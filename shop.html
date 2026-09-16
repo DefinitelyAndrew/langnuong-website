@@ -276,7 +276,12 @@
     </div>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1"></script>
   <script>
+    const supabaseClient = window.supabase.createClient(
+      'https://egggnxmzxbqdsqqlnvig.supabase.co',
+      'sb_publishable_jostM0x7NIGiLikFjVHLwA_I_x0IpS8'
+    );
     const toggle = document.getElementById('navToggle');
     const menu = document.getElementById('navMenu');
     toggle.addEventListener('click', () => {
@@ -452,6 +457,27 @@
     document.getElementById('clearCart').addEventListener('click', () => {
       cart = [];
       renderCart();
+    });
+
+    checkoutCart.addEventListener('click', async event => {
+      if (cart.length === 0) return;
+      const { data } = await supabaseClient.auth.getSession();
+      if (!data.session?.user) {
+        event.preventDefault();
+        window.location.href = 'account.html';
+        return;
+      }
+      const { error } = await supabaseClient.from('orders').insert({
+        user_id: data.session.user.id,
+        items: cart,
+        total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
+        status: 'request_sent'
+      });
+      if (error) {
+        event.preventDefault();
+        cartEmpty.hidden = false;
+        cartEmpty.textContent = `We could not save this order request: ${error.message}`;
+      }
     });
 
     const sortProducts = () => {
