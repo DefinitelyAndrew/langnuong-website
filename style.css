@@ -954,7 +954,6 @@ img {
    ============================================= */
 .site-footer {
   background-color: var(--green);
-  background-image: url("footerbgkraft.jpg");
   background-size: cover;
   background-position: center;
   border-top: 3px solid var(--gold);
