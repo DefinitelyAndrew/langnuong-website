@@ -30,6 +30,8 @@
 }
 
 :root {
+  --green:       #1E5631;
+  --green-dark:  #14402a;
   --brown:       #492200;
   --brown-dark:  #311700;
   --gold:        #F6D879;
@@ -90,9 +92,9 @@ img {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(49, 23, 0, .96);
+  background: rgba(30, 86, 49, .96);
   border-bottom: 1px solid rgba(246,216,121,.45);
-  box-shadow: 0 8px 24px rgba(49,23,0,.18);
+  box-shadow: 0 8px 24px rgba(30,86,49,.18);
   backdrop-filter: blur(12px);
 }
 
@@ -153,7 +155,7 @@ img {
   flex-basis: 100%;
   width: 100%;
   margin: 0;
-  background: rgba(49,23,0,.98);
+  background: rgba(30,86,49,.98);
   border-top: 1px solid rgba(246,216,121,.18);
   padding: .35rem 1.25rem .75rem;
 }
@@ -176,7 +178,7 @@ img {
 .nav-menu a:last-child { border-bottom: none; }
 .nav-menu a:hover,
 .nav-menu a.active {
-  background: rgba(246,216,121,.12);
+  background: rgba(30,86,49,.6);
   color: var(--gold);
 }
 
@@ -951,7 +953,7 @@ img {
    FOOTER
    ============================================= */
 .site-footer {
-  background-color: var(--brown);
+  background-color: var(--green);
   background-image: url("footerbgkraft.jpg");
   background-size: cover;
   background-position: center;
@@ -975,7 +977,7 @@ img {
 .footer-brand {
   font-family: var(--font);
   font-size: 1.3rem;
-  color: #000000;
+  color: #FFFFFF;
   margin-bottom: .5rem;
   font-weight: 600;
   letter-spacing: .04em;
@@ -984,12 +986,12 @@ img {
 
 .footer-tagline {
   font-size: .85rem;
-  color: #000000;
+  color: #FFFFFF;
   margin-bottom: 1rem;
 }
 
 .site-footer p {
-  color: #000000 !important;
+  color: #FFFFFF !important;
 }
 
 .footer-social {
@@ -1006,7 +1008,7 @@ img {
   height: 38px;
   background: rgba(255,255,255,.55);
   border-radius: 50%;
-  color: #180e08;
+  color: #FFFFFF;
   transition: background .2s, color .2s;
 }
 
@@ -1018,12 +1020,12 @@ img {
 
 .footer-social a:hover {
   background: var(--gold);
-  color: #180e08;
+  color: var(--green-dark);
 }
 
 .footer-col h4 {
   font-family: var(--font);
-  color: #000000;
+  color: #FFFFFF;
   font-size: .82rem;
   letter-spacing: .12em;
   text-transform: uppercase;
@@ -1040,19 +1042,19 @@ img {
 
 .footer-col ul li a {
   font-size: .85rem;
-  color: #000000;
+  color: #FFFFFF;
   transition: color .2s;
 }
 
-.footer-col ul li a:hover { color: var(--brown); }
+.footer-col ul li a:hover { color: var(--green-dark); }
 
 .footer-bottom {
   max-width: var(--max-w);
   margin: 2rem auto 0;
   padding-top: 1rem;
-  border-top: 1px solid rgba(24,14,8,.25);
+  border-top: 1px solid rgba(255,255,255,.25);
   font-size: .75rem;
-  color: #000000;
+  color: #FFFFFF;
   text-align: center;
 }
 
