@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+  <defs>
+    <linearGradient id="lacquer" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D4A545"/>
+      <stop offset="35%" stop-color="#E8C04A"/>
+      <stop offset="60%" stop-color="#C89638"/>
+      <stop offset="100%" stop-color="#8B6914"/>
+    </linearGradient>
+    <linearGradient id="lacquerSoft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F0DABD"/>
+      <stop offset="50%" stop-color="#E8D8C0"/>
+      <stop offset="100%" stop-color="#F0DABD"/>
+    </linearGradient>
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E5631"/>
+      <stop offset="100%" stop-color="#0A2514"/>
+    </linearGradient>
+    <filter id="softBlur" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2.5"/>
+    </filter>
+    <pattern id="vietnameseFloss" x="0" y="0" width="400" height="400" patternUnits="userSpaceOnUse">
+      <!-- Large lotus leaf -->
+      <ellipse cx="200" cy="200" rx="90" ry="46" fill="url(#leafGrad)" opacity="0.18"/>
+      <ellipse cx="200" cy="200" rx="60" ry="30" fill="url(#leafGrad)" opacity="0.22"/>
+      <ellipse cx="200" cy="200" rx="32" ry="16" fill="url(#leafGrad)" opacity="0.28"/>
+      <!-- Lotus petals around the leaf -->
+      <ellipse cx="200" cy="200" rx="70" ry="24" transform="rotate(45 200 200)" fill="url(#leafGrad)" opacity="0.12"/>
+      <ellipse cx="200" cy="200" rx="70" ry="24" transform="rotate(135 200 200)" fill="url(#leafGrad)" opacity="0.12"/>
+      <ellipse cx="200" cy="200" rx="70" ry="24" transform="rotate(225 200 200)" fill="url(#leafGrad)" opacity="0.12"/>
+      <ellipse cx="200" cy="200" rx="70" ry="24" transform="rotate(315 200 200)" fill="url(#leafGrad)" opacity="0.12"/>
+      <!-- Bamboo stalks -->
+      <rect x="130" y="0" width="6" height="180" rx="3" fill="url(#lacquer)" opacity="0.45"/>
+      <rect x="160" y="0" width="5" height="170" rx="2.5" fill="url(#lacquer)" opacity="0.4"/>
+      <rect x="290" y="0" width="5" height="140" rx="2.5" fill="url(#lacquer)" opacity="0.4"/>
+      <rect x="450" y="0" width="6" height="160" rx="3" fill="url(#lacquer)" opacity="0.45"/>
+      <rect x="780" y="0" width="5" height="130" rx="2.5" fill="url(#lacquer)" opacity="0.4"/>
+      <rect x="950" y="0" width="6" height="170" rx="3" fill="url(#lacquer)" opacity="0.45"/>
+      <rect x="1080" y="30" width="5" height="120" rx="2.5" fill="url(#lacquer)" opacity="0.4"/>
+      <!-- Dragon-scale dots -->
+      <circle cx="200" cy="120" r="5" fill="url(#lacquer)" opacity="0.5"/>
+      <circle cx="200" cy="280" r="4" fill="url(#lacquer)" opacity="0.45"/>
+      <circle cx="200" cy="360" r="5" fill="url(#lacquer)" opacity="0.45"/>
+      <circle cx="200" cy="440" r="4" fill="url(#lacquer)" opacity="0.4"/>
+      <circle cx="60" cy="100" r="4" fill="url(#lacquer)" opacity="0.4"/>
+      <circle cx="1100" cy="180" r="4" fill="url(#lacquer)" opacity="0.4"/>
+      <circle cx="1080" cy="420" r="4" fill="url(#lacquer)" opacity="0.4"/>
+      <circle cx="1140" cy="480" r="4" fill="url(#lacquer)" opacity="0.4"/>
+      <!-- Concentric gold rings -->
+      <circle cx="200" cy="200" r="120" fill="none" stroke="#6B4E1F" stroke-width="1" opacity="0.25"/>
+      <circle cx="200" cy="200" r="90" fill="none" stroke="#6B4E1F" stroke-width="1" opacity="0.2"/>
+      <circle cx="200" cy="200" r="60" fill="none" stroke="#6B4E1F" stroke-width="1" opacity="0.2"/>
+      <circle cx="200" cy="200" r="30" fill="none" stroke="#6B4E1F" stroke-width="1" opacity="0.2"/>
+    </pattern>
+  </defs>
+  <!-- Soft earth-tone background -->
+  <rect width="1200" height="600" fill="url(#lacquerSoft)"/>
+  <!-- Ornamental filigree -->
+  <rect width="1200" height="600" fill="url(#vietnameseFloss)" opacity="0.55"/>
+</svg>

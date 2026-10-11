@@ -348,10 +348,39 @@ img {
   letter-spacing: .04em;
 }
 
+/* Vietnamese serif decorative banner */
+.vietnamese-banner {
+  display: inline-block;
+  border: 2px solid var(--amber);
+  border-radius: 3px;
+  padding: .2rem .6rem;
+  font-size: .65rem;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--amber-dark);
+  margin-bottom: 1rem;
+}
+
 /* Page hero (inner pages — shorter) */
 .page-hero {
   min-height: 40vw;
   max-height: 500px;
+}
+
+/* Traditional Vietnamese colored buttons */
+.btn-amber {
+  background: var(--amber);
+  color: var(--brown-dark);
+  border-color: var(--amber);
+}
+
+.btn-amber:hover {
+  background: var(--amber-light);
+  border-color: var(--amber-light);
+  color: var(--brown-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(212,165,69,.45);
 }
 
 /* =============================================
@@ -458,7 +487,47 @@ img {
   width: 100%;
 }
 
-/* Light kraft background — matches live site main content areas */
+/* Traditional Vietnamese palette — warm amber / lacquer / lotus leaf */
+:root {
+  --green:       #1E5631;
+  --green-dark:  #14402a;
+  --brown:       #492200;
+  --brown-dark:  #311700;
+  --amber:       #D4A545;
+  --amber-light: #E8C04A;
+  --gold:        #F6D879;
+  --gold-dark:   #F5D063;
+  --kraft-bg:    #F0DABD;
+  --white:       #ffffff;
+  --black:       #000000;
+  --text:        #000000;
+  --muted:       #555555;
+  --light-gray:  #c4c4c4;
+  --section-bg:  #ffffff;
+  --font:        "Gilroy", Arial, Helvetica, sans-serif;
+  --font-vietnamese: Arial, "Helvetica Neue", sans-serif;
+  --radius:      4px;
+  --shadow:      0 4px 20px rgba(0,0,0,.15);
+  --max-w:       1140px;
+}
+
+/* --- Vietnamese decorative SVG pattern --- */
+.vietnamese-pattern {
+  background-image: url("assets/vietnamese-pattern.svg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.vietnamese-pattern::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(240,218,189,.55);
+  pointer-events: none;
+}
+
+/* Traditional Vietnamese section treatments */
 .section-light {
   background-color: var(--kraft-bg);
   background-image: url("kraftbg.jpg");
@@ -480,14 +549,43 @@ img {
   background-color: var(--white);
 }
 
-/* Dark brown sections */
+/* Vietnamese warm content section for dark headings */
 .section-dark {
   background-color: var(--brown);
+  color: var(--white);
+}
+
+.section-dark .section-title,
+.section-dark .serif-title {
+  color: var(--gold-dark);
+}
+
+.section-dark p {
+  color: var(--white);
 }
 
 /* Slightly lighter brown */
 .section-darker {
   background-color: var(--brown-dark);
+}
+
+.serif-title {
+  font-family: "Gilroy", "Times New Roman", serif;
+  color: var(--brown-dark);
+  font-size: clamp(1.6rem, 5.5vw, 2.6rem);
+  font-weight: 600;
+  line-height: 1.2;
+  text-transform: none;
+  letter-spacing: .01em;
+  margin-bottom: .4rem;
+}
+
+.vietnamese-subtitle {
+  color: var(--muted);
+  font-size: .95rem;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+  font-family: var(--font-vietnamese);
 }
 
 .section-title {
@@ -500,6 +598,39 @@ img {
   text-transform: uppercase;
   letter-spacing: .025em;
   text-wrap: balance;
+}
+
+.vietnamese-divider {
+  width: 48px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--amber), var(--gold));
+  margin: .5rem 0 1.5rem;
+  border-radius: 2px;
+  position: relative;
+}
+
+.vietnamese-divider::before,
+.vietnamese-divider::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.vietnamese-divider::before {
+  left: -10px;
+  background: var(--amber);
+}
+
+.vietnamese-divider::after {
+  right: -10px;
+  background: var(--gold);
+}
+.vietnamese-divider::after {
+  right: -10px;
+  background: var(--gold);
 }
 
 .bbq-page .hero-title,
@@ -602,6 +733,15 @@ img {
 /* Gold title variant */
 .section-title-gold {
   color: var(--gold);
+}
+
+/* Vietnamese serif title for dark sections */
+.section-title-vietnamese {
+  color: var(--gold-dark);
+  font-family: "Gilroy", "Times New Roman", serif;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: .01em;
 }
 
 .section-divider {
@@ -941,13 +1081,13 @@ img {
    EMPHASIS BLOCK (italic highlight)
    ============================================= */
 .emphasis-block {
-  border-left: 3px solid var(--gold);
+  border-left: 3px solid var(--amber);
   padding: .85rem 1.25rem;
-  background: rgba(246,216,121,.12);
+  background: rgba(212,165,69,.08);
   border-radius: 0 var(--radius) var(--radius) 0;
   font-style: italic;
   font-size: .92rem;
-  color: var(--black);
+  color: var(--brown);
   margin: 1.25rem 0;
   line-height: 1.7;
 }
@@ -959,7 +1099,7 @@ img {
   background-color: var(--green);
   background-size: cover;
   background-position: center;
-  border-top: 3px solid var(--gold);
+  border-top: 3px solid var(--amber);
   padding: 3rem 1.25rem 1.5rem;
   margin-top: 0;
 }
@@ -1086,6 +1226,35 @@ img {
   background-position: center;
   padding: 4rem 1.25rem 3.5rem;
   text-align: center;
+}
+
+.shop-hero .vietnamese-banner {
+  color: var(--gold-dark);
+  border-color: var(--gold-dark);
+}
+
+.shop-hero .vietnamese-banner::before {
+  background: var(--gold-dark);
+}
+
+.shop-hero .vietnamese-banner::after {
+  background: var(--amber-light);
+}
+
+.shop-hero .vietnamese-divider {
+  background: linear-gradient(90deg, var(--amber-light), var(--gold));
+}
+
+.shop-hero .vietnamese-divider::before {
+  background: var(--amber-light);
+}
+
+.shop-hero .vietnamese-divider::after {
+  background: var(--gold);
+}
+
+.shop-hero .section-title-vietnamese {
+  color: var(--gold-dark);
 }
 
 .shop-hero-inner {
