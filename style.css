@@ -92,7 +92,10 @@ img {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(30, 86, 49, .96);
+  background: #143A22;
+  background-image: url("assets/leaves-bg.svg");
+  background-size: cover;
+  background-position: center;
   border-bottom: 1px solid rgba(246,216,121,.45);
   box-shadow: 0 8px 24px rgba(30,86,49,.18);
   backdrop-filter: blur(12px);
@@ -155,7 +158,7 @@ img {
   flex-basis: 100%;
   width: 100%;
   margin: 0;
-  background: rgba(30,86,49,.98);
+  background: #143A22;
   border-top: 1px solid rgba(246,216,121,.18);
   padding: .35rem 1.25rem .75rem;
 }
