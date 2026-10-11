@@ -277,10 +277,11 @@ img {
   padding: .3rem .9rem;
   border-radius: 2px;
   margin-bottom: 1rem;
+  font-family: "Gilroy", "Times New Roman", serif;
 }
 
 .hero-title {
-  font-family: var(--font);
+  font-family: "Gilroy", "Times New Roman", serif;
   font-size: clamp(1.8rem, 6vw, 3.5rem);
   font-weight: 400;
   line-height: 1.15;
@@ -1264,13 +1265,14 @@ img {
 
 .shop-hero .hero-title {
   color: var(--white);
-  font-family: var(--font);
+  font-family: "Gilroy", "Times New Roman", serif;
   font-size: clamp(1.8rem, 6vw, 3rem);
   line-height: 1.15;
   margin-bottom: .5rem;
 }
 
 .shop-hero .hero-sub {
+  font-family: "Gilroy", "Times New Roman", serif;
   font-size: 1rem;
   color: rgba(255,255,255,.85);
 }
