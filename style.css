@@ -794,6 +794,54 @@ img {
   .brands-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
+/* ---- phone layout: photo on top, details below (same container) ---- */
+@media (max-width: 767px) {
+  .brand-card {
+    border: none;
+    border-radius: 4px;
+    box-shadow: none;
+    display: block;
+  }
+
+  .brand-card-layer {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+  }
+
+  .brand-card-layer img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .brand-card-body {
+    padding: 0.4rem 0.6rem 0.6rem;
+  }
+
+  .brand-card-tag {
+    font-size: 0.55rem;
+    padding: 0.12rem 0.4rem;
+    margin-bottom: 0.15rem;
+  }
+
+  .brand-card-name {
+    font-size: 0.95rem;
+    margin-bottom: 0.1rem;
+  }
+
+  .brand-card-desc {
+    font-size: 0.7rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .brand-card-cta {
+    font-size: 0.62rem;
+  }
+}
+
 /* Card — layered image, white border, white content area */
 .brand-card {
   position: relative;
