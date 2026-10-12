@@ -819,6 +819,26 @@ img {
   padding: 1.1rem 1.2rem 1.2rem;
 }
 
+/* Vietnamese paragraph wrap — no box, no overflow issues */
+.brand-card-body p-wrapper {
+  display: block;
+}
+
+.brand-card-body p-wrapper p {
+  margin: 0 0 .4rem;
+  border: none;
+  padding: 0;
+  font-family: var(--font-vietnamese);
+  font-size: .88rem;
+  color: #555555;
+  line-height: 1.6;
+  text-align: justify;
+}
+
+.brand-card-body p-wrapper p:last-child {
+  margin-bottom: 0;
+}
+
 .brand-card-tag {
   display: inline-block;
   background: #F0E4D0;
