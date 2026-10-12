@@ -101,20 +101,15 @@ img {
   backdrop-filter: blur(12px);
 }
 
-/* Header with bamboo and flower decorations */
-.site-header-bamboo {
-  background: #143A22;
-  background-image: url("assets/bamboo-flower-footer.svg");
-  background-size: cover;
-  background-position: center;
-}
-
 /* Footer with bamboo and flower decorations */
-.site-footer-bamboo {
-  background: #143A22;
+.site-footer {
+  background-color: var(--green);
   background-image: url("assets/bamboo-flower-footer.svg");
   background-size: cover;
   background-position: center;
+  border-top: 3px solid var(--amber);
+  padding: 3rem 1.25rem 1.5rem;
+  margin-top: 0;
 }
 
 .nav-inner {
