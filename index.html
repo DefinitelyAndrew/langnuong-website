@@ -29,9 +29,11 @@
 
   <!-- ===== HERO ===== -->
   <section class="hero">
-    <video class="hero-video" autoplay muted loop playsinline>
-      <source src="hero-video.mp4" type="video/mp4">
-    </video>
+    <div class="hero-video-wrap">
+      <video class="hero-video" autoplay muted loop playsinline id="heroVideo">
+        <source src="section1.mp4" type="video/mp4">
+      </video>
+    </div>
     <div class="hero-content"></div>
   </section>
 
@@ -199,6 +201,45 @@
   </footer>
 
   <script>
+    // Sequential hero video playback
+    const sections = [
+      'section1.mp4',
+      'section2.mp4',
+      'section3.mp4',
+      'section4.mp4',
+      'section5.mp4'
+    ];
+    let sectionIndex = 0;
+    let isTransitioning = false;
+
+    const video = document.getElementById('heroVideo');
+
+    function loadNextSection() {
+      if (isTransitioning) return;
+      const next = sections[sectionIndex % sections.length];
+      sectionIndex++;
+      video.src = next;
+      video.load();
+      video.play().catch(e => {});
+      isTransitioning = true;
+      setTimeout(() => { isTransitioning = false; }, 1000);
+    }
+
+    // Preload sections and start playback
+    sections.forEach(src => {
+      const pre = document.createElement('video');
+      pre.preload = 'auto';
+      pre.src = src;
+      pre.load();
+    });
+
+    // Start sequential playback when video ends
+    video.addEventListener('ended', loadNextSection);
+    video.addEventListener('error', () => {
+      // Fallback: retry on next user interaction
+      video.addEventListener('play', () => { video.removeEventListener('error', arguments.callee); });
+    });
+
     const toggle = document.getElementById('navToggle');
     const menu = document.getElementById('navMenu');
     toggle.addEventListener('click', () => {
