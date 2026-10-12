@@ -15,28 +15,6 @@
   </defs>
   <!-- Background -->
   <rect width="1200" height="600" fill="url(#footerGrad)"/>
-  <!-- Bamboo stalks -->
-  <g opacity="0.5">
-    <rect x="100" y="0" width="7" height="600" rx="3" fill="url(#bambooGrad)"/>
-    <rect x="220" y="40" width="6" height="520" rx="3" fill="url(#bambooGrad)"/>
-    <rect x="340" y="80" width="7" height="460" rx="3.5" fill="url(#bambooGrad)"/>
-    <rect x="470" y="150" width="6" height="400" rx="3" fill="url(#bambooGrad)"/>
-    <rect x="600" y="200" width="7" height="350" rx="3.5" fill="url(#bambooGrad)"/>
-    <rect x="730" y="260" width="6" height="300" rx="3" fill="url(#bambooGrad)"/>
-    <rect x="870" y="320" width="7" height="240" rx="3.5" fill="url(#bambooGrad)"/>
-    <rect x="1000" y="380" width="6" height="180" rx="3" fill="url(#bambooGrad)"/>
-  </g>
-  <!-- Bamboo node lines (horizontal stripes) -->
-  <g stroke="url(#bambooGrad)" stroke-width="2" opacity="0.35">
-    <line x1="101" y1="100" x2="107" y2="100"/>
-    <line x1="221" y1="150" x2="226" y2="150"/>
-    <line x1="341" y1="190" x2="347" y2="190"/>
-    <line x1="471" y1="230" x2="476" y2="230"/>
-    <line x1="601" y1="270" x2="607" y2="270"/>
-    <line x1="731" y1="330" x2="736" y2="330"/>
-    <line x1="871" y1="380" x2="877" y2="380"/>
-    <line x1="1001" y1="440" x2="1006" y2="440"/>
-  </g>
   <!-- Single leaf (singular leaf) -->
   <g opacity="0.55">
     <path d="M500 200 Q540 140 620 160 Q600 190 500 200" fill="url(#leafGrad)"/>
