@@ -1239,6 +1239,7 @@ img {
 /* outer card — no white background, just the shadow/border */
 .gallery-carousel {
   background: transparent;
+  border: 1px solid #e0d8c8;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 1rem 1rem 1.2rem;
