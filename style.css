@@ -2443,3 +2443,23 @@ body.account-open {
   font-style: normal;
   font-display: swap;
 }
+
+/* YouTube hero video */
+.hero-yt-wrap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.hero-yt {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
