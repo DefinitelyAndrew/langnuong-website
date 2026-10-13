@@ -28,12 +28,7 @@
   </header>
 
   <!-- ===== HERO ===== -->
-  <section class="hero">
-    <div class="hero-video-wrap">
-      <video class="hero-video" autoplay muted loop playsinline id="heroVideo">
-        <source src="assets/welcomeweb-small.mp4" type="video/mp4">
-      </video>
-    </div>
+  <section class="hero" style="background: url('assets/hero-cover.jpg') center/cover no-repeat;">
     <div class="hero-content"></div>
   </section>
 
@@ -201,14 +196,6 @@
   </footer>
 
   <script>
-    // Sequential hero video playback        // Hero is now a single looping video (welcomeweb-small.mp4)
-        // No more sequential section switching — one file loops on its own
-        const video = document.getElementById('heroVideo');
-    video.addEventListener('error', () => {
-      // Fallback: retry on next user interaction
-      video.addEventListener('play', () => { video.removeEventListener('error', arguments.callee); });
-    });
-
     const toggle = document.getElementById('navToggle');
     const menu = document.getElementById('navMenu');
     toggle.addEventListener('click', () => {
