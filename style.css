@@ -1236,9 +1236,9 @@ img {
    GALLERY CAROUSEL
    ========================= */
 
-/* outer card */
+/* outer card — no white background, just the shadow/border */
 .gallery-carousel {
-  background: #fff;
+  background: transparent;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 1rem 1rem 1.2rem;
