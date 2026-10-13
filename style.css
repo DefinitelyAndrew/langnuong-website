@@ -6,12 +6,14 @@
     bottom: 0;
     left: 0;
     transform: none;
-    image-rendering: pixelated;
-  }
+  image-rendering: pixelated;
+  z-index: -2;
+}
 }
 
 @media (min-width: 768px) {
   .hero-yt {
-    image-rendering: pixelated;
-  }
+  image-rendering: pixelated;
+  z-index: -2;
+}
 }
