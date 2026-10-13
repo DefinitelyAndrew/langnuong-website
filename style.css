@@ -1751,15 +1751,14 @@ img {
   height: 100%;
   border: 0;
   background: #000;
-}
-
-/* On small screens the hero is 16:9 (min-height 55vw), so size the
+}  /* On small screens the hero is 16:9 (min-height 55vw), so size the
    iframe to 16:9 full-bleed and pin it to the bottom/edge so it does
    not letterbox on phones. */
-@media (max-width: 767px) {
-  .hero-yt {
-    width: 100vw;
-    height: 56.25vw;
-    inset: auto 0 0 0;
+  @media (max-width: 767px) {
+    .hero-yt {
+      width: 100vw;
+      height: 56.25vw;
+      inset: auto 0 0 0;
+      z-index: -1;
+    }
   }
-}
