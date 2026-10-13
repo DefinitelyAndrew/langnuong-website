@@ -3,17 +3,10 @@
     width: 100vw;
     height: 56.25vw;
     top: auto;
-    bottom: 0;
-    left: 0;
-    transform: none;
+    bottom: 0;  left: 0;
+  transform: none;
   image-rendering: pixelated;
   z-index: -2;
 }
 }
 
-@media (min-width: 768px) {
-  .hero-yt {
-  image-rendering: pixelated;
-  z-index: -2;
-}
-}
