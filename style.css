@@ -2457,8 +2457,8 @@ body.account-open {
 .hero-yt {
   position: absolute;
   inset: 0;
-  width: 100vw;
-  height: 100vw;
+  width: 100vh;
+  height: 100vh;
   border: 0;
   background: #000;
 }
