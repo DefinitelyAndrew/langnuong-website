@@ -20,9 +20,17 @@
   font-weight: 600;
   font-style: normal;
   font-display: swap;
+}/* --- Righteous Font (for hero-sub texts) --- */
+@font-face {
+  font-family: "Righteous";
+  src: url("righteous-latin-400-normal.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
 /* --- Reset & Base --- */
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -340,6 +348,7 @@ img {
 }
 
 .hero-sub {
+  font-family: "Righteous", cursive;
   font-size: clamp(.9rem, 2.5vw, 1.1rem);
   color: var(--white);
   margin-bottom: 1.75rem;
