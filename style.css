@@ -75,7 +75,7 @@ body {
 
 /* Use a full Vietnamese glyph set for brand names and accented words. */
 [lang="vi"] {
-  font-family: var(--font-vietnamese);
+  font-family: "Montserrat", var(--font-vietnamese);
 }
 
 a {
@@ -593,7 +593,7 @@ img {
   font-size: .95rem;
   line-height: 1.7;
   margin-bottom: 1.5rem;
-  font-family: var(--font-vietnamese);
+  font-family: "Montserrat", var(--font-vietnamese);
 }
 
 .section-title {
@@ -876,7 +876,7 @@ img {
   margin: 0 0 .4rem;
   border: none;
   padding: 0;
-  font-family: var(--font-vietnamese);
+  font-family: "Montserrat", var(--font-vietnamese);
   font-size: .88rem;
   color: #555555;
   line-height: 1.6;
@@ -896,7 +896,7 @@ img {
   margin: 0 0 .4rem;
   border: none;
   padding: 0;
-  font-family: var(--font-vietnamese);
+  font-family: "Montserrat", var(--font-vietnamese);
   font-size: .88rem;
   color: #555555;
   line-height: 1.6;
@@ -916,7 +916,7 @@ img {
   margin: 0 0 .4rem;
   border: none;
   padding: 0;
-  font-family: var(--font-vietnamese);
+  font-family: "Montserrat", var(--font-vietnamese);
   font-size: .88rem;
   color: #555555;
   line-height: 1.6;
@@ -2434,4 +2434,13 @@ body.account-open {
   position: absolute;
   top: 45%;
   z-index: 3;
+}
+
+/* --- Montserrat Font (for Vietnamese text) --- */
+@font-face {
+  font-family: "Montserrat";
+  src: url("Montserrat-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
