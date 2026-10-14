@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">      <meta name="description" content="Reserve a table across Lang Nuong Vietnam group restaurants. Choose a location, date, time and party size.">
+  <title>Reservations | Lang Nuong Vietnam Group</title>
+  <link rel="stylesheet" href="style.css?v=20260915-26">
+  <style>
+    html{ background:#fffaf2; }
+    body{ background-image:linear-gradient(180deg, #fff7ed 0%, #fffaf2 40%, #fff 100%); background-attachment:fixed; }
+    .res-page{ padding-bottom:56px; }
+    .res-header{
+      padding:48px 24px 40px;
+      text-align:center;
+      background:
+        radial-gradient(1100px 240px at 50% -120px, rgba(183,69,29,.10), transparent 60%),
+        linear-gradient(180deg, #fff4e6 0%, #fffaf2 70%);
+      border-bottom:1px solid var(--tone-line);
+    }
+    .res-eyebrow{
+      display:inline-block;
+      font-size:12px;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      color:var(--accent);
+      background:var(--accent-soft);
+      padding:.4rem .9rem;
+      border-radius:999px;
+      margin-bottom:14px;
+    }
+    .res-title{
+      font-size:clamp(28px,4.4vw,44px);
+      line-height:1.1;
+      color:var(--tone-title);
+      max-width:760px;
+      margin:0 auto 10px;
+    }
+    .res-sub{
+      color:var(--tone-muted);
+      font-size:15px;
+      max-width:540px;
+      margin:0 auto;
+    }
+    .res-shell{
+      max-width:980px;
+      margin:0 auto;
+      padding:24px 20px 8px;
+      display:grid;
+      gap:20px;
+    }
+    .res-card{
+      background:rgba(255,255,255,.72);
+      backdrop-filter:blur(6px);
+      -webkit-backdrop-filter:blur(6px);
+      border:1px solid rgba(233,217,191,.55);
+      border-radius:18px;
+      padding:22px;
+      box-shadow:0 1px 2px rgba(42,24,16,.04), 0 10px 26px -14px rgba(42,24,16,.16);
+    }
+    .res-card h3{
+      margin:0 0 14px;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      color:var(--tone-muted);
+      font-weight:600;
+    }
+    .shop-picker{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+      gap:12px;
+    }
+    .shop-opt{
+      position:relative;
+      border:1px solid var(--tone-line);
+      background:rgba(255,255,255,.6);
+      border-radius:14px;
+      padding:0;
+      cursor:pointer;
+      text-align:left;
+      overflow:hidden;
+      transition:border-color .15s ease, background .15s ease, transform .15s ease;
+    }
+    .shop-opt:hover{ border-color:#c8a572; transform:translateY(-1px); }
+    .shop-opt[aria-selected="true"]{
+      border-color:var(--accent);
+      background:rgba(243,226,210,.55);
+      box-shadow:0 0 0 3px rgba(183,69,29,.08);
+    }
+    .shop-opt .shop-thumb{
+      width:100%;
+      aspect-ratio:16/9;
+      object-fit:cover;
+      display:block;
+      background:#f3e7d4;
+      transition:transform .25s ease;
+    }
+    .shop-opt:hover .shop-thumb{ transform:scale(1.02); }
+    .shop-opt .shop-body{
+      padding:10px 12px 12px;
+    }
+    .shop-name{
+      font-weight:600;
+      color:var(--tone-title);
+      font-size:14px;
+      line-height:1.25;
+    }
+    .shop-meta{
+      font-size:11.5px;
+      color:var(--tone-muted);
+      margin-top:4px;
+      line-height:1.4;
+    }
+    .field-stack{ display:grid; gap:18px; }
+    .field-row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+    @media (max-width:560px){
+      .field-row{ grid-template-columns:1fr; }
+    }
+    .field{
+      display:grid;
+      gap:6px;
+    }
+    .field > label{
+      font-size:11.5px;
+      text-transform:uppercase;
+      letter-spacing:.1em;
+      color:var(--tone-muted);
+    }
+    .field input[type="date"],
+    .field input[type="number"],
+    .field input[type="tel"],
+    .field select{
+      appearance:none;
+      font:inherit;
+      border:1px solid var(--tone-line);
+      border-radius:10px;
+      padding:.6rem .75rem;
+      background:rgba(255,255,255,.7);
+      color:var(--tone-title);
+      width:100%;
+      transition:border-color .15s ease, box-shadow .15s ease;
+    }
+    .field input:focus,
+    .field select:focus{
+      outline:none;
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(183,69,29,.15);
+    }
+    .time-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(92px, 1fr));
+      gap:8px;
+      margin-top:2px;
+    }
+    .time-opt{
+      border:1px solid var(--tone-line);
+      background:rgba(255,255,255,.6);
+      border-radius:10px;
+      padding:.5rem .2rem;
+      text-align:center;
+      cursor:pointer;
+      font-size:13px;
+      color:var(--tone-title);
+      transition:background .15s ease, color .15s ease, border-color .15s ease, transform .1s ease;
+    }
+    .time-opt:hover{ background:rgba(243,226,210,.6); border-color:#c8a572; }
+    .time-opt:active{ transform:scale(.97); }
+    .time-opt[aria-selected="true"]{
+      background:var(--accent);
+      color:#fff;
+      border-color:var(--accent);
+      box-shadow:0 4px 10px -4px rgba(183,69,29,.5);
+    }
+    .time-opt.unavailable{
+      color:#b19a82;
+      background:rgba(250,245,238,.5);
+      border-style:dashed;
+      cursor:not-allowed;
+      text-decoration:line-through;
+    }
+    .time-opt.unavailable[aria-selected="true"]{ background:#b19a82; border-style:solid; }
+    .guest-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border:1px solid var(--tone-line);
+      border-radius:999px;
+      background:rgba(255,255,255,.6);
+      padding:.4rem .8rem .4rem .9rem;
+      cursor:pointer;
+      transition:border-color .15s ease, background .15s ease;
+    }
+    .guest-chip:hover{ border-color:#c8a572; background:rgba(243,226,210,.5); }
+    .guest-chip[aria-selected="true"]{
+      border-color:var(--accent);
+      background:rgba(243,226,210,.7);
+      box-shadow:0 0 0 2px rgba(183,69,29,.12);
+    }
+    .guest-chip .count{
+      font-weight:600;
+      color:var(--tone-title);
+      min-width:22px;
+      text-align:center;
+    }
+    .guest-stepper{
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .guest-steps{
+      width:28px;
+      height:28px;
+      border-radius:50%;
+      border:1px solid var(--tone-line);
+      background:rgba(255,255,255,.7);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      color:var(--tone-title);
+      font-size:16px;
+      line-height:1;
+      transition:background .15s ease, border-color .15s ease;
+    }
+    .guest-steps:hover{ background:rgba(243,226,210,.6); border-color:#c8a572; }
+    .guest-steps:active{ transform:scale(.95); }
+    .res-note{
+      font-size:12.5px;
+      color:var(--tone-muted);
+      background:rgba(250,245,238,.6);
+      border:1px dashed var(--tone-line);
+      border-radius:10px;
+      padding:.6rem .8rem;
+      line-height:1.5;
+    }
+    .res-summary{
+      display:grid;
+      gap:8px;
+      padding:14px 16px;
+      background:rgba(250,245,238,.5);
+      border:1px solid var(--tone-line);
+      border-radius:12px;
+    }
+    .res-summary .row{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      font-size:13.5px;
+      color:var(--tone-title);
+      align-items:baseline;
+    }
+    .res-summary .row span:last-child{
+      color:var(--tone-muted);
+      font-variant-numeric:tabular-nums;
+    }
+    .res-summary .row .status{
+      color:var(--tone-muted);
+    }
+    .res-summary .row .status.ready{ color:var(--accent); font-weight:600; }
+    .confirm-area{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:6px;
+    }
+    @media (max-width:560px){
+      .confirm-area{ grid-template-columns:1fr; }
+    }
+    .btn-primary{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:.5rem;
+      border:none;
+      background:var(--accent);
+      color:#fff;
+      font-weight:600;
+      padding:.8rem 1.1rem;
+      border-radius:999px;
+      cursor:pointer;
+      transition:transform .1s ease, box-shadow .15s ease, background .15s ease;
+      box-shadow:0 6px 16px -8px rgba(183,69,29,.5);
+    }
+    .btn-primary:hover:not(:disabled){ transform:translateY(-1px); background:#a03a17; box-shadow:0 10px 22px -10px rgba(183,69,29,.6); }
+    .btn-primary:active:not(:disabled){ transform:translateY(0); }
+    .btn-primary:disabled{ opacity:.55; cursor:not-allowed; transform:none; box-shadow:none; }
+    .btn-outline{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:.5rem;
+      border:1px solid var(--accent);
+      background:#fff;
+      color:var(--accent);
+      font-weight:600;
+      padding:.8rem 1.1rem;
+      border-radius:999px;
+      cursor:pointer;
+      transition:background .15s ease, color .15s ease;
+    }
+    .btn-outline:hover{ background:var(--accent); color:#fff; }
+    .hidden{ display:none !important; }
+    .sr-only{
+      position:absolute;
+      width:1px; height:1px;
+      padding:0; margin:-1px;
+      overflow:hidden;
+      clip:rect(0,0,0,0);
+      white-space:nowrap;
+      border:0;
+    }
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:24px;
+      transform:translateX(-50%);
+      background:var(--tone-title);
+      color:#fffaf2;
+      padding:.7rem 1.1rem;
+      border-radius:999px;
+      font-size:14px;
+      box-shadow:0 10px 24px -10px rgba(42,24,16,.4);
+      max-width:90vw;
+      text-align:center;
+      z-index:50;
+    }
+    .input-note{
+      font-size:11.5px;
+      color:var(--tone-muted);
+      margin-top:4px;
+      display:block;
+    }
+    .contact-row{ display:grid; gap:14px; }
+  </style>
+  <style>
+    :root{
+      --tone-bg:#fffaf2;
+      --tone-card:#ffffff;
+      --tone-line:#e9d9bf;
+      --tone-muted:#7a5a3a;
+      --tone-title:#2a1810;
+      --accent:#b7451d;
+      --accent-soft:#f3e2d2;
+      --shadow:0 1px 2px rgba(42,24,16,.06), 0 8px 24px -12px rgba(42,24,16,.18);
+    }
+    .res-page{ padding-bottom:48px; }
+    .res-header{
+      padding:48px 24px 32px;
+      text-align:center;
+      background:
+        radial-gradient(1200px 220px at 50% -80px, rgba(183,69,29,.08), transparent 60%),
+        linear-gradient(180deg, var(--tone-bg), #fff8ee);
+    }
+    .res-eyebrow{
+      display:inline-block;
+      font-size:12px;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      color:var(--accent);
+      background:var(--accent-soft);
+      padding:.4rem .9rem;
+      border-radius:999px;
+      margin-bottom:14px;
+    }
+    .res-title{
+      font-size:clamp(28px,4.4vw,44px);
+      line-height:1.1;
+      color:var(--tone-title);
+      max-width:720px;
+      margin:0 auto 10px;
+    }
+    .res-sub{
+      color:var(--tone-muted);
+      font-size:15px;
+      max-width:520px;
+      margin:0 auto;
+    }
+    .res-shell{
+      max-width:980px;
+      margin:0 auto;
+      padding:0 20px 32px;
+      display:grid;
+      gap:20px;
+    }
+    .res-card{
+      background:var(--tone-card);
+      border:1px solid var(--tone-line);
+      border-radius:18px;
+      padding:20px;
+      box-shadow:var(--shadow);
+    }
+    .res-card h3{
+      margin:0 0 14px;
+      font-size:14px;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      color:var(--tone-muted);
+    }
+    .shop-picker{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(190px, 1fr));
+      gap:10px;
+    }
+    .shop-opt{
+      position:relative;
+      border:1px solid var(--tone-line);
+      background:#fff;
+      border-radius:14px;
+      padding:14px;
+      cursor:pointer;
+      text-align:left;
+      transition:border-color .15s ease, background .15s ease, transform .15s ease;
+    }
+    .shop-opt:hover{ border-color:#c8a572; }
+    .shop-opt[aria-selected="true"]{
+      border-color:var(--accent);
+      background:var(--accent-soft);
+    }
+    .shop-thumb{
+      width:100%;
+      aspect-ratio:16/9;
+      object-fit:cover;
+      border-radius:10px;
+      display:block;
+      background:#f3e7d4;
+    }
+    .shop-name{
+      font-weight:600;
+      color:var(--tone-title);
+      margin-top:10px;
+      font-size:15px;
+    }
+    .shop-meta{
+      font-size:12px;
+      color:var(--tone-muted);
+      margin-top:4px;
+      line-height:1.4;
+    }
+    .field-stack{ display:grid; gap:16px; }
+    .field-row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width:560px){
+      .field-row{ grid-template-columns:1fr; }
+    }
+    .field{
+      display:grid;
+      gap:6px;
+    }
+    .field label{
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.1em;
+      color:var(--tone-muted);
+    }
+    .field input[type="date"],
+    .field input[type="number"],
+    .field select{
+      appearance:none;
+      font:inherit;
+      border:1px solid var(--tone-line);
+      border-radius:10px;
+      padding:.6rem .75rem;
+      background:#fff;
+      color:var(--tone-title);
+      width:100%;
+    }
+    .field input[type="date"]:focus,
+    .field input[type="number"]:focus,
+    .field select:focus{
+      outline:2px solid var(--accent);
+      outline-offset:1px;
+      border-color:var(--accent);
+    }
+    .time-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(96px, 1fr));
+      gap:8px;
+      margin-top:4px;
+    }
+    .time-opt{
+      border:1px solid var(--tone-line);
+      background:#fff;
+      border-radius:10px;
+      padding:.55rem .3rem;
+      text-align:center;
+      cursor:pointer;
+      font-size:13px;
+      color:var(--tone-title);
+      transition:background .15s ease, color .15s ease, border-color .15s ease;
+    }
+    .time-opt:hover{ background:var(--accent-soft); border-color:#c8a572; }
+    .time-opt[aria-selected="true"]{
+      background:var(--accent);
+      color:#fff;
+      border-color:var(--accent);
+    }
+    .time-opt.unavailable{
+      color:#b19a82;
+      background:#faf5ee;
+      border-style:dashed;
+      cursor:not-allowed;
+      text-decoration:line-through;
+    }
+    .time-opt.unavailable[aria-selected="true"]{ background:#b19a82; border-style:solid; }
+    .guest-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      border:1px solid var(--tone-line);
+      border-radius:999px;
+      background:#fff;
+      padding:.45rem .9rem .45rem 1rem;
+      cursor:pointer;
+      transition:border-color .15s ease, background .15s ease;
+    }
+    .guest-chip:hover{ border-color:#c8a572; }
+    .guest-chip[aria-selected="true"]{
+      border-color:var(--accent);
+      background:var(--accent-soft);
+    }
+    .guest-chip .count{
+      font-weight:600;
+      color:var(--tone-title);
+      min-width:24px;
+      text-align:center;
+    }
+    .guest-stepper{
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .guest-steps{
+      width:28px;
+      height:28px;
+      border-radius:50%;
+      border:1px solid var(--tone-line);
+      background:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      color:var(--tone-title);
+      font-size:16px;
+      line-height:1;
+    }
+    .guest-steps:hover{ background:var(--accent-soft); border-color:#c8a572; }
+    .res-note{
+      font-size:13px;
+      color:var(--tone-muted);
+      background:#faf5ee;
+      border:1px dashed var(--tone-line);
+      border-radius:10px;
+      padding:.7rem .9rem;
+      line-height:1.5;
+    }
+    .res-summary{
+      display:grid;
+      gap:10px;
+      padding:14px;
+      background:#faf5ee;
+      border-radius:12px;
+      border:1px solid var(--tone-line);
+    }
+    .res-summary .row{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      font-size:14px;
+      color:var(--tone-title);
+    }
+    .res-summary .row span:last-child{
+      color:var(--tone-muted);
+      font-variant-numeric:tabular-nums;
+    }
+    .confirm-area{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:6px;
+    }
+    @media (max-width:560px){
+      .confirm-area{ grid-template-columns:1fr; }
+    }
+    .btn-primary{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:.5rem;
+      border:none;
+      background:var(--accent);
+      color:#fff;
+      font-weight:600;
+      padding:.8rem 1.1rem;
+      border-radius:999px;
+      cursor:pointer;
+      transition:transform .1s ease, box-shadow .15s ease, background .15s ease;
+      box-shadow:0 6px 16px -8px rgba(183,69,29,.5);
+    }
+    .btn-primary:hover{ transform:translateY(-1px); background:#a03a17; box-shadow:0 10px 22px -10px rgba(183,69,29,.6); }
+    .btn-primary:active{ transform:translateY(0); }
+    .btn-primary:disabled{ opacity:.55; cursor:not-allowed; transform:none; box-shadow:none; }
+    .btn-outline{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:.5rem;
+      border:1px solid var(--accent);
+      background:#fff;
+      color:var(--accent);
+      font-weight:600;
+      padding:.8rem 1.1rem;
+      border-radius:999px;
+      cursor:pointer;
+      transition:background .15s ease, color .15s ease;
+    }
+    .btn-outline:hover{ background:var(--accent); color:#fff; }
+    .hidden{ display:none !important; }
+    .sr-only{
+      position:absolute;
+      width:1px; height:1px;
+      padding:0; margin:-1px;
+      overflow:hidden;
+      clip:rect(0,0,0,0);
+      white-space:nowrap;
+      border:0;
+    }
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:24px;
+      transform:translateX(-50%);
+      background:var(--tone-title);
+      color:#fffaf2;
+      padding:.7rem 1.1rem;
+      border-radius:999px;
+      font-size:14px;
+      box-shadow:0 10px 24px -10px rgba(42,24,16,.4);
+      max-width:90vw;
+      text-align:center;
+      z-index:50;
+    }
+    .input-note{
+      font-size:12px;
+      color:var(--tone-muted);
+      margin-top:4px;
+      display:block;
+    }
+    .contact-row{ display:grid; gap:14px; }
+  </style>
+</head>
+<body class="res-page">
+
+  <!-- ===== HEADER / NAV ===== -->
+  <header class="site-header">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" aria-label="Làng Nướng Vietnam home">
+        <img src="https://langnuonggroup.com/wp-content/uploads/2024/07/LNGROUP.png" alt="Làng Nướng Vietnam">
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="navMenu">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav-menu" id="navMenu">
+        <a href="index.html">Home</a>
+        <a href="bbq.html">Lang Nuong Vietnam BBQ</a>
+        <a href="1980s.html">Lang Nuong Vietnam 1980's</a>
+        <a href="little-hanoi.html">Little Hanoi</a>
+        <a href="exclusive.html" lang="vi">Làng Nướng Exclusive</a>
+        <a href="shop.html">Shop Now</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== RESERVATIONS HEADER ===== -->
+  <div class="res-header">
+    <span class="res-eyebrow">Reservations</span>
+    <h1 class="res-title">Book a table across our restaurants</h1>      <p class="res-sub">Choose a location, pick a date and time, and the restaurant will confirm your table.</p>
+  </div>
+
+  <main class="res-shell">
+
+    <!-- STEP 1 — SHOP / LOCATION SELECTOR -->
+    <section class="res-card" aria-labelledby="shopLabel">
+      <h3 id="shopLabel">Select a restaurant</h3>
+      <div class="shop-picker" id="shopPicker" role="radiogroup" aria-label="Restaurant locations">
+        <!-- Options injected by JS; static fallback below -->
+      </div>
+      <p class="res-note" id="shopHelp">Every location uses the same table-reservation booking form. After you choose a date and time, the restaurant will confirm your table.</p>
+    </section>
+
+    <!-- STEP 2 — DATE / TIME / GUESTS -->
+    <section class="res-card" aria-labelledby="detailsLabel">
+      <h3 id="detailsLabel">When and how many</h3>
+      <div class="field-stack">
+        <div class="field-row">
+          <div class="field">
+            <label for="resDate">Date</label>
+            <input type="date" id="resDate" min="">
+          </div>
+          <div class="field">
+            <label for="resTime">Time</label>
+            <input type="text" id="resTime" readonly placeholder="Select a time below" aria-describedby="timeHelp">
+          </div>
+        </div>
+
+        <div id="timeHelp" class="sr-only">Available reservation times for the selected date. Choose one slot.</div>
+        <div id="timeGrid" class="time-grid" aria-label="Available times"></div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="guestPreset">Party size</label>
+            <div id="guestPreset" role="radiogroup" aria-label="Party size"></div>
+          </div>
+          <div class="field">
+            <label for="guestExact">Or enter exact number</label>
+            <div class="guest-stepper">
+              <button type="button" class="guest-steps" id="guestMinus" aria-label="Fewer guests">−</button>
+              <input type="number" id="guestExact" min="1" max="20" value="2" style="width:70px; text-align:center;">
+              <button type="button" class="guest-steps" id="guestPlus" aria-label="More guests">+</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="res-note" id="guestNote">Reservations are accepted for 2 to 20 guests. Tables for larger parties are subject to availability — the restaurant will confirm.</p>
+      </div>
+    </section>
+
+    <!-- STEP 3 — SUMMARY + CONFIRM -->
+    <section class="res-card" aria-labelledby="confirmLabel">
+      <h3 id="confirmLabel">Confirm reservation</h3>
+      <div class="res-summary" id="resSummary">
+        <div class="row"><span>Restaurant</span><span id="sumShop">—</span></div>
+        <div class="row"><span>Date</span><span id="sumDate">—</span></div>
+        <div class="row"><span>Time</span><span id="sumTime">—</span></div>
+        <div class="row"><span>Guests</span><span id="sumGuests">—</span></div>
+        <div class="row"><span>Phone</span><span id="sumPhone">—</span></div>
+        <div class="row"><span>Status</span><span id="sumStatus">Awaiting details</span></div>
+      </div>
+
+      <div class="confirm-area" style="margin-top:14px;">
+        <div class="contact-row">
+          <div class="field" style="grid-column:1/-1;">
+            <label for="resPhone">Your phone (for confirmation)</label>
+            <input type="tel" id="resPhone" placeholder="9123 4567" inputmode="numeric" autocomplete="tel">
+            <span class="input-note" id="phoneNote">Numbers only — digits, spaces, + or -.</span>
+          </div>
+        </div>
+
+        <div class="confirm-area" style="margin-top:14px;">
+          <button type="button" class="btn-outline" id="resetBtn">Clear form</button>
+          <button type="button" class="btn-primary" id="confirmBtn">Confirm reservation</button>
+        </div>      <p class="res-note" style="margin-top:12px;">After you submit, the restaurant will confirm your table directly. No booking is committed on this page.</p>
+    </section>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-col">
+        <h4>Làng Nướng Vietnam</h4>
+        <p>Singapore's Original Vietnamese Grill Village</p>
+        <p>18 Foch Road, Singapore 209260</p>
+        <p>Open 24 Hours · Daily</p>
+      </div>
+      <div class="footer-col">
+        <h4>Our Brands</h4>
+        <ul>
+          <li><a href="bbq.html">Lang Nuong Vietnam BBQ</a></li>
+          <li><a href="1980s.html">Lang Nuong Vietnam 1980's</a></li>
+          <li><a href="little-hanoi.html">Little Hanoi</a></li>
+          <li><a href="exclusive.html">Làng Nướng Exclusive</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="https://wa.me/6592353548">Lang Nuong Vietnam BBQ: +65 9235 3548</a></li>
+          <li><a href="https://wa.me/6594512966">Lang Nuong Vietnam 1980's: +65 9451 2966</a></li>
+          <li><a href="https://wa.me/6598105927">Little Hanoi: +65 9810 5927</a></li>
+        </ul>
+      </div>
+      <div class="footer-social">
+        <a href="https://www.facebook.com/langnuongvietnam" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.6-1.5h1.7V4a22 22 0 0 0-2.4-.1c-2.4 0-4 1.5-4 4.1V10H7.7v3H10v8h3.5Z"/></svg></a>
+        <a href="https://www.instagram.com/langnuongvietnam18fochroad/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9a5.5 5.5 0 0 1-5.5 5.5h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2Zm0 2A3.5 3.5 0 0 0 4 7.5v9A3.5 3.5 0 0 0 7.5 20h9a3.5 3.5 0 0 0 3.5-3.5v-9A3.5 3.5 0 0 0 16.5 4h-9Zm9.8 1.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg></a>
+        <a href="https://wa.me/6592353548" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.5 0 .2 5.3.2 11.9c0 2.1.5 4.1 1.6 5.9L.1 24l6.4-1.7a11.9 11.9 0 0 0 5.6 1.4h.1c6.5 0 11.8-5.3 11.8-11.9 0-3.2-1.2-6.1-3.5-8.3Zm-8.4 18.2h-.1a9.8 9.8 0 0 1-5-1.4l-.4-.2-3.8 1 1-3.7-.2-.4a9.9 9.9 0 0 1-1.5-5.2C2.1 6.4 6.6 2 12.1 2c2.6 0 5.1 1 7 2.9a9.8 9.8 0 0 1 2.9 7c0 5.4-4.4 9.8-9.9 9.8Zm5.4-7.4c-.3-.1-1.8-.9-2.1-1-.3-.1-.5-.2-.7.1l-.9 1.2c-.2.2-.3.2-.6.1-1.7-.8-2.8-1.5-3.9-3.4-.3-.5.3-.5.8-1.6.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4 0-.2-.3-.3-.6-.4Z"/></svg></a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © Lang Nuong Vietnam | All Rights Reserved · <a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms and Conditions</a>
+    </div>
+  </footer>
+
+  <script>
+    // ===== SHOP CONFIGURATION =====
+    // Edit this list to add, remove or reorder shops.
+    const SHOPS = [
+      {
+        id: 'bbq',
+        name: 'Lang Nuong Vietnam BBQ',
+        slug: 'lang-nuong-vietnam-bbq',
+        address: '18 Foch Road, Singapore 209260',
+        phone: '6592353548',
+        wa: 'https://wa.me/6592353548',
+        open: 'Open 24 Hours',
+        thumb: 'assets/brands/langnuong-bbq.jpg',
+        times: ['5:00 PM','5:30 PM','6:00 PM','6:30 PM','7:00 PM','7:30 PM','8:00 PM','8:30 PM','9:00 PM','9:30 PM','10:00 PM','10:30 PM','11:00 PM','11:30 PM']
+      },
+      {
+        id: '1980s',
+        name: 'Lang Nuong Vietnam 1980\'s',
+        slug: 'lang-nuong-vietnam-1980s',
+        address: '19 Hamilton Road, Singapore 209189',
+        phone: '6594512966',
+        wa: 'https://wa.me/6594512966',
+        open: 'Open 24 Hours',
+        thumb: 'assets/brands/langnuong-1980s.jpg',
+        times: ['5:00 PM','5:30 PM','6:00 PM','6:30 PM','7:00 PM','7:30 PM','8:00 PM','8:30 PM','9:00 PM','9:30 PM','10:00 PM','10:30 PM','11:00 PM','11:30 PM']
+      },
+      {
+        id: 'hanoi',
+        name: 'Little Hanoi',
+        slug: 'little-hanoi',
+        address: 'Shaw House (Food Republic), 1 Scotts Road, Singapore 228208',
+        phone: '6598105927',
+        wa: 'https://wa.me/6598105927',
+        open: 'Daily 11:00 AM – 9:30 PM',
+        thumb: 'assets/brands/little-hanoi.jpg',
+        times: ['11:00 AM','11:30 AM','12:00 PM','12:30 PM','1:00 PM','1:30 PM','2:00 PM','5:00 PM','5:30 PM','6:00 PM','6:30 PM','7:00 PM','7:30 PM','8:00 PM','8:30 PM','9:00 PM']
+      },
+      {
+        id: 'exclusive',
+        name: 'Làng Nướng Exclusive',
+        slug: 'lang-nuong-exclusive',
+        address: 'TBC — Coming Soon',
+        phone: '6592353548',
+        wa: 'https://wa.me/6592353548',
+        open: 'Coming soon',
+        thumb: 'assets/brands/langnuong-exclusive.jpg',
+        times: ['5:00 PM','5:30 PM','6:00 PM','6:30 PM','7:00 PM','7:30 PM','8:00 PM','8:30 PM','9:00 PM','9:30 PM']
+      }
+    ];
+
+    const GUEST_PRESETS = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
+
+    // Image fallbacks if asset files are missing
+    const PLACEHOLDER_BY_ID = {
+      bbq: 'assets/brands/langnuong-bbq.jpg',
+      '1980s': 'assets/brands/langnuong-1980s.jpg',
+      hanoi: 'assets/brands/little-hanoi.jpg',
+      exclusive: 'assets/brands/langnuong-exclusive.jpg'
+    };
+
+    // ===== DOM REFS =====
+    const shopPicker = document.getElementById('shopPicker');
+    const resDate = document.getElementById('resDate');
+    const resTime = document.getElementById('resTime');
+    const timeGrid = document.getElementById('timeGrid');
+    const guestPreset = document.getElementById('guestPreset');
+    const guestExact = document.getElementById('guestExact');
+    const guestMinus = document.getElementById('guestMinus');
+    const guestPlus = document.getElementById('guestPlus');
+    const sumShop = document.getElementById('sumShop');
+    const sumDate = document.getElementById('sumDate');
+    const sumTime = document.getElementById('sumTime');
+    const sumGuests = document.getElementById('sumGuests');
+    const sumPhone = document.getElementById('sumPhone');
+    const toast = document.getElementById('toast');
+    const confirmBtn = document.getElementById('confirmBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const guestNote = document.getElementById('guestNote');
+    const phoneField = document.getElementById('resPhone');
+
+    // ===== STATE =====
+    let selectedShop = SHOPS[0];
+    let selectedDate = '';
+    let selectedTime = '';
+    let guestCount = 2;
+
+    // ===== HELPERS =====
+    function pad(n){ return n < 10 ? '0'+n : ''+n; }
+    function todayISO(){ const d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+    function formatDate(iso){
+      if(!iso) return '—';
+      const d = new Date(iso + 'T00:00:00');
+      if(isNaN(d.getTime())) return '—';
+      return d.toLocaleDateString('en-SG', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+    }
+    function parseTimeLabel(lbl){
+      // "5:00 PM" -> Date representing today at that time
+      const m = lbl.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+      if(!m) return null;
+      let h = parseInt(m[1],10), min = parseInt(m[2],10);
+      if(m[3].toUpperCase() === 'PM' && h !== 12) h += 12;
+      if(m[3].toUpperCase() === 'AM' && h === 12) h = 0;
+      return { hour:h, minute:min };
+    }
+    function timeFromLabel(lbl, dateIso){
+      const t = parseTimeLabel(lbl);
+      if(!t || !dateIso) return null;
+      const d = new Date(dateIso + 'T' + pad(t.hour) + ':' + pad(t.minute) + ':00');
+      return d;
+    }
+    function isTodaySelected(){
+      return resDate.value === todayISO();
+    }
+
+    // ===== SHOP PICKER =====
+    function renderShops(){
+      shopPicker.innerHTML = '';
+      SHOPS.forEach((shop, i) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'shop-opt';
+        btn.setAttribute('role', 'radio');
+        btn.setAttribute('aria-checked', i === 0 ? 'true' : 'false');
+        btn.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+        btn.dataset.id = shop.id;
+
+        const thumb = document.createElement('img');
+        thumb.className = 'shop-thumb';
+        thumb.alt = '';
+        thumb.src = shop.thumb;
+        thumb.loading = 'lazy';
+        thumb.onerror = function(){ this.src = PLACEHOLDER_BY_ID[shop.id] || ''; };
+        btn.appendChild(thumb);
+
+        const name = document.createElement('div');
+        name.className = 'shop-name';
+        name.textContent = shop.name;
+        btn.appendChild(name);
+
+        const meta = document.createElement('div');
+        meta.className = 'shop-meta';
+        meta.textContent = shop.address + ' · ' + shop.open;
+        btn.appendChild(meta);
+
+        btn.addEventListener('click', () => selectShop(shop));
+        shopPicker.appendChild(btn);
+      });
+    }
+
+    function selectShop(shop){
+      selectedShop = shop;
+      selectedTime = '';
+      // reset time slots for previous date
+      timeGrid.querySelectorAll('.time-opt').forEach(el => el.remove());
+      resTime.value = 'Select a time below';
+      renderShops();
+      renderShopButtons();
+      renderTimes();
+      updateSummary();
+      updateConfirmState();
+    }
+
+    function renderShopButtons(){
+      const buttons = shopPicker.querySelectorAll('.shop-opt');
+      buttons.forEach(b => {
+        const isSelected = b.dataset.id === selectedShop.id;
+        b.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+        b.setAttribute('aria-checked', isSelected ? 'true' : 'false');
+      });
+    }
+
+    // ===== DATE + TIME SLOTS =====
+    function renderDateMin(){
+      const min = new Date();
+      min.setDate(min.getDate() - 1); // allow today too; min = yesterday so today selectable
+      resDate.min = min.toISOString().slice(0,10);
+      if(!resDate.value || resDate.value < resDate.min){
+        resDate.value = todayISO();
+      }
+      selectedDate = resDate.value;
+    }
+
+    function renderTimes(){
+      timeGrid.innerHTML = '';
+      if(!selectedShop || !selectedDate){
+        const empty = document.createElement('div');
+        empty.className = 'res-note';
+        empty.textContent = 'Select a restaurant and a date to see available times.';
+        timeGrid.appendChild(empty);
+        return;
+      }
+
+      selectedShop.times.forEach((t, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'time-opt';
+        btn.textContent = t;
+        btn.dataset.index = idx;
+        btn.setAttribute('aria-label', t);
+
+        // Heuristic availability: block roughly the last 2 slots for "today" to mimic Oddle
+        if(isTodaySelected()){
+          const tDate = timeFromLabel(t, selectedDate);
+          if(tDate && tDate <= new Date()){
+            btn.classList.add('unavailable');
+            btn.setAttribute('aria-disabled','true');
+            btn.title = 'No longer available';
+          }
+        }
+
+        if(selectedTime === t){
+          btn.setAttribute('aria-selected','true');
+          btn.setAttribute('aria-disabled', btn.classList.contains('unavailable') ? 'true' : 'false');
+        } else {
+          btn.removeAttribute('aria-selected');
+        }
+
+        btn.addEventListener('click', () => {
+          if(btn.classList.contains('unavailable')) return;
+          selectedTime = t;
+          renderTimes();
+          resTime.value = t;
+          updateSummary();
+          updateConfirmState();
+        });
+        timeGrid.appendChild(btn);
+      });
+    }
+
+    // ===== GUESTS =====
+    function renderGuests(){
+      guestPreset.innerHTML = '';
+      GUEST_PRESETS.forEach(n => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'guest-chip';
+        btn.setAttribute('role','radio');
+        btn.setAttribute('aria-checked', n === guestCount ? 'true' : 'false');
+        btn.setAttribute('aria-selected', n === guestCount ? 'true' : 'false');
+        btn.dataset.count = n;
+
+        const count = document.createElement('span');
+        count.className = 'count';
+        count.textContent = n + (n === 1 ? ' guest' : ' guests');
+        btn.appendChild(count);
+
+        btn.addEventListener('click', () => {
+          guestCount = n;
+          guestExact.value = n;
+          renderGuests();
+          updateSummary();
+          updateConfirmState();
+        });
+        guestPreset.appendChild(btn);
+      });
+    }
+
+    function clampGuest(v){
+      let n = parseInt(v, 10);
+      if(isNaN(n) || n < 1) n = 1;
+      if(n > 20) n = 20;
+      return n;
+    }
+
+    guestMinus.addEventListener('click', () => {
+      guestCount = clampGuest(guestCount - 1);
+      guestExact.value = guestCount;
+      renderGuests();
+      updateSummary();
+      updateConfirmState();
+    });
+    guestPlus.addEventListener('click', () => {
+      guestCount = clampGuest(guestCount + 1);
+      guestExact.value = guestCount;
+      renderGuests();
+      updateSummary();
+      updateConfirmState();
+    });
+    guestExact.addEventListener('input', () => {
+      guestCount = clampGuest(guestExact.value);
+      guestExact.value = guestCount;
+      renderGuests();
+      updateSummary();
+      updateConfirmState();
+    });
+
+    // ===== FORM EVENTS =====
+    resDate.addEventListener('change', () => {
+      selectedDate = resDate.value;
+      selectedTime = '';
+      resTime.value = 'Select a time below';
+      renderTimes();
+      updateSummary();
+      updateConfirmState();
+    });
+
+    guestExact.addEventListener('change', () => {
+      guestCount = clampGuest(guestExact.value);
+      guestExact.value = guestCount;
+      renderGuests();
+      updateSummary();
+      updateConfirmState();
+    });
+
+    // ===== SUMMARY / CONFIRM STATE =====
+    function updateSummary(){
+      sumShop.textContent = selectedShop ? selectedShop.name : '—';
+      sumDate.textContent = formatDate(selectedDate);
+      sumTime.textContent = selectedTime || '—';
+      sumGuests.textContent = guestCount + (guestCount === 1 ? ' guest' : ' guests');
+      sumPhone.textContent = formatPhoneDisplay(phoneField.value);
+    }
+
+    // ===== PHONE CLEANUP / DISPLAY =====
+    function cleanupPhone(raw){
+      if(!raw) return '';
+      let s = raw.replace(/[^0-9]/g, '');
+      if(s.startsWith('65')){
+        s = s.slice(2);
+      }
+      if(s.startsWith('0')){
+        s = s.slice(1);
+      }
+      if(!s) return '';
+      return s;
+    }
+
+    function cleanupPhoneAllowPlus(raw){
+      if(!raw) return '';
+      const plus = raw.indexOf('+') === 0 ? '+' : '';
+      let s = raw.replace(/[^0-9]/g, '');
+      if(s.startsWith('65')){
+        s = s.slice(2);
+      }
+      if(s.startsWith('0')){
+        s = s.slice(1);
+      }
+      if(!s) return '';
+      return plus + s;
+    }
+
+    function formatPhoneDisplay(raw){
+      const cleaned = cleanupPhone(raw);
+      if(!cleaned) return '—';
+      const display = cleanupPhoneAllowPlus(raw);
+      if(display.startsWith('+')){
+        const body = display.slice(1);
+        if(body.length >= 8){
+          return '+' + body.slice(0,1) + ' ' + body.slice(1,4) + ' ' + body.slice(4);
+        }
+        if(body.length >= 1){
+          return '+' + body;
+        }
+        return display;
+      }
+      if(cleaned === '65'){
+        return '+65';
+      }
+      if(cleaned.length >= 8){
+        return '65 ' + cleaned.slice(0,4) + ' ' + cleaned.slice(4);
+      }
+      return cleaned;
+    }
+
+    function updateConfirmState(){
+      const phone = cleanupPhoneAllowPlus(phoneField.value);
+      sumPhone.textContent = formatPhoneDisplay(phoneField.value);
+      if(!selectedShop || !selectedDate || !selectedTime){
+        sumStatus.textContent = 'Awaiting details';
+        confirmBtn.disabled = true;
+        return;
+      }
+      sumStatus.textContent = 'Ready to send';
+      confirmBtn.disabled = !phone;
+      if(!phone) sumStatus.textContent = 'Add your phone number';
+    }
+
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.classList.remove('hidden');
+      toast.setAttribute('aria-live','polite');
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toast.classList.add('hidden'), 3200);
+    }
+
+    resetBtn.addEventListener('click', () => {
+      guestCount = 2;
+      guestExact.value = 2;
+      selectedDate = todayISO();
+      resDate.value = selectedDate;
+      selectedTime = '';
+      resTime.value = 'Select a time below';
+      renderGuests();
+      renderTimes();
+      updateSummary();
+      updateConfirmState();
+    });
+
+    confirmBtn.addEventListener('click', () => {
+      const phone = phoneField.value.trim();
+      if(!selectedShop || !selectedDate || !selectedTime){
+        showToast('Please choose a restaurant, date and time.');
+        return;
+      }
+      if(!cleanupPhone(phone)){
+        showToast('Please add your phone number.');
+        phoneField.focus();
+        return;
+      }
+      phoneField.value = cleanupPhone(phone);
+      updateSummary();
+      updateConfirmState();
+      showToast('Request submitted for ' + selectedShop.name + '. The restaurant will confirm your table.');
+    });
+
+    phoneField.addEventListener('input', () => {
+      const raw = phoneField.value;
+      const cleaned = cleanupPhone(raw);
+      if(raw !== cleaned){
+        const cursor = phoneField.selectionStart;
+        phoneField.value = cleaned;
+        try{ phoneField.setSelectionRange(cursor, cursor); }catch(e){}
+      }
+      updateSummary();
+      updateConfirmState();
+    });
+
+    phoneField.addEventListener('keydown', (e) => {
+      if(e.key === ' ' || e.key.length === 1 && (e.key < '0' || e.key > '9')){
+        e.preventDefault();
+      }
+    });
+
+    // ===== INIT =====
+    renderShops();
+    renderDateMin();
+    selectedDate = resDate.value;
+    renderGuests();
+    renderTimes();
+    updateSummary();
+    updateConfirmState();
+    renderShopButtons();
+
+    // Mobile nav toggle
+    const toggle = document.getElementById('navToggle');
+    const menu = document.getElementById('navMenu');
+    if(toggle && menu){
+      toggle.addEventListener('click', () => {
+        toggle.classList.toggle('open');
+        menu.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', menu.classList.contains('open'));
+      });
+    }
+  </script>
+
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+</body>
+</html>
