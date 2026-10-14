@@ -720,14 +720,14 @@
           <div class="field">
             <label for="guestExact">Or enter exact number</label>
             <div class="guest-stepper">
-              <button type="button" class="guest-steps" id="guestMinus" aria-label="Fewer guests">−</button>
-              <input type="number" id="guestExact" min="1" max="20" value="2" style="width:70px; text-align:center;">
+              <button type="button" class="guest-steps" id="guestMinus" aria-label="Fewer guests" disabled aria-disabled="true">−</button>
+              <input type="number" id="guestExact" min="2" max="20" value="2" style="width:70px; text-align:center;">
               <button type="button" class="guest-steps" id="guestPlus" aria-label="More guests">+</button>
             </div>
           </div>
         </div>
 
-        <p class="res-note" id="guestNote">Reservations are accepted for 2 to 20 guests. Tables for larger parties are subject to availability — the restaurant will confirm.</p>
+        <p class="res-note" id="guestNote">Reservations are accepted for groups of 2 to 20 guests. Tables for 1 guest or larger parties are subject to availability — the restaurant will confirm.</p>
       </div>
     </section>
 
@@ -739,16 +739,16 @@
         <div class="row"><span>Date</span><span id="sumDate">—</span></div>
         <div class="row"><span>Time</span><span id="sumTime">—</span></div>
         <div class="row"><span>Guests</span><span id="sumGuests">—</span></div>
-        <div class="row"><span>Phone</span><span id="sumPhone">—</span></div>
+        <div class="row"><span>Email</span><span id="sumPhone">—</span></div>
         <div class="row"><span>Status</span><span id="sumStatus">Awaiting details</span></div>
       </div>
 
       <div class="confirm-area" style="margin-top:14px;">
         <div class="contact-row">
           <div class="field" style="grid-column:1/-1;">
-            <label for="resPhone">Your phone (for confirmation)</label>
-            <input type="tel" id="resPhone" placeholder="9123 4567" inputmode="numeric" autocomplete="tel">
-            <span class="input-note" id="phoneNote">Numbers only — digits, spaces, + or -.</span>
+            <label for="resEmail">Your email</label>
+            <input type="email" id="resEmail" placeholder="you@example.com" autocomplete="email" inputmode="email">
+            <span class="input-note" id="emailNote">We only use this to send the confirmation detail.</span>
           </div>
         </div>
 
@@ -848,6 +848,8 @@
     ];
 
     const GUEST_PRESETS = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
+    const GUEST_MIN = 2;
+    const GUEST_MAX = 20;
 
     // Image fallbacks if asset files are missing
     const PLACEHOLDER_BY_ID = {
@@ -870,12 +872,12 @@
     const sumDate = document.getElementById('sumDate');
     const sumTime = document.getElementById('sumTime');
     const sumGuests = document.getElementById('sumGuests');
-    const sumPhone = document.getElementById('sumPhone');
+    const sumContact = document.getElementById('sumPhone');
     const toast = document.getElementById('toast');
     const confirmBtn = document.getElementById('confirmBtn');
     const resetBtn = document.getElementById('resetBtn');
     const guestNote = document.getElementById('guestNote');
-    const phoneField = document.getElementById('resPhone');
+    const emailField = document.getElementById('resEmail');
 
     // ===== STATE =====
     let selectedShop = SHOPS[0];
@@ -1056,15 +1058,18 @@
 
     function clampGuest(v){
       let n = parseInt(v, 10);
-      if(isNaN(n) || n < 1) n = 1;
-      if(n > 20) n = 20;
+      if(isNaN(n) || n < GUEST_MIN) n = GUEST_MIN;
+      if(n > GUEST_MAX) n = GUEST_MAX;
       return n;
     }
 
     guestMinus.addEventListener('click', () => {
-      guestCount = clampGuest(guestCount - 1);
+      const next = clampGuest(guestCount - 1);
+      if(next === guestCount) return;
+      guestCount = next;
       guestExact.value = guestCount;
       renderGuests();
+      updateMinusButton();
       updateSummary();
       updateConfirmState();
     });
@@ -1072,16 +1077,30 @@
       guestCount = clampGuest(guestCount + 1);
       guestExact.value = guestCount;
       renderGuests();
+      updateMinusButton();
       updateSummary();
       updateConfirmState();
     });
     guestExact.addEventListener('input', () => {
-      guestCount = clampGuest(guestExact.value);
-      guestExact.value = guestCount;
-      renderGuests();
-      updateSummary();
-      updateConfirmState();
+      const next = clampGuest(guestExact.value);
+      if(next !== guestCount){
+        guestCount = next;
+        guestExact.value = guestCount;
+        renderGuests();
+        updateMinusButton();
+        updateSummary();
+        updateConfirmState();
+      } else {
+        guestExact.value = guestCount;
+        renderGuests();
+      }
     });
+
+    function updateMinusButton(){
+      const disabled = guestCount <= GUEST_MIN;
+      guestMinus.disabled = disabled;
+      guestMinus.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+    }
 
     // ===== FORM EVENTS =====
     resDate.addEventListener('change', () => {
@@ -1094,9 +1113,11 @@
     });
 
     guestExact.addEventListener('change', () => {
-      guestCount = clampGuest(guestExact.value);
+      const next = clampGuest(guestExact.value);
+      guestCount = next;
       guestExact.value = guestCount;
       renderGuests();
+      updateMinusButton();
       updateSummary();
       updateConfirmState();
     });
@@ -1107,71 +1128,35 @@
       sumDate.textContent = formatDate(selectedDate);
       sumTime.textContent = selectedTime || '—';
       sumGuests.textContent = guestCount + (guestCount === 1 ? ' guest' : ' guests');
-      sumPhone.textContent = formatPhoneDisplay(phoneField.value);
+      sumContact.textContent = emailField.value.trim() || '—';
     }
 
     // ===== PHONE CLEANUP / DISPLAY =====
-    function cleanupPhone(raw){
-      if(!raw) return '';
-      let s = raw.replace(/[^0-9]/g, '');
-      if(s.startsWith('65')){
-        s = s.slice(2);
-      }
-      if(s.startsWith('0')){
-        s = s.slice(1);
-      }
-      if(!s) return '';
-      return s;
-    }
-
-    function cleanupPhoneAllowPlus(raw){
-      if(!raw) return '';
-      const plus = raw.indexOf('+') === 0 ? '+' : '';
-      let s = raw.replace(/[^0-9]/g, '');
-      if(s.startsWith('65')){
-        s = s.slice(2);
-      }
-      if(s.startsWith('0')){
-        s = s.slice(1);
-      }
-      if(!s) return '';
-      return plus + s;
-    }
-
-    function formatPhoneDisplay(raw){
-      const cleaned = cleanupPhone(raw);
-      if(!cleaned) return '—';
-      const display = cleanupPhoneAllowPlus(raw);
-      if(display.startsWith('+')){
-        const body = display.slice(1);
-        if(body.length >= 8){
-          return '+' + body.slice(0,1) + ' ' + body.slice(1,4) + ' ' + body.slice(4);
-        }
-        if(body.length >= 1){
-          return '+' + body;
-        }
-        return display;
-      }
-      if(cleaned === '65'){
-        return '+65';
-      }
-      if(cleaned.length >= 8){
-        return '65 ' + cleaned.slice(0,4) + ' ' + cleaned.slice(4);
-      }
-      return cleaned;
+    function isValidEmail(raw){
+      if(!raw) return false;
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw.trim());
     }
 
     function updateConfirmState(){
-      const phone = cleanupPhoneAllowPlus(phoneField.value);
-      sumPhone.textContent = formatPhoneDisplay(phoneField.value);
+      const email = emailField.value.trim();
+      sumContact.textContent = email || '—';
       if(!selectedShop || !selectedDate || !selectedTime){
         sumStatus.textContent = 'Awaiting details';
         confirmBtn.disabled = true;
         return;
       }
+      if(!email){
+        sumStatus.textContent = 'Add your email address';
+        confirmBtn.disabled = true;
+        return;
+      }
+      if(!isValidEmail(email)){
+        sumStatus.textContent = 'Add a valid email address';
+        confirmBtn.disabled = true;
+        return;
+      }
       sumStatus.textContent = 'Ready to send';
-      confirmBtn.disabled = !phone;
-      if(!phone) sumStatus.textContent = 'Add your phone number';
+      confirmBtn.disabled = false;
     }
 
     function showToast(msg){
@@ -1182,63 +1167,43 @@
       showToast._t = setTimeout(() => toast.classList.add('hidden'), 3200);
     }
 
+    emailField.addEventListener('input', () => {
+      updateSummary();
+      updateConfirmState();
+    });
+
     resetBtn.addEventListener('click', () => {
-      guestCount = 2;
-      guestExact.value = 2;
+      guestCount = GUEST_MIN;
+      guestExact.value = GUEST_MIN;
       selectedDate = todayISO();
       resDate.value = selectedDate;
       selectedTime = '';
       resTime.value = 'Select a time below';
       renderGuests();
+      updateMinusButton();
       renderTimes();
       updateSummary();
       updateConfirmState();
     });
 
     confirmBtn.addEventListener('click', () => {
-      const phone = phoneField.value.trim();
+      const email = emailField.value.trim();
       if(!selectedShop || !selectedDate || !selectedTime){
         showToast('Please choose a restaurant, date and time.');
         return;
       }
-      if(!cleanupPhone(phone)){
-        showToast('Please add your phone number.');
-        phoneField.focus();
+      if(!isValidEmail(email)){
+        showToast('Please add a valid email address.');
+        emailField.focus();
         return;
       }
-      phoneField.value = cleanupPhone(phone);
       updateSummary();
       updateConfirmState();
-      showToast('Request submitted for ' + selectedShop.name + '. The restaurant will confirm your table.');
+      showToast('Request submitted for ' + selectedShop.name + ' to ' + email + '. The restaurant will confirm your table.');
     });
 
-    phoneField.addEventListener('input', () => {
-      const raw = phoneField.value;
-      const cleaned = cleanupPhone(raw);
-      if(raw !== cleaned){
-        const cursor = phoneField.selectionStart;
-        phoneField.value = cleaned;
-        try{ phoneField.setSelectionRange(cursor, cursor); }catch(e){}
-      }
-      updateSummary();
-      updateConfirmState();
-    });
-
-    phoneField.addEventListener('keydown', (e) => {
-      if(e.key === ' ' || e.key.length === 1 && (e.key < '0' || e.key > '9')){
-        e.preventDefault();
-      }
-    });
-
-    // ===== INIT =====
-    renderShops();
-    renderDateMin();
-    selectedDate = resDate.value;
-    renderGuests();
-    renderTimes();
-    updateSummary();
-    updateConfirmState();
-    renderShopButtons();
+    // Keep the readonly time field in sync with the selected slot (no WhatsApp link).
+    // This form uses email only — no phone field.
 
     // Mobile nav toggle
     const toggle = document.getElementById('navToggle');
@@ -1253,5 +1218,14 @@
   </script>
 
   <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
-</body>
+
+  </body>
+</html>
+      });
+    }
+  </script>
+
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  </body>
 </html>
