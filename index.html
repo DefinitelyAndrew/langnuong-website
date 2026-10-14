@@ -63,20 +63,22 @@
 
     /* Mobile-friendly iframe sizing across devices.
        Stays full-bleed (inset: 0) on every screen; only the crop shifts so the
-       subject stays visible when the hero gets short on phones. */
+       subject stays visible when the hero gets short on phones.
+       Frame is nudged upward a touch so the action sits higher in the hero. */
     @media (max-width: 479px) {
-      .hero-video-iframe { object-position: center 40%; }
+      .hero-video-iframe { object-position: center 32%; }
     }
 
     @media (min-width: 480px) and (max-width: 767px) {
-      .hero-video-iframe { object-position: center 34%; }
+      .hero-video-iframe { object-position: center 24%; }
     }
 
     @media (min-width: 768px) and (max-width: 1024px) {
-      .hero-video-iframe { object-position: center 30%; }
+      .hero-video-iframe { object-position: center 22%; }
     }
 
-    /* Keep the desktop crop centered by default (no override needed above 1024px). */
+    /* Desktop default: nudge the frame up a little (was center; now ~30% from top). */
+    .hero-video-iframe { object-position: center 30%; }
 
     /* Invisible overlay to block YouTube UI interactions */
     .hero-video-overlay {
