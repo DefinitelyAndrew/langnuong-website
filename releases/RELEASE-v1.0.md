@@ -1,4 +1,4 @@
-# Release v1.0 — Lang Nuong Vietnam Group Website
+# [draft] Release v1.0 — Lang Nuong Vietnam Group Website
 
 The Lang Nuong Vietnam Group homepage has been rebuilt as a self-contained static site serving all assets directly from the GitHub Pages repository. The hero now uses the original cover photo (`hero-cover.jpg`, 206 KB, 1152×1440) as a full-bleed background with the headline, subheading, and contact section sitting on top — no video, no loading delay. The site is fully offline-cached by the browser after the first load, with every image, font, and stylesheet served from the same origin.
 
