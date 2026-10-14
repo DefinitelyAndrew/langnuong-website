@@ -50,34 +50,33 @@
 
     .hero-video-iframe {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 100vw;
-      height: 56.25vw;
-      min-height: 100dvh;
-      min-width: 177.77dvh;
-      transform: translate(-50%, -50%);
+      inset: 0;
+      width: 100%;
+      height: 100%;
       border: none;
+      /* full-bleed cover so the video fills the hero without letterboxing.
+         object-fit: cover keeps the 16:9 frame filling edge-to-edge on every screen,
+         cropping only the parts that fall outside the hero box. */
+      object-fit: cover;
+      object-position: center;
     }
 
-    /* Automatically scales up on smaller/narrower screens (tablets & mobile) */
-    @media (max-width: 1024px) {
-      .hero-video-iframe {
-        width: 180vw;
-        height: 101.25vw;
-        min-height: 180dvh;
-        min-width: 320dvh;
-      }
+    /* Mobile-friendly iframe sizing across devices.
+       Stays full-bleed (inset: 0) on every screen; only the crop shifts so the
+       subject stays visible when the hero gets short on phones. */
+    @media (max-width: 479px) {
+      .hero-video-iframe { object-position: center 40%; }
     }
 
-    @media (max-width: 768px) {
-      .hero-video-iframe {
-        width: 250vw;
-        height: 140.625vw;
-        min-height: 250dvh;
-        min-width: 444.4dvh;
-      }
+    @media (min-width: 480px) and (max-width: 767px) {
+      .hero-video-iframe { object-position: center 34%; }
     }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+      .hero-video-iframe { object-position: center 30%; }
+    }
+
+    /* Keep the desktop crop centered by default (no override needed above 1024px). */
 
     /* Invisible overlay to block YouTube UI interactions */
     .hero-video-overlay {
