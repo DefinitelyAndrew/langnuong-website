@@ -239,7 +239,7 @@ img {
    ============================================= */
 .hero {
   position: relative;
-  min-height: 55vw;
+  min-height: 48vw;
   max-height: 700px;
   display: flex;
   align-items: center;
@@ -255,6 +255,41 @@ img {
   height: 100%;
   object-fit: cover;
   z-index: -1;
+  object-position: center;
+}
+
+/* Mobile-friendly hero sizing across devices.
+   Shorter hero on small phones so the headline reads without scrolling;
+   full-bleed cover keeps the image filling the hero on every screen.
+   object-position tweaks keep faces/food visible when the crop shifts on narrow screens. */
+@media (max-width: 479px) {
+  .hero {
+    min-height: 42vw;
+    max-height: 300px;
+  }
+  .hero-video { object-position: center 38%; }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+  .hero {
+    min-height: 48vw;
+    max-height: 380px;
+  }
+  .hero-video { object-position: center 34%; }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .hero {
+    min-height: 52vw;
+    max-height: 480px;
+  }
+}
+
+@media (min-width: 1025px) {
+  .hero {
+    min-height: 55vw;
+    max-height: 700px;
+  }
 }
 
 .hero-content {
