@@ -27,13 +27,84 @@
     </div>
   </header>
 
+<style>
+    /* ===== HERO BACKGROUND VIDEO STYLES ===== */
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 100dvh; /* Uses dynamic viewport height to handle mobile browser bars */
+      overflow: hidden;
+      background: #000;
+    }
+
+    .hero-video-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .hero-video-iframe {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100vw;
+      height: 56.25vw;
+      min-height: 100dvh;
+      min-width: 177.77dvh;
+      transform: translate(-50%, -50%);
+      border: none;
+    }
+
+    /* Automatically scales up on smaller/narrower screens (tablets & mobile) */
+    @media (max-width: 1024px) {
+      .hero-video-iframe {
+        width: 180vw;
+        height: 101.25vw;
+        min-height: 180dvh;
+        min-width: 320dvh;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero-video-iframe {
+        width: 250vw;
+        height: 140.625vw;
+        min-height: 250dvh;
+        min-width: 444.4dvh;
+      }
+    }
+
+    /* Invisible overlay to block YouTube UI interactions */
+    .hero-video-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body>
+
   <!-- ===== HERO ===== -->
   <section class="hero">
-    <img class="hero-video" src="hero-cover.jpg" alt="Làng Nướng Vietnam hero image">
-    <div class="hero-content">
-      <span class="hero-eyebrow">Singapore's Original Grill Village</span>
-      <h1 class="hero-title">Experience Vietnam's<span class="animated-underline">Best BBQ<span class="underline-layer" aria-hidden="true"><svg viewBox="0 0 200 24" preserveAspectRatio="none"><path pathLength="1" d="M2 11 C15 8 24 13 37 10 S58 8 72 11 S93 13 108 10 S130 8 145 11 S166 13 181 10 S192 9 198 10"></path></svg></span></span> at Làng Nướng Việt Nam</h1>
-      <p class="hero-sub">Authentic charcoal-grilled street food from the heart of Vietnam, now in Singapore.</p>
+    <div class="hero-video-container">
+      <iframe 
+        class="hero-video-iframe" 
+        src="https://www.youtube.com/embed/xy9-v4WZR4A?autoplay=1&mute=1&loop=1&playlist=xy9-v4WZR4A&controls=0&modestbranding=1&showinfo=0&rel=0&iv_load_policy=3&disablekb=1&fs=0" 
+        title="Làng Nướng Vietnam hero video" 
+        frameborder="0" 
+        allow="autoplay; encrypted-media" 
+        allowfullscreen>
+      </iframe>
+      <div class="hero-video-overlay"></div>
     </div>
   </section>
 
@@ -74,7 +145,7 @@
           </div>
           <div class="brand-card-body">
             <span class="brand-card-tag">BBQ & HOTPOT</span>
-            <h3 class="brand-card-name">Lang Nuong Vietnam</h3>
+            <h3 class="brand-card-name">Làng Nướng Vietnam</h3>
             <p class="brand-card-desc">Charcoal-grilled favourites, flavourful marinades and the lively spirit of Vietnamese grill-village dining.</p>
             <a href="bbq.html" class="brand-card-cta">Explore Restaurant</a>
           </div>
@@ -86,7 +157,7 @@
           </div>
           <div class="brand-card-body">
             <span class="brand-card-tag">HOME-STYLE</span>
-            <h3 class="brand-card-name">Lang Nuong 1980's</h3>
+            <h3 class="brand-card-name">Làng Nướng 1980's</h3>
             <p class="brand-card-desc">A nostalgic dining experience inspired by Vietnamese homes, regional dishes and treasured cultural details.</p>
             <a href="1980s.html" class="brand-card-cta">Explore Restaurant</a>
           </div>
@@ -94,7 +165,7 @@
         <!-- Refined Dining -->
         <a href="exclusive.html" class="brand-card" lang="vi">
           <div class="brand-card-layer">
-            <img src="assets/brands/exclusive-food2.jpg" alt="Làng Nướng Exclusive">
+            <img src="assets/placeholder.png" alt="Làng Nướng Exclusive">
           </div>
           <div class="brand-card-body p-wrapper">
             <span class="brand-card-tag">REFINED DINING</span>
