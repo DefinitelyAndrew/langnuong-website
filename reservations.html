@@ -1160,7 +1160,8 @@
 
       const actions = document.createElement('div');
       actions.className = 'actions';
-      actions.innerHTML = `         <button type="button" class="btn-outline" id="backBtn" disabled>Back</button>
+      actions.innerHTML = `
+        <button type="button" class="btn-outline" id="backBtn" disabled>Back</button>
         <div class="right">
           <button type="button" class="btn-primary" id="nextBtn">Continue</button>
         </div>
@@ -1343,7 +1344,7 @@
         if(!selectedShop){ showToast('Please choose a restaurant.'); return; }
         if(!selectedDate){ showToast('Please pick a date.'); return; }
         const total = parseInt(guestExact.value, 10);
-        if(isNaN(total) || total < 1){ showToast('Please enter at least 1 guest.'); return; }
+        if(isNaN(total) || total < 2){ showToast('At least 2 guests are required.'); return; }
         if(total > 20){ showToast('A party can have up to 20 guests.'); return; }
         goNext();
       });
