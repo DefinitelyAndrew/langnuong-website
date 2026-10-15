@@ -1193,37 +1193,31 @@
       main.innerHTML = `
         <h3 id="datetimeLabel">When and how many</h3>
         <p class="input-note" style="margin:-6px 0 14px;">Pick a date first — the available times and period picker will show once you do.</p>
-        <div class="field-stack">
-          <div class="field">
-            <label for="resDate">Date</label>
-            <input type="date" id="resDate" min="">
-            <span class="input-note" id="dateNote">Pick the day you’d like to dine with us.</span>
-          </div>
+        <div class="field-stack">            <div class="field">
+              <label for="resDate">Date</label>
+              <input type="date" id="resDate" min="">
+              <span class="input-note" id="dateNote">Pick the day you’d like to dine with us.</span>
+            </div>
+
+
 
           <div class="field">
             <label for="resTime">Time</label>
             <input type="text" id="resTime" readonly placeholder="Select a time below" aria-describedby="timeHelp">
           </div>
           <div id="timeHelp" class="sr-only">Available reservation times for the selected date. Choose one slot.</div>
-          <div id="timeGrid" class="time-grid" aria-label="Available times"></div>
 
           <div class="field">
-            <label for="resTime">Time</label>
-            <input type="text" id="resTime" readonly placeholder="Select a time below" aria-describedby="timeHelp">
+            <label>Timeslots</label>
+            <div id="timeGrid" class="time-grid" aria-label="Available times"></div>
           </div>
-          <div id="timeHelp" class="sr-only">Available reservation times for the selected date. Choose one slot.</div>
-          <div id="timeGrid" class="time-grid" aria-label="Available times"></div>
-          <p class="input-note" id="timeHelpNote">Choose a time slot below.</p>
 
           <div id="periodSlot" class="hidden"></div>
 
           <div class="field">
             <label for="guestExact">Guests</label>
-            <input type="number" id="guestExact" min="1" max="20" value="2" inputmode="numeric" style="width:110px; text-align:center;" aria-describedby="guestNote">
-            <span class="input-note" id="guestNote">For parties larger than 20, contact us.</span>
+            <input type="number" id="guestExact" min="1" max="20" value="2" inputmode="numeric" style="width:110px; text-align:center;" aria-describedby="guestNote">            <span class="input-note" id="guestNote">For parties larger than 20, contact us.</span>
           </div>
-
-
         </div>
       `;
       shell.appendChild(main);
@@ -1235,6 +1229,7 @@
       const periodPicked = document.getElementById('periodPicked');
       const guestExact = document.getElementById('guestExact');
       const guestNote = document.getElementById('guestNote');
+      const noDateNote = document.getElementById('noDateNote');
 
       // set date min
       const minDate = new Date();
@@ -1265,6 +1260,10 @@
         renderPeriodPicker(periodSlot);
         if(selectedDate){
           periodSlot.classList.remove('hidden');
+          noDateNote.classList.add('hidden');
+        } else {
+          periodSlot.classList.add('hidden');
+          noDateNote.classList.remove('hidden');
         }
         updatePeriodPicked(periodPicked);
       });
@@ -1305,7 +1304,10 @@
       // disable date-only fields until a date is chosen
       if(!selectedDate){
         periodSlot.classList.add('hidden');
+        noDateNote.classList.remove('hidden');
         timeField.value = 'Pick a date first';
+      } else {
+        noDateNote.classList.add('hidden');
       }
 
       // buttons
@@ -1323,7 +1325,6 @@
       nextBtn.addEventListener('click', () => {
         if(!selectedShop){ showToast('Please choose a restaurant.'); return; }
         if(!selectedDate){ showToast('Please pick a date.'); return; }
-        const total = totalGuests();
         const total = parseInt(guestExact.value, 10);
         if(isNaN(total) || total < 1){ showToast('Please enter at least 1 guest.'); return; }
         if(total > 20){ showToast('A party can have up to 20 guests.'); return; }
@@ -1406,7 +1407,10 @@
     }
 
     function totalGuests(){
-      const v = Math.max(1, parseInt(document.getElementById('guestExact').value, 10) || 2);
+      const el = document.getElementById('guestExact');
+      if(!el) return 2;
+      const v = parseInt(el.value, 10);
+      if(isNaN(v) || v < 1) return 2;
       if(v > 20) return 20;
       return v;
     }
