@@ -767,50 +767,6 @@
       gap:16px;
     }
     .nav-logo img{ height:34px; display:block; }
-    .nav-toggle{
-      display:none;
-      flex-direction:column;
-      justify-content:center;
-      gap:5px;
-      background:none;
-      border:none;
-      cursor:pointer;
-      padding:6px;
-    }
-    .nav-toggle span{
-      width:22px;
-      height:2px;
-      background:var(--tone-title);
-      border-radius:2px;
-    }
-    .nav-menu{
-      display:flex;
-      gap:18px;
-      margin-left:auto;
-    }
-    .nav-menu a{
-      color:var(--tone-title);
-      text-decoration:none;
-      font-size:13px;
-      font-weight:500;
-      transition:color .15s ease;
-    }
-    .nav-menu a:hover{ color:var(--accent); }
-    @media (max-width:640px){
-      .nav-toggle{ display:flex; }
-      .nav-menu{
-        display:none;
-        flex-direction:column;
-        background:var(--tone-card);
-        border-top:1px solid var(--tone-line);
-        padding:10px 20px 16px;
-        gap:12px;
-        margin-left:0;
-        width:100%;
-      }
-      .nav-menu.open{ display:flex; }
-    }
-
     .site-footer{
       margin-top:30px;
       background:var(--tone-card);
@@ -875,26 +831,6 @@
   </style>
 </head>
 <body class="res-page">
-
-  <!-- ===== HEADER / NAV ===== -->
-  <header class="site-header">
-    <div class="nav-inner">
-      <a href="index.html" class="nav-logo" aria-label="Làng Nướng Vietnam home">
-        <img src="https://langnuonggroup.com/wp-content/uploads/2024/07/LNGROUP.png" alt="Làng Nướng Vietnam">
-      </a>
-      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="navMenu">
-        <span></span><span></span><span></span>
-      </button>
-      <nav class="nav-menu" id="navMenu">
-        <a href="index.html">Home</a>
-        <a href="bbq.html">Lang Nuong Vietnam BBQ</a>
-        <a href="1980s.html">Lang Nuong Vietnam 1980's</a>
-        <a href="little-hanoi.html">Little Hanoi</a>
-        <a href="exclusive.html" lang="vi">Làng Nướng Exclusive</a>
-        <a href="shop.html">Shop Now</a>
-      </nav>
-    </div>
-  </header>
 
   <!-- ===== RESERVATIONS HEADER ===== -->
   <div class="res-header">
@@ -1028,8 +964,7 @@
     // ===== DOM REFS =====
     const shell = document.getElementById('resShell');
     const toastEl = document.getElementById('toast');
-    const navToggle = document.getElementById('navToggle');
-    const navMenu = document.getElementById('navMenu');
+
 
     // ===== STATE =====
     let currentPage = 0;
@@ -2030,15 +1965,6 @@
       toastEl.setAttribute('aria-live','polite');
       clearTimeout(showToast._t);
       showToast._t = setTimeout(() => toastEl.classList.add('hidden'), 3200);
-    }
-
-    // ===== MOBILE NAV =====
-    if(navToggle && navMenu){
-      navToggle.addEventListener('click', () => {
-        navToggle.classList.toggle('open');
-        navMenu.classList.toggle('open');
-        navToggle.setAttribute('aria-expanded', navMenu.classList.contains('open'));
-      });
     }
 
     // ===== INIT =====
