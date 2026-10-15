@@ -1160,8 +1160,7 @@
 
       const actions = document.createElement('div');
       actions.className = 'actions';
-      actions.innerHTML = `
-        <button type="button" class="btn-outline" id="backBtn">Back</button>
+      actions.innerHTML = `         <button type="button" class="btn-outline" id="backBtn" disabled>Back</button>
         <div class="right">
           <button type="button" class="btn-primary" id="nextBtn">Continue</button>
         </div>
@@ -1201,21 +1200,23 @@
           </div>
 
           <div class="field">
-            <label for="resTime">Time</label>
-            <input type="text" id="resTime" readonly placeholder="Select a time below" aria-describedby="timeHelp">
-          </div>
-          <div id="timeHelp" class="sr-only">Available reservation times for the selected date. Choose one slot.</div>
-
-          <div class="field">
             <label>Timeslots</label>
             <div id="timeGrid" class="time-grid" aria-label="Available times"></div>
           </div>
+
+          <div class="res-note hidden" id="noDateNote">Pick a date first to see available times and period options.</div>
+
+          <div class="field">
+            <label for="resTime">Time <span style="text-transform:none; letter-spacing:0; font-weight:400;">(select)</span></label>
+            <input type="text" id="resTime" readonly placeholder="Select a time below" aria-describedby="timeHelp">
+          </div>
+          <div id="timeHelp" class="sr-only">Available reservation times for the selected date. Choose one slot.</div>
 
           <div id="periodSlot" class="hidden"></div>
 
           <div class="field">
             <label for="guestExact">Guests</label>
-            <input type="number" id="guestExact" min="1" max="20" value="2" inputmode="numeric" style="width:110px; text-align:center;" aria-describedby="guestNote">
+            <input type="number" id="guestExact" min="2" max="20" value="2" inputmode="numeric" aria-describedby="guestNote">
             <span class="input-note" id="guestNote">For parties larger than 20, contact us.</span>
           </div>
         </div>
@@ -1230,6 +1231,7 @@
       const guestExact = document.getElementById('guestExact');
       const guestNote = document.getElementById('guestNote');
       const noDateNote = document.getElementById('noDateNote');
+      const backBtn = document.getElementById('backBtn');
 
       // set date min
       const minDate = new Date();
@@ -1242,14 +1244,20 @@
 
       // guests start at 2
       guestExact.value = 2;
+      backBtn.disabled = true;
       updatePeriodPicked(periodPicked);
 
       renderTimeGrid(timeGrid, timeField);
       renderPeriodPicker(periodSlot);
 
+      // disable date-only fields until a date is chosen
       if(!selectedDate){
         periodSlot.classList.add('hidden');
+        noDateNote.classList.remove('hidden');
         timeField.value = 'Pick a date first';
+        noDateNote.classList.remove('hidden');
+      } else {
+        noDateNote.classList.add('hidden');
       }
 
       dateField.addEventListener('change', () => {
@@ -1280,17 +1288,24 @@
 
       guestExact.addEventListener('input', () => {
         let v = parseInt(guestExact.value, 10);
-        if(isNaN(v) || v < 1) v = 1;
+        if(isNaN(v) || v < 2) v = 2;
         if(v > 20) v = 20;
         guestExact.value = v;
       });
 
       guestExact.addEventListener('change', () => {
         let v = parseInt(guestExact.value, 10);
-        if(isNaN(v) || v < 1) v = 1;
+        if(isNaN(v) || v < 2) v = 2;
         if(v > 20) v = 20;
         guestExact.value = v;
       });
+
+      // enable Back once page 2 has a restaurant, date and time
+      function updatePageTwoBack(){
+        if(selectedShop && selectedDate && selectedTime){
+          if(backBtn) backBtn.disabled = false;
+        }
+      }
 
       // period selection — pick directly, no change button
       periodSlot.querySelectorAll('.period-opt').forEach(el => {
@@ -1313,8 +1328,7 @@
       // buttons
       const actions = document.createElement('div');
       actions.className = 'actions';
-      actions.innerHTML = `
-        <button type="button" class="btn-outline" id="backBtn">Back</button>
+      actions.innerHTML = `         <button type="button" class="btn-outline" id="backBtn" disabled>Back</button>
         <div class="right">
           <button type="button" class="btn-primary" id="nextBtn">Continue</button>
         </div>
@@ -1620,8 +1634,7 @@
 
       const actions = document.createElement('div');
       actions.className = 'actions';
-      actions.innerHTML = `
-        <button type="button" class="btn-outline" id="backBtn">Back</button>
+      actions.innerHTML = `         <button type="button" class="btn-outline" id="backBtn" disabled>Back</button>
         <div class="right">
           <button type="button" class="btn-primary" id="nextBtn">Continue</button>
         </div>
@@ -1715,8 +1728,7 @@
       const actions = document.createElement('div');
       actions.className = 'actions';
       actions.style.justifyContent = 'flex-end';
-      actions.innerHTML = `
-        <button type="button" class="btn-outline" id="backBtn">Back</button>
+      actions.innerHTML = `         <button type="button" class="btn-outline" id="backBtn" disabled>Back</button>
         <button type="button" class="btn-primary" id="submitBtn">Send reservation</button>
       `;
       shell.appendChild(actions);
