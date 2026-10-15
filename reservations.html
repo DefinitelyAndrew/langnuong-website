@@ -1005,8 +1005,6 @@
     let selectedShop = SHOPS[0];
     let selectedDate = '';
     let selectedTime = '';
-    let guestAdults = 0;
-    let guestChildren = 0;
     let selectedPeriodId = 'all';
     let email = '';
     let salutation = '';
@@ -1214,35 +1212,12 @@
             <input type="text" id="resTime" readonly placeholder="Select a time below" aria-describedby="timeHelp">
           </div>
           <div id="timeHelp" class="sr-only">Available reservation times for the selected date. Choose one slot.</div>          <div id="timeGrid" class="time-grid" aria-label="Available times"></div>
-          <p class="input-note" id="timeHelpNote">Choose a time slot below.</p>
+          <p class="input-note" id="timeHelpNote">Choose a time slot below.</p>        <div id="periodSlot" class="hidden"></div>
 
-          <div id="periodSlot" class="hidden"></div>
-
-          <div id="guestBlock" class="guest-block">
-            <div class="guest-block-head">
-              <span class="guest-block-title">Guests</span>
-              <button type="button" id="addChildrenBtn" class="guest-add-children">Add Children</button>
-            </div>
-
-          <div class="guest-block-adults">
-            <span class="guest-block-label">Adults</span>
-            <div class="guest-stepper">
-              <button type="button" class="guest-steps minus" id="guestMinus" aria-label="Fewer guests" disabled aria-disabled="true">−</button>
-              <input type="number" id="guestAdults" min="1" max="20" value="2" inputmode="numeric" class="guest-count" aria-label="Adults" inputmode="numeric">
-              <button type="button" class="guest-steps" id="guestPlus" aria-label="More guests">+</button>
-            </div>
-          </div>
-
-            <div class="guest-block-children hidden" id="guestChildrenBlock">
-              <span class="guest-block-label">Children</span>
-              <div class="guest-stepper">
-                <button type="button" class="guest-steps minus" id="childMinus" aria-label="Fewer children" disabled aria-disabled="true">−</button>
-                <input type="number" id="guestChildren" min="0" max="20" value="0" inputmode="numeric" class="guest-count" aria-label="Children">
-                <button type="button" class="guest-steps" id="childPlus" aria-label="More children">+</button>
-              </div>
-            </div>
-
-            <p class="res-note" id="guestNote">For parties larger than 20, contact us.</p>
+          <div class="field">
+            <label>Guests</label>
+            <input type="number" id="guestExact" min="1" max="20" value="2" inputmode="numeric" style="width:110px; text-align:center;" aria-describedby="guestNote">
+            <span class="input-note" id="guestNote">For parties larger than 20, contact us.</span>
           </div>
 
           <p class="res-note" id="guestHelp">Children are counted separately from adults so the restaurant can plan seating.</p>
@@ -1255,15 +1230,8 @@
       const timeGrid = document.getElementById('timeGrid');
       const periodSlot = document.getElementById('periodSlot');
       const periodPicked = document.getElementById('periodPicked');
-      const guestBlock = document.getElementById('guestBlock');
-      const addChildrenBtn = document.getElementById('addChildrenBtn');
-      const guestChildrenBlock = document.getElementById('guestChildrenBlock');
-      const guestAdults = document.getElementById('guestAdults');
-      const guestChildren = document.getElementById('guestChildren');
-      const guestMinus = document.getElementById('guestMinus');
-      const guestPlus = document.getElementById('guestPlus');
-      const childMinus = document.getElementById('childMinus');
-      const childPlus = document.getElementById('childPlus');
+      const guestExact = document.getElementById('guestExact');
+      const guestNote = document.getElementById('guestNote');
 
       // set date min
       const minDate = new Date();
@@ -1274,19 +1242,13 @@
       }
       dateField.value = selectedDate;
 
-      // guests start at 2 adults, 0 children
-      guestAdults.value = 2;
-      guestChildren.value = 0;
-      guestChildrenBlock.classList.add('hidden');
-      selectedChildrenVisible = false;
-      updateAdultMinusButton();
-      updateChildMinusButton();
+      // guests start at 2
+      guestExact.value = 2;
       updatePeriodPicked(periodPicked);
 
       renderTimeGrid(timeGrid, timeField);
       renderPeriodPicker(periodSlot);
 
-      // period picker appears only after a date is selected
       if(!selectedDate){
         periodSlot.classList.add('hidden');
         timeField.value = 'Pick a date first';
@@ -1314,88 +1276,18 @@
         });
       });
 
-      guestAdults.addEventListener('input', () => {
-        let a = Math.max(1, parseInt(guestAdults.value, 10) || 1);
-        if(a > 20) a = 20;
-        guestAdults.value = a;
-        let c = Math.max(0, parseInt(guestChildren.value, 10) || 0);
-        let total = a + c;
-        if(total > 20){
-          if(selectedChildrenVisible){
-            c = Math.max(0, 20 - a);
-            guestChildren.value = c;
-            total = a + c;
-          } else {
-            a = 20;
-            guestAdults.value = a;
-            total = 20;
-          }
-        }
-        updateAdultMinusButton();
+      guestExact.addEventListener('input', () => {
+        let v = parseInt(guestExact.value, 10);
+        if(isNaN(v) || v < 1) v = 1;
+        if(v > 20) v = 20;
+        guestExact.value = v;
       });
 
-      guestChildren.addEventListener('input', () => {
-        let c = Math.max(0, parseInt(guestChildren.value, 10) || 0);
-        if(c > 20) c = 20;
-        guestChildren.value = c;
-        let a = Math.max(1, parseInt(guestAdults.value, 10) || 1);
-        let total = a + c;
-        if(total > 20){
-          a = Math.max(1, 20 - c);
-          guestAdults.value = a;
-          total = a + c;
-        }
-        updateChildMinusButton();
-      });
-
-      guestMinus.addEventListener('click', () => {
-        let a = Math.max(1, parseInt(guestAdults.value, 10) || 1);
-        if(a > 1){
-          a--;
-          guestAdults.value = a;
-        }
-        updateAdultMinusButton();
-      });
-
-      guestPlus.addEventListener('click', () => {
-        let a = Math.max(1, parseInt(guestAdults.value, 10) || 1);
-        if(a < 20){
-          a++;
-          guestAdults.value = a;
-        }
-        updateAdultMinusButton();
-      });
-
-      childMinus.addEventListener('click', () => {
-        let c = Math.max(0, parseInt(guestChildren.value, 10) || 0);
-        if(c > 0){
-          c--;
-          guestChildren.value = c;
-        }
-        updateChildMinusButton();
-      });
-
-      childPlus.addEventListener('click', () => {
-        let c = Math.max(0, parseInt(guestChildren.value, 10) || 0);
-        let a = Math.max(1, parseInt(guestAdults.value, 10) || 1);
-        if(a + c < 20){
-          c++;
-          guestChildren.value = c;
-        }
-        updateChildMinusButton();
-      });
-
-      addChildrenBtn.addEventListener('click', () => {
-        selectedChildrenVisible = !selectedChildrenVisible;
-        if(selectedChildrenVisible){
-          guestChildrenBlock.classList.remove('hidden');
-          addChildrenBtn.textContent = 'Remove Children';
-        } else {
-          guestChildrenBlock.classList.add('hidden');
-          guestChildren.value = 0;
-          addChildrenBtn.textContent = 'Add Children';
-        }
-        updateChildMinusButton();
+      guestExact.addEventListener('change', () => {
+        let v = parseInt(guestExact.value, 10);
+        if(isNaN(v) || v < 1) v = 1;
+        if(v > 20) v = 20;
+        guestExact.value = v;
       });
 
       // period selection — pick directly, no change button
@@ -1406,6 +1298,12 @@
           updatePeriodPicked(periodPicked);
         });
       });
+
+      // disable date-only fields until a date is chosen
+      if(!selectedDate){
+        periodSlot.classList.add('hidden');
+        timeField.value = 'Pick a date first';
+      }
 
       // buttons
       const actions = document.createElement('div');
@@ -1423,7 +1321,8 @@
         if(!selectedShop){ showToast('Please choose a restaurant.'); return; }
         if(!selectedDate){ showToast('Please pick a date.'); return; }
         const total = totalGuests();
-        if(total < 1){ showToast('Please enter at least 1 guest.'); return; }
+        const total = parseInt(guestExact.value, 10);
+        if(isNaN(total) || total < 1){ showToast('Please enter at least 1 guest.'); return; }
         if(total > 20){ showToast('A party can have up to 20 guests.'); return; }
         goNext();
       });
@@ -1503,41 +1402,13 @@
       });
     }
 
-    let selectedChildrenVisible = false;
-
     function totalGuests(){
-      const a = Math.max(1, parseInt(document.getElementById('guestAdults').value,10) || 1);
-      const c = Math.max(0, parseInt(document.getElementById('guestChildren').value,10) || 0);
-      return Math.max(1, Math.min(20, a + c));
+      const v = Math.max(1, parseInt(document.getElementById('guestExact').value, 10) || 2);
+      if(v > 20) return 20;
+      return v;
     }
 
-    function updateAdultMinusButton(){
-      const minusEl = document.getElementById('guestMinus');
-      if(!minusEl) return;
-      const a = Math.max(1, parseInt(document.getElementById('guestAdults').value,10) || 1);
-      const disabled = a <= 1;
-      minusEl.disabled = disabled;
-      minusEl.setAttribute('aria-disabled', disabled ? 'true' : 'false');
-      if(disabled){
-        minusEl.classList.add('minus');
-      } else {
-        minusEl.classList.remove('minus');
-      }
-    }
 
-    function updateChildMinusButton(){
-      const minusEl = document.getElementById('childMinus');
-      if(!minusEl) return;
-      const c = Math.max(0, parseInt(document.getElementById('guestChildren').value,10) || 0);
-      const disabled = c <= 0;
-      minusEl.disabled = disabled;
-      minusEl.setAttribute('aria-disabled', disabled ? 'true' : 'false');
-      if(disabled){
-        minusEl.classList.add('minus');
-      } else {
-        minusEl.classList.remove('minus');
-      }
-    }
 
     function updateChildMinusButton(){
       const minusEl = document.getElementById('childMinus');
@@ -1787,9 +1658,7 @@
         statusEl.textContent = 'Ready to send';
         statusEl.classList.add('ready');
       }
-    }
-
-    // ---------- PAGE 4: REVIEW ----------
+    }    // ---------- PAGE 4: REVIEW ----------
     function renderReviewPage(){
       const main = document.createElement('section');
       main.className = 'res-card';
@@ -1803,8 +1672,7 @@
             <div class="row"><span>Time</span><span id="rTime">—</span></div>
             <div class="row"><span>Guests</span><span id="rGuests">—</span></div>
             <div class="row"><span>Period</span><span id="rPeriod">—</span></div>
-            <div class="row"><span>Name</span><span id="rContact">—</span></div>
-        <div class="row"><span>Phone</span><span id="rPhone">—</span></div>
+            <div class="row"><span>Contact</span><span id="rContact">—</span></div>
           </div>
 
           <div class="check-row">
@@ -1829,8 +1697,7 @@
       document.getElementById('rGuests').textContent = total + ' guest' + (total === 1 ? '' : 's');
       const p = PERIODS.find(x => x.id === selectedPeriodId);
       document.getElementById('rPeriod').textContent = p ? p.name : '—';
-      document.getElementById('rContact').textContent = (salutation ? salutation + ' ' : '') + firstName + ' ' + lastName || '—';
-      document.getElementById('rPhone').textContent = phone || '—';
+      document.getElementById('rContact').textContent = email || '—';
 
       const check = document.getElementById('houseRulesCheck');
       check.checked = acceptedHouseRules;
