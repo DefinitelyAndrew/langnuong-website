@@ -1204,10 +1204,10 @@
             <div id="timeGrid" class="time-grid" aria-label="Available times"></div>
           </div>
 
-          <div class="res-note hidden" id="noDateNote">Pick a date first to see available times and period options.</div>
+          <div class="res-note" id="noDateNote">Pick a date first to see available times and period options.</div>
 
           <div class="field">
-            <label for="resTime">Time <span style="text-transform:none; letter-spacing:0; font-weight:400;">(select)</span></label>
+            <label for="resTime">Time (select)</label>
             <input type="text" id="resTime" readonly placeholder="Select a time below" aria-describedby="timeHelp">
           </div>
           <div id="timeHelp" class="sr-only">Available reservation times for the selected date. Choose one slot.</div>
@@ -1216,7 +1216,7 @@
 
           <div class="field">
             <label for="guestExact">Guests</label>
-            <input type="number" id="guestExact" min="2" max="20" value="2" inputmode="numeric" aria-describedby="guestNote">
+            <input type="number" id="guestExact" min="2" max="20" value="2" inputmode="numeric" style="width:110px; text-align:center;" aria-describedby="guestNote">
             <span class="input-note" id="guestNote">For parties larger than 20, contact us.</span>
           </div>
         </div>
