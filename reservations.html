@@ -1274,6 +1274,8 @@
           noDateNote.classList.remove('hidden');
         }
         updatePeriodPicked(periodPicked);
+        updatePageTwoBack();
+        updatePageTwoBack();
       });
 
       timeGrid.querySelectorAll('.time-opt').forEach(btn => {
@@ -1291,6 +1293,7 @@
         if(isNaN(v) || v < 2) v = 2;
         if(v > 20) v = 20;
         guestExact.value = v;
+        updatePageTwoBack();
       });
 
       guestExact.addEventListener('change', () => {
