@@ -1,0 +1,152 @@
+name: Website bug audit
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: website-audit-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    name: Scan website
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out website
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Scan website source
+        id: scan
+        continue-on-error: true
+        run: python .github/scripts/website_audit.py --root . --output audit-results.json
+
+      - name: Report findings to GitHub Issues
+        if: always() && steps.scan.outcome != 'cancelled'
+        uses: actions/github-script@v7
+        env:
+          AUDIT_OUTCOME: ${{ steps.scan.outcome }}
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- automated-website-audit -->';
+            const title = 'Automated website bug audit';
+            const findings = fs.existsSync('audit-results.json')
+              ? JSON.parse(fs.readFileSync('audit-results.json', 'utf8'))
+              : [];
+            const order = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
+            findings.sort((a, b) =>
+              (order[a.severity] ?? 99) - (order[b.severity] ?? 99) ||
+              a.file.localeCompare(b.file) || a.line - b.line
+            );
+            const groups = [
+              ['CRITICAL', 'Website-breaking'],
+              ['HIGH', 'Major'],
+              ['MEDIUM', 'Moderate'],
+              ['LOW', 'Minor'],
+            ];
+            const counts = Object.fromEntries(
+              groups.map(([severity]) => [severity, findings.filter(f => f.severity === severity).length])
+            );
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const runRef = `Commit: \`${context.sha}\` · [Workflow run](${runUrl})`;
+            let body;
+            if (process.env.AUDIT_OUTCOME !== 'success') {
+              body = `${marker}\n## Audit could not complete\n\nThe website audit script failed unexpectedly. See the [workflow run](${runUrl}) for details.`;
+            } else if (findings.length === 0) {
+              body = `${marker}\nCheck passed, no errors found.\n\n${runRef}`;
+            } else {
+              const summary = groups
+                .filter(([severity]) => counts[severity] > 0)
+                .map(([severity, label]) => `${counts[severity]} ${label.toLowerCase()}`)
+                .join(', ');
+              body = `${marker}\n## Website audit found ${findings.length} issue(s)\n\nRanked from website-breaking to minor:\n\n`;
+              for (const [severity, label] of groups) {
+                const matches = findings.filter(f => f.severity === severity);
+                if (!matches.length) continue;
+                body += `### ${severity} — ${label}\n\n`;
+                for (const finding of matches) {
+                  body += `- \`${finding.file}:${finding.line}\` — ${finding.message}\n`;
+                }
+                body += '\n';
+              }
+              body += `${runRef}\n\nAutomated static checks can find common source and broken-reference problems; they cannot guarantee detection of every runtime or visual bug.`;
+            }
+
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100,
+            });
+            const existing = issues.find(issue =>
+              !issue.pull_request && issue.body?.includes(marker)
+            );
+
+            if (findings.length || process.env.AUDIT_OUTCOME !== 'success') {
+              const issueTitle = findings.length
+                ? `${title} (${findings.length} finding${findings.length === 1 ? '' : 's'})`
+                : title;
+              if (existing) {
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: existing.number,
+                  title: issueTitle,
+                  body,
+                });
+                core.info(`Updated audit issue #${existing.number}`);
+              } else {
+                const created = await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: issueTitle,
+                  body,
+                });
+                core.info(`Created audit issue #${created.data.number}`);
+              }
+            } else if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `Check passed, no errors found.\n\n${runRef}`,
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                state: 'closed',
+              });
+              core.info(`Closed resolved audit issue #${existing.number}`);
+            }
+
+            await core.summary
+              .addHeading('Website bug audit')
+              .addRaw(body.replace(marker, '').trim())
+              .write();
+
+            if (process.env.AUDIT_OUTCOME !== 'success') {
+              core.setFailed('Website audit did not complete successfully.');
+            } else if (findings.length) {
+              core.setFailed(`Found ${findings.length} issue(s); see the automated audit issue.`);
+            } else {
+              core.info('Check passed, no errors found.');
+            }
