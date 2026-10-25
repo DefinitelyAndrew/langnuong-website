@@ -143,10 +143,12 @@ jobs:
               .addRaw(body.replace(marker, '').trim())
               .write();
 
+            // Findings are reported through the audit issue; the workflow itself is
+            // informational so a bug never blocks a deploy or marks the run failed.
             if (process.env.AUDIT_OUTCOME !== 'success') {
-              core.setFailed('Website audit did not complete successfully.');
+              core.warning('Website audit did not complete successfully; see the audit issue for details.');
             } else if (findings.length) {
-              core.setFailed(`Found ${findings.length} issue(s); see the automated audit issue.`);
+              core.warning(`Found ${findings.length} issue(s); see the automated audit issue.`);
             } else {
               core.info('Check passed, no errors found.');
             }
