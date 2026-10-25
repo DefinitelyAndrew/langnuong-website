@@ -5,75 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lang Nuong Exclusive Reservation | Lang Nuong Group | Cal.com</title>
   <style>
+    :root {
+      color-scheme: light dark;
+    }
+    
     * { box-sizing: border-box; }
     html, body { margin: 0; padding: 0; height: 100%; background: #ffffff; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #111827; line-height: 1.5; -webkit-font-smoothing: antialiased; }
     
     @media (prefers-color-scheme: dark) {
-      html, body { background: #0f0f0f; }
-      body { color: #f9fafb; }
-      .booking-container { background: #0f0f0f; }
-      .left-panel { border-right-color: #27272a; }
-      @media (max-width: 968px) { .left-panel { border-right: none; border-bottom-color: #27272a; } }
-      .org-name { color: #a1a1aa; }
-      .event-title { color: #f9fafb; }
-      .description { color: #d4d4d8; }
-      .description strong { color: #f9fafb; }
-      .duration-label { color: #f9fafb; }
-      .duration-btn { background: #18181b; border-color: #27272a; color: #d4d4d8; }
-      .duration-btn:hover { background: #27272a; border-color: #3f3f46; }
-      .duration-btn.active { background: #f9fafb; color: #111827; border-color: #f9fafb; }
-      .location-section, .timezone-section { color: #d4d4d8; }
-      .icon { color: #a1a1aa; }
-      .right-panel { background: #0f0f0f; }
-      .month-display { color: #f9fafb; }
-      .calendar-grid { background: #27272a; border-color: #27272a; }
-      .weekday-header { background: #18181b; color: #a1a1aa; }
-      .day-button { background: #0f0f0f; color: #f9fafb; }
-      .day-button:disabled { color: #52525b; background: #09090b; }
-      .day-button:not(:disabled):hover { background: #18181b; }
-      .day-button.selected { background: #f9fafb; color: #111827; }
-      .today-label { color: #a1a1aa; }
-      .day-button.selected .today-label { color: #71717a; }
-      .date-label { color: #f9fafb; }
-      .time-format-toggle { background: #27272a; }
-      .format-option { color: #a1a1aa; }
-      .format-option.active { background: #18181b; color: #f9fafb; }
-      .availability-text { color: #a1a1aa; }
-      .time-slot-btn { background: #18181b; border-color: #27272a; color: #f9fafb; }
-      .time-slot-btn:hover { border-color: #f9fafb; background: #27272a; }
-      .modal-overlay { background: rgba(0, 0, 0, 0.8); }
-      .modal { background: #18181b; }
-      .modal-title { color: #f9fafb; }
-      .booking-summary { color: #d4d4d8; }
-      .form-label { color: #f9fafb; }
-      .form-input, .select-input, .textarea-input, .country-code { background: #0f0f0f; border-color: #27272a; color: #f9fafb; }
-      .form-input:hover, .select-input:hover, .textarea-input:hover, .country-code:hover { border-color: #3f3f46; }
-      .form-input:focus, .select-input:focus, .textarea-input:focus, .country-code:focus { border-color: #f9fafb; box-shadow: 0 0 0 1px #f9fafb; }
-      .checkbox-label { color: #d4d4d8; }
-      .terms-notice { color: #a1a1aa; }
-      .terms-notice a { color: #a1a1aa; }
-      .btn-back { background: #18181b; border-color: #27272a; color: #d4d4d8; }
-      .btn-back:hover { background: #27272a; border-color: #3f3f46; }
-      .btn-verify { background: #f9fafb; border-color: #f9fafb; color: #111827; }
-      .btn-verify:hover { background: #e4e4e7; }
+      html, body { background: #000000; }
+      body { color: #ffffff; }
     }
     
     .booking-container { max-width: 1100px; margin: 0 auto; min-height: 100vh; background: white; display: flex; }
     @media (max-width: 968px) { .booking-container { flex-direction: column; } }
+    @media (prefers-color-scheme: dark) {
+      .booking-container { background: #000000; }
+    }
     
     .left-panel { flex: 0 0 400px; padding: 48px 40px; border-right: 1px solid #e5e7eb; display: flex; flex-direction: column; gap: 24px; }
     @media (max-width: 968px) { .left-panel { flex: none; border-right: none; border-bottom: 1px solid #e5e7eb; padding: 32px 24px; } }
     @media (max-width: 640px) { .left-panel { padding: 24px 20px; } }
+    @media (prefers-color-scheme: dark) {
+      .left-panel { border-right-color: #1f1f1f; }
+      @media (max-width: 968px) { .left-panel { border-right: none; border-bottom-color: #1f1f1f; } }
+    }
     
     .header-section { display: flex; flex-direction: column; gap: 16px; }
     .logo-img { width: 64px; height: auto; }
     .org-name { font-size: 15px; color: #6b7280; }
     .event-title { font-size: 32px; font-weight: 700; margin: 0; line-height: 1.2; letter-spacing: -0.02em; }
     @media (max-width: 640px) { .event-title { font-size: 28px; } }
+    @media (prefers-color-scheme: dark) {
+      .org-name { color: #a3a3a3; }
+      .event-title { color: #ffffff; }
+    }
     
     .description { display: flex; flex-direction: column; gap: 12px; color: #374151; font-size: 15px; }
     .description strong { font-weight: 600; color: #111827; }
+    @media (prefers-color-scheme: dark) {
+      .description { color: #d4d4d4; }
+      .description strong { color: #ffffff; }
+    }
     
     .duration-section { display: flex; flex-direction: column; gap: 12px; }
     .duration-label { font-size: 14px; font-weight: 600; color: #111827; }
@@ -81,16 +55,32 @@
     .duration-btn { padding: 8px 14px; background: white; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; color: #374151; cursor: pointer; font-family: inherit; font-weight: 500; transition: all 0.15s; }
     .duration-btn:hover { background: #f9fafb; border-color: #9ca3af; }
     .duration-btn.active { background: #111827; color: white; border-color: #111827; }
+    @media (prefers-color-scheme: dark) {
+      .duration-label { color: #ffffff; }
+      .duration-btn { background: #0a0a0a; border-color: #2a2a2a; color: #d4d4d4; }
+      .duration-btn:hover { background: #141414; border-color: #3a3a3a; }
+      .duration-btn.active { background: #ffffff; color: #000000; border-color: #ffffff; }
+    }
     
     .location-section, .timezone-section { display: flex; align-items: center; gap: 12px; color: #374151; font-size: 15px; }
     .icon { width: 20px; height: 20px; color: #6b7280; flex-shrink: 0; }
+    @media (prefers-color-scheme: dark) {
+      .location-section, .timezone-section { color: #d4d4d4; }
+      .icon { color: #a3a3a3; }
+    }
     
     .right-panel { flex: 1; padding: 48px 40px; display: flex; flex-direction: column; background: white; }
     @media (max-width: 968px) { .right-panel { padding: 32px 24px; } }
     @media (max-width: 640px) { .right-panel { padding: 24px 20px; } }
+    @media (prefers-color-scheme: dark) {
+      .right-panel { background: #000000; }
+    }
     
     .calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
     .month-display { font-size: 18px; font-weight: 600; color: #111827; }
+    @media (prefers-color-scheme: dark) {
+      .month-display { color: #ffffff; }
+    }
     
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; margin-bottom: 40px; background: #e5e7eb; border: 1px solid #e5e7eb; border-radius: 6px; overflow: hidden; }
     .weekday-header { text-align: center; font-size: 11px; color: #6b7280; padding: 10px 0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; background: #f9fafb; }
@@ -101,6 +91,16 @@
     .day-button.today { font-weight: 600; }
     .today-label { font-size: 8px; position: absolute; bottom: 2px; color: #6b7280; }
     .day-button.selected .today-label { color: rgba(255,255,255,0.85); }
+    @media (prefers-color-scheme: dark) {
+      .calendar-grid { background: #2a2a2a; border-color: #2a2a2a; }
+      .weekday-header { background: #0a0a0a; color: #a3a3a3; }
+      .day-button { background: #000000; color: #ffffff; }
+      .day-button:disabled { color: #525252; background: #050505; }
+      .day-button:not(:disabled):hover { background: #141414; }
+      .day-button.selected { background: #ffffff; color: #000000; }
+      .today-label { color: #a3a3a3; }
+      .day-button.selected .today-label { color: #737373; }
+    }
     
     .time-selection { flex: 1; }
     .time-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
@@ -108,23 +108,47 @@
     .time-format-toggle { display: flex; background: #f3f4f6; border-radius: 6px; padding: 2px; }
     .format-option { padding: 6px 12px; border: none; background: transparent; border-radius: 4px; cursor: pointer; font-size: 13px; color: #374151; font-family: inherit; font-weight: 500; }
     .format-option.active { background: white; color: #111827; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+    @media (prefers-color-scheme: dark) {
+      .date-label { color: #ffffff; }
+      .time-format-toggle { background: #1a1a1a; }
+      .format-option { color: #a3a3a3; }
+      .format-option.active { background: #0a0a0a; color: #ffffff; }
+    }
     
     .availability-text { color: #6b7280; font-size: 14px; margin-bottom: 20px; }
+    @media (prefers-color-scheme: dark) {
+      .availability-text { color: #a3a3a3; }
+    }
     
     .time-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
     @media (max-width: 640px) { .time-grid { grid-template-columns: 1fr; } }
     .time-slot-btn { padding: 14px 16px; border: 1px solid #d1d5db; background: white; border-radius: 8px; cursor: pointer; font-size: 15px; color: #111827; text-align: center; font-family: inherit; font-weight: 600; transition: all 0.15s; min-height: 48px; }
     .time-slot-btn:hover { border-color: #111827; background: #f9fafb; }
+    @media (prefers-color-scheme: dark) {
+      .time-slot-btn { background: #0a0a0a; border-color: #2a2a2a; color: #ffffff; }
+      .time-slot-btn:hover { border-color: #ffffff; background: #141414; }
+    }
     
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
     .modal-overlay.active { display: flex; }
+    @media (prefers-color-scheme: dark) {
+      .modal-overlay { background: rgba(0, 0, 0, 0.85); }
+    }
+    
     .modal { background: white; border-radius: 12px; max-width: 520px; width: 100%; max-height: 95vh; overflow-y: auto; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
     .modal-content { padding: 40px; }
     @media (max-width: 640px) { .modal-content { padding: 28px 24px; } }
+    @media (prefers-color-scheme: dark) {
+      .modal { background: #0a0a0a; }
+    }
     
     .modal-header { margin-bottom: 28px; }
     .modal-title { font-size: 24px; font-weight: 700; margin: 0 0 18px 0; color: #111827; letter-spacing: -0.01em; }
     .booking-summary { display: flex; flex-wrap: wrap; gap: 10px 18px; color: #374151; font-size: 15px; align-items: center; }
+    @media (prefers-color-scheme: dark) {
+      .modal-title { color: #ffffff; }
+      .booking-summary { color: #d4d4d4; }
+    }
     
     .form-section { display: flex; flex-direction: column; gap: 22px; }
     .form-row { display: flex; flex-direction: column; gap: 8px; }
@@ -133,27 +157,56 @@
     .form-input { width: 100%; padding: 12px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 15px; font-family: inherit; color: #111827; background: white; transition: all 0.15s; min-height: 48px; }
     .form-input:hover { border-color: #9ca3af; }
     .form-input:focus { outline: none; border-color: #111827; box-shadow: 0 0 0 1px #111827; }
+    @media (prefers-color-scheme: dark) {
+      .form-label { color: #ffffff; }
+      .form-input { background: #000000; border-color: #2a2a2a; color: #ffffff; }
+      .form-input:hover { border-color: #3a3a3a; }
+      .form-input:focus { border-color: #ffffff; box-shadow: 0 0 0 1px #ffffff; }
+    }
     
     .phone-container { display: flex; gap: 8px; }
     .country-code { width: 110px; padding: 12px 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 15px; font-family: inherit; color: #111827; background: white; cursor: pointer; min-height: 48px; }
     .country-code:hover { border-color: #9ca3af; }
     .country-code:focus { outline: none; border-color: #111827; box-shadow: 0 0 0 1px #111827; }
     .phone-number { flex: 1; }
+    @media (prefers-color-scheme: dark) {
+      .country-code { background: #000000; border-color: #2a2a2a; color: #ffffff; }
+      .country-code:hover { border-color: #3a3a3a; }
+      .country-code:focus { border-color: #ffffff; box-shadow: 0 0 0 1px #ffffff; }
+    }
     
     .select-input { width: 100%; padding: 12px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 15px; font-family: inherit; color: #111827; background: white; cursor: pointer; min-height: 48px; transition: all 0.15s; }
     .select-input:hover { border-color: #9ca3af; }
     .select-input:focus { outline: none; border-color: #111827; box-shadow: 0 0 0 1px #111827; }
+    @media (prefers-color-scheme: dark) {
+      .select-input { background: #000000; border-color: #2a2a2a; color: #ffffff; }
+      .select-input:hover { border-color: #3a3a3a; }
+      .select-input:focus { border-color: #ffffff; box-shadow: 0 0 0 1px #ffffff; }
+    }
     
     .textarea-input { width: 100%; padding: 12px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 15px; font-family: inherit; color: #111827; background: white; resize: vertical; min-height: 100px; transition: all 0.15s; }
     .textarea-input:hover { border-color: #9ca3af; }
     .textarea-input:focus { outline: none; border-color: #111827; box-shadow: 0 0 0 1px #111827; }
+    @media (prefers-color-scheme: dark) {
+      .textarea-input { background: #000000; border-color: #2a2a2a; color: #ffffff; }
+      .textarea-input:hover { border-color: #3a3a3a; }
+      .textarea-input:focus { border-color: #ffffff; box-shadow: 0 0 0 1px #ffffff; }
+    }
     
     .checkbox-container { display: flex; gap: 12px; align-items: flex-start; }
     .checkbox-input { width: 20px; height: 20px; margin-top: 2px; cursor: pointer; flex-shrink: 0; accent-color: #111827; }
     .checkbox-label { font-size: 14px; color: #374151; cursor: pointer; line-height: 1.6; }
+    @media (prefers-color-scheme: dark) {
+      .checkbox-label { color: #d4d4d4; }
+      .checkbox-input { accent-color: #ffffff; }
+    }
     
     .terms-notice { font-size: 13px; color: #6b7280; }
     .terms-notice a { color: #6b7280; text-decoration: underline; }
+    @media (prefers-color-scheme: dark) {
+      .terms-notice { color: #a3a3a3; }
+      .terms-notice a { color: #a3a3a3; }
+    }
     
     .modal-actions { display: flex; gap: 12px; margin-top: 32px; }
     .modal-btn { flex: 1; padding: 13px 24px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; min-height: 48px; }
@@ -161,6 +214,12 @@
     .btn-back:hover { background: #f9fafb; border-color: #9ca3af; }
     .btn-verify { background: #111827; border: 1px solid #111827; color: white; }
     .btn-verify:hover { background: #000; }
+    @media (prefers-color-scheme: dark) {
+      .btn-back { background: #0a0a0a; border-color: #2a2a2a; color: #d4d4d4; }
+      .btn-back:hover { background: #141414; border-color: #3a3a3a; }
+      .btn-verify { background: #ffffff; border-color: #ffffff; color: #000000; }
+      .btn-verify:hover { background: #e5e5e5; }
+    }
   </style>
 </head>
 <body>
