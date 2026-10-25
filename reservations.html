@@ -280,9 +280,7 @@
           </div>
         </div>
         <div class="availability-text">Available times</div>
-        <div class="time-grid" id="timeGrid">
-          <button class="time-slot-btn" onclick="openBookingForm('11:45')">11:45</button><button class="time-slot-btn" onclick="openBookingForm('12:00')">12:00</button><button class="time-slot-btn" onclick="openBookingForm('12:15')">12:15</button><button class="time-slot-btn" onclick="openBookingForm('12:30')">12:30</button><button class="time-slot-btn" onclick="openBookingForm('12:45')">12:45</button><button class="time-slot-btn" onclick="openBookingForm('13:00')">13:00</button><button class="time-slot-btn" onclick="openBookingForm('13:15')">13:15</button><button class="time-slot-btn" onclick="openBookingForm('13:30')">13:30</button><button class="time-slot-btn" onclick="openBookingForm('13:45')">13:45</button><button class="time-slot-btn" onclick="openBookingForm('14:00')">14:00</button><button class="time-slot-btn" onclick="openBookingForm('14:15')">14:15</button><button class="time-slot-btn" onclick="openBookingForm('14:30')">14:30</button><button class="time-slot-btn" onclick="openBookingForm('14:45')">14:45</button><button class="time-slot-btn" onclick="openBookingForm('15:00')">15:00</button><button class="time-slot-btn" onclick="openBookingForm('15:15')">15:15</button><button class="time-slot-btn" onclick="openBookingForm('15:30')">15:30</button><button class="time-slot-btn" onclick="openBookingForm('15:45')">15:45</button><button class="time-slot-btn" onclick="openBookingForm('16:00')">16:00</button><button class="time-slot-btn" onclick="openBookingForm('16:15')">16:15</button><button class="time-slot-btn" onclick="openBookingForm('16:30')">16:30</button><button class="time-slot-btn" onclick="openBookingForm('16:45')">16:45</button><button class="time-slot-btn" onclick="openBookingForm('17:00')">17:00</button><button class="time-slot-btn" onclick="openBookingForm('17:15')">17:15</button><button class="time-slot-btn" onclick="openBookingForm('17:30')">17:30</button><button class="time-slot-btn" onclick="openBookingForm('17:45')">17:45</button><button class="time-slot-btn" onclick="openBookingForm('18:00')">18:00</button><button class="time-slot-btn" onclick="openBookingForm('18:15')">18:15</button><button class="time-slot-btn" onclick="openBookingForm('18:30')">18:30</button><button class="time-slot-btn" onclick="openBookingForm('18:45')">18:45</button><button class="time-slot-btn" onclick="openBookingForm('19:00')">19:00</button><button class="time-slot-btn" onclick="openBookingForm('19:15')">19:15</button><button class="time-slot-btn" onclick="openBookingForm('19:30')">19:30</button><button class="time-slot-btn" onclick="openBookingForm('19:45')">19:45</button><button class="time-slot-btn" onclick="openBookingForm('20:00')">20:00</button><button class="time-slot-btn" onclick="openBookingForm('20:15')">20:15</button><button class="time-slot-btn" onclick="openBookingForm('20:30')">20:30</button><button class="time-slot-btn" onclick="openBookingForm('20:45')">20:45</button><button class="time-slot-btn" onclick="openBookingForm('21:00')">21:00</button><button class="time-slot-btn" onclick="openBookingForm('21:15')">21:15</button><button class="time-slot-btn" onclick="openBookingForm('21:30')">21:30</button><button class="time-slot-btn" onclick="openBookingForm('21:45')">21:45</button><button class="time-slot-btn" onclick="openBookingForm('22:00')">22:00</button><button class="time-slot-btn" onclick="openBookingForm('22:15')">22:15</button><button class="time-slot-btn" onclick="openBookingForm('22:30')">22:30</button><button class="time-slot-btn" onclick="openBookingForm('22:45')">22:45</button><button class="time-slot-btn" onclick="openBookingForm('23:00')">23:00</button><button class="time-slot-btn" onclick="openBookingForm('23:15')">23:15</button><button class="time-slot-btn" onclick="openBookingForm('23:30')">23:30</button><button class="time-slot-btn" onclick="openBookingForm('23:45')">23:45</button>
-        </div>
+        <div class="time-grid" id="timeGrid"></div>
       </div>
     </div>
   </div>
@@ -296,27 +294,26 @@
             <span id="modalDate">Monday, October 26, 2026</span><span>•</span><span id="modalTime">11:45</span><span>•</span><span id="modalDuration">2h</span>
           </div>
         </div>
-        <form class="form-section">
-          <div class="form-row"><label class="form-label">Your name <span class="required">*</span></label><input type="text" class="form-input" required></div>
-          <div class="form-row"><label class="form-label">Email address <span class="required">*</span></label><input type="email" class="form-input" required></div>
+        <form class="form-section" id="bookingForm" novalidate>
+          <div class="form-row"><label class="form-label">Your name <span class="required">*</span></label><input type="text" class="form-input" id="nameInput" required></div>
+          <div class="form-row"><label class="form-label">Email address <span class="required">*</span></label><input type="email" class="form-input" id="emailInput" required></div>
           <div class="form-row"><label class="form-label">Phone number <span class="required">*</span></label>
             <div class="phone-container">
-              <select class="country-code">
+              <select class="country-code" id="countryCode">
                 <option value="+65">SG +65</option><option value="+60">MY +60</option><option value="+62">ID +62</option><option value="+63">PH +63</option><option value="+66">TH +66</option><option value="+84">VN +84</option><option value="+86">CN +86</option><option value="+852">HK +852</option><option value="+853">MO +853</option><option value="+886">TW +886</option><option value="+81">JP +81</option><option value="+82">KR +82</option><option value="+61">AU +61</option><option value="+64">NZ +64</option><option value="+1">US/CA +1</option><option value="+44">UK +44</option><option value="+49">DE +49</option><option value="+33">FR +33</option><option value="+39">IT +39</option><option value="+34">ES +34</option>
               </select>
-              <input type="tel" class="form-input phone-number" required>
+              <input type="tel" class="form-input phone-number" id="phoneInput" required>
             </div>
           </div>
-          <div class="form-row"><label class="form-label">Number of Guests <span class="required">*</span></label><input type="number" class="form-input" required></div>
-          <div class="form-row"><label class="form-label">Level</label><select class="select-input"><option>Level 1 (Charcoal BBQ)</option><option>Level 2 (Private Dining & VIP Rooms)</option></select></div>
-          <div class="form-row"><label class="form-label">Additional notes</label><textarea class="textarea-input"></textarea></div>
+          <div class="form-row"><label class="form-label">Number of Guests <span class="required">*</span></label><input type="number" class="form-input" id="guestsInput" min="1" required></div>
+          <div class="form-row"><label class="form-label">Additional notes</label><textarea class="textarea-input" id="notesInput"></textarea></div>
           <div class="checkbox-container"><input type="checkbox" class="checkbox-input" id="check1" required><label class="checkbox-label" for="check1">I have read and accept the house rules & policies <span class="required">*</span></label></div>
           <div class="checkbox-container"><input type="checkbox" class="checkbox-input" id="check2" required><label class="checkbox-label" for="check2">I understand that Lang Nuong Vietnam will hold your table for up to 15 mins past your reservation time. <span class="required">*</span></label></div>
           <div class="terms-notice">By proceeding, you agree to Cal.com's <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</div>
         </form>
         <div class="modal-actions">
           <button type="button" class="modal-btn btn-back" onclick="closeBookingForm()">Back</button>
-          <button type="button" class="modal-btn btn-verify">Verify email</button>
+          <button type="button" class="modal-btn btn-verify" onclick="submitBooking()">Submit</button>
         </div>
       </div>
     </div>
@@ -327,16 +324,38 @@
     let selectedDateStr = '';
     let timeFormat = '24h';
     
-    const times24 = ['11:45','12:00','12:15','12:30','12:45','13:00','13:15','13:30','13:45','14:00','14:15','14:30','14:45','15:00','15:15','15:30','15:45','16:00','16:15','16:30','16:45','17:00','17:15','17:30','17:45','18:00','18:15','18:30','18:45','19:00','19:15','19:30','19:45','20:00','20:15','20:30','20:45','21:00','21:15','21:30','21:45','22:00','22:15','22:30','22:45','23:00','23:15','23:30','23:45'];
-    const times12 = ['11:45 AM','12:00 PM','12:15 PM','12:30 PM','12:45 PM','1:00 PM','1:15 PM','1:30 PM','1:45 PM','2:00 PM','2:15 PM','2:30 PM','2:45 PM','3:00 PM','3:15 PM','3:30 PM','3:45 PM','4:00 PM','4:15 PM','4:30 PM','4:45 PM','5:00 PM','5:15 PM','5:30 PM','5:45 PM','6:00 PM','6:15 PM','6:30 PM','6:45 PM','7:00 PM','7:15 PM','7:30 PM','7:45 PM','8:00 PM','8:15 PM','8:30 PM','8:45 PM','9:00 PM','9:15 PM','9:30 PM','9:45 PM','10:00 PM','10:15 PM','10:30 PM','10:45 PM','11:00 PM','11:15 PM','11:30 PM','11:45 PM'];
+    const times30 = ['11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30','21:00','21:30','22:00','22:30','23:00'];
+    const times30_12 = ['11:30 AM','12:00 PM','12:30 PM','1:00 PM','1:30 PM','2:00 PM','2:30 PM','3:00 PM','3:30 PM','4:00 PM','4:30 PM','5:00 PM','5:30 PM','6:00 PM','6:30 PM','7:00 PM','7:30 PM','8:00 PM','8:30 PM','9:00 PM','9:30 PM','10:00 PM','10:30 PM','11:00 PM'];
     
     function selectDuration(btn, duration){ document.querySelectorAll('.duration-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); selectedDuration=duration; document.getElementById('modalDuration').textContent=duration; }
     function selectDate(btn, dateStr, dayLabel){ document.querySelectorAll('.day-button').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); selectedDateStr=dateStr; document.getElementById('modalDate').textContent=dateStr; document.getElementById('selectedDateLabel').textContent=dayLabel; }
     function setTimeFormat(fmt){ timeFormat=fmt; document.getElementById('btn12h').classList.toggle('active', fmt==='12h'); document.getElementById('btn24h').classList.toggle('active', fmt==='24h'); renderTimes(); }
-    function renderTimes(){ const grid=document.getElementById('timeGrid'); grid.innerHTML=''; const times = timeFormat==='12h'?times12:times24; times.forEach(t=>{ const btn=document.createElement('button'); btn.className='time-slot-btn'; btn.textContent=t; btn.onclick=()=>openBookingForm(t); grid.appendChild(btn); }); }
+    function renderTimes(){ const grid=document.getElementById('timeGrid'); grid.innerHTML=''; const times = timeFormat==='12h'?times30_12:times30; times.forEach(t=>{ const btn=document.createElement('button'); btn.className='time-slot-btn'; btn.textContent=t; btn.onclick=()=>openBookingForm(t); grid.appendChild(btn); }); }
     function openBookingForm(time){ document.getElementById('modalTime').textContent=time; document.getElementById('modalDate').textContent=selectedDateStr || 'Monday, October 26, 2026'; document.getElementById('modalDuration').textContent=selectedDuration; document.getElementById('bookingModal').classList.add('active'); }
     function closeBookingForm(){ document.getElementById('bookingModal').classList.remove('active'); }
     document.getElementById('bookingModal').addEventListener('click',function(e){ if(e.target===this){ closeBookingForm(); } });
+    
+    function submitBooking() {
+      const name = document.getElementById('nameInput').value.trim();
+      const email = document.getElementById('emailInput').value.trim();
+      const phone = document.getElementById('phoneInput').value.trim();
+      const guests = parseInt(document.getElementById('guestsInput').value);
+      const check1 = document.getElementById('check1').checked;
+      const check2 = document.getElementById('check2').checked;
+      
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const phoneRegex = /^[0-9]{7,15}$/;
+      
+      if (!name) { alert('Please enter your name'); return; }
+      if (!email || !emailRegex.test(email)) { alert('Please enter a valid email address'); return; }
+      if (!phone || !phoneRegex.test(phone)) { alert('Please enter a valid phone number'); return; }
+      if (isNaN(guests) || guests < 1) { alert('Please enter number of guests'); return; }
+      if (guests > 20) { alert('Number of guests cannot be more than 20'); return; }
+      if (!check1 || !check2) { alert('Please accept all terms and conditions'); return; }
+      
+      alert('Reservation submitted successfully!');
+      closeBookingForm();
+    }
     
     function generateCalendar() {
       const calendarDays = document.getElementById('calendarDays');
@@ -378,6 +397,7 @@
     }
     
     generateCalendar();
+    renderTimes();
   </script>
 </body>
 </html>
