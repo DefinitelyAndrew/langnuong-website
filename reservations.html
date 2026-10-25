@@ -9,6 +9,56 @@
     html, body { margin: 0; padding: 0; height: 100%; background: #ffffff; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #111827; line-height: 1.5; -webkit-font-smoothing: antialiased; }
     
+    @media (prefers-color-scheme: dark) {
+      html, body { background: #0f0f0f; }
+      body { color: #f9fafb; }
+      .booking-container { background: #0f0f0f; }
+      .left-panel { border-right-color: #27272a; }
+      @media (max-width: 968px) { .left-panel { border-right: none; border-bottom-color: #27272a; } }
+      .org-name { color: #a1a1aa; }
+      .event-title { color: #f9fafb; }
+      .description { color: #d4d4d8; }
+      .description strong { color: #f9fafb; }
+      .duration-label { color: #f9fafb; }
+      .duration-btn { background: #18181b; border-color: #27272a; color: #d4d4d8; }
+      .duration-btn:hover { background: #27272a; border-color: #3f3f46; }
+      .duration-btn.active { background: #f9fafb; color: #111827; border-color: #f9fafb; }
+      .location-section, .timezone-section { color: #d4d4d8; }
+      .icon { color: #a1a1aa; }
+      .right-panel { background: #0f0f0f; }
+      .month-display { color: #f9fafb; }
+      .calendar-grid { background: #27272a; border-color: #27272a; }
+      .weekday-header { background: #18181b; color: #a1a1aa; }
+      .day-button { background: #0f0f0f; color: #f9fafb; }
+      .day-button:disabled { color: #52525b; background: #09090b; }
+      .day-button:not(:disabled):hover { background: #18181b; }
+      .day-button.selected { background: #f9fafb; color: #111827; }
+      .today-label { color: #a1a1aa; }
+      .day-button.selected .today-label { color: #71717a; }
+      .date-label { color: #f9fafb; }
+      .time-format-toggle { background: #27272a; }
+      .format-option { color: #a1a1aa; }
+      .format-option.active { background: #18181b; color: #f9fafb; }
+      .availability-text { color: #a1a1aa; }
+      .time-slot-btn { background: #18181b; border-color: #27272a; color: #f9fafb; }
+      .time-slot-btn:hover { border-color: #f9fafb; background: #27272a; }
+      .modal-overlay { background: rgba(0, 0, 0, 0.8); }
+      .modal { background: #18181b; }
+      .modal-title { color: #f9fafb; }
+      .booking-summary { color: #d4d4d8; }
+      .form-label { color: #f9fafb; }
+      .form-input, .select-input, .textarea-input, .country-code { background: #0f0f0f; border-color: #27272a; color: #f9fafb; }
+      .form-input:hover, .select-input:hover, .textarea-input:hover, .country-code:hover { border-color: #3f3f46; }
+      .form-input:focus, .select-input:focus, .textarea-input:focus, .country-code:focus { border-color: #f9fafb; box-shadow: 0 0 0 1px #f9fafb; }
+      .checkbox-label { color: #d4d4d8; }
+      .terms-notice { color: #a1a1aa; }
+      .terms-notice a { color: #a1a1aa; }
+      .btn-back { background: #18181b; border-color: #27272a; color: #d4d4d8; }
+      .btn-back:hover { background: #27272a; border-color: #3f3f46; }
+      .btn-verify { background: #f9fafb; border-color: #f9fafb; color: #111827; }
+      .btn-verify:hover { background: #e4e4e7; }
+    }
+    
     .booking-container { max-width: 1100px; margin: 0 auto; min-height: 100vh; background: white; display: flex; }
     @media (max-width: 968px) { .booking-container { flex-direction: column; } }
     
@@ -35,7 +85,7 @@
     .location-section, .timezone-section { display: flex; align-items: center; gap: 12px; color: #374151; font-size: 15px; }
     .icon { width: 20px; height: 20px; color: #6b7280; flex-shrink: 0; }
     
-    .right-panel { flex: 1; padding: 48px 40px; display: flex; flex-direction: column; }
+    .right-panel { flex: 1; padding: 48px 40px; display: flex; flex-direction: column; background: white; }
     @media (max-width: 968px) { .right-panel { padding: 32px 24px; } }
     @media (max-width: 640px) { .right-panel { padding: 24px 20px; } }
     
@@ -154,7 +204,7 @@
     
     <div class="right-panel">
       <div class="calendar-header">
-        <div class="month-display" id="monthDisplay">October 2026</div>
+        <div class="month-display" id="monthDisplay">October - December 2026</div>
       </div>
       
       <div class="calendar-grid">
@@ -232,7 +282,7 @@
     function generateCalendar() {
       const calendarDays = document.getElementById('calendarDays');
       calendarDays.innerHTML = '';
-      const today = new Date(2026, 9, 25); // Oct 25, 2026
+      const today = new Date(2026, 9, 25);
       const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
       const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
       
@@ -245,7 +295,7 @@
         const dayName = days[date.getDay()];
         const monthName = months[date.getMonth()];
         const dateStr = dayName + ', ' + monthName + ' ' + date.getDate() + ', ' + date.getFullYear();
-        const label = dayName.substring(0,3) + ' ' + date.getDate() + (date.getDate() === 1 || date.getDate() === 21 || date.getDate() === 31 ? 'st' : date.getDate() === 2 || date.getDate() === 22 ? 'nd' : date.getDate() === 3 || date.getDate() === 23 ? 'rd' : 'th');
+        const label = dayName.substring(0,3) + ' ' + date.getDate() + (date.getDate() % 10 === 1 && date.getDate() !== 11 ? 'st' : date.getDate() % 10 === 2 && date.getDate() !== 12 ? 'nd' : date.getDate() % 10 === 3 && date.getDate() !== 13 ? 'rd' : 'th');
         btn.onclick = () => selectDate(btn, dateStr, label);
         if (i === 0) btn.classList.add('selected');
         if (i === 0) {
@@ -263,7 +313,9 @@
         calendarDays.appendChild(btn);
       }
       
-      document.getElementById('monthDisplay').textContent = months[today.getMonth()] + ' - ' + months[new Date(today.getFullYear(), today.getMonth(), today.getDate() + 59).getMonth()] + ' ' + today.getFullYear();
+      const endDate = new Date(today);
+      endDate.setDate(today.getDate() + 59);
+      document.getElementById('monthDisplay').textContent = months[today.getMonth()] + ' - ' + months[endDate.getMonth()] + ' ' + today.getFullYear();
     }
     
     generateCalendar();
