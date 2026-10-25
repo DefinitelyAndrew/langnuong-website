@@ -345,7 +345,32 @@
     function selectDuration(btn, duration){ document.querySelectorAll('.duration-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); selectedDuration=duration; document.getElementById('modalDuration').textContent=duration; }
     function selectDate(btn, dateStr, dayLabel){ document.querySelectorAll('.day-button').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); selectedDateStr=dateStr; document.getElementById('modalDate').textContent=dateStr; document.getElementById('selectedDateLabel').textContent=dayLabel; }
     function setTimeFormat(fmt){ timeFormat=fmt; document.getElementById('btn12h').classList.toggle('active', fmt==='12h'); document.getElementById('btn24h').classList.toggle('active', fmt==='24h'); renderTimes(); }
-    function renderTimes(){ const grid=document.getElementById('timeGrid'); grid.innerHTML=''; const times = timeFormat==='12h'?times30_12:times30; times.forEach(t=>{ const btn=document.createElement('button'); btn.className='time-slot-btn'; btn.textContent=t; btn.onclick=()=>openBookingForm(t); grid.appendChild(btn); }); }
+    function renderTimes(){ const grid=document.getElementById('timeGrid'); grid.innerHTML=''; const times = timeFormat==='12h'?times30_12:times30; const now = new Date(); times.forEach((t, idx)=>{ const btn=document.createElement('button'); btn.className='time-slot-btn'; btn.textContent=t; 
+      if(selectedDateStr) {
+        let hour, min;
+        if(timeFormat === '24h') {
+          const parts = t.split(':'); hour = parseInt(parts[0]); min = parseInt(parts[1]);
+        } else {
+          const isPM = t.includes('PM'); const timePart = t.replace(' AM','').replace(' PM',''); const parts = timePart.split(':'); hour = parseInt(parts[0]); min = parseInt(parts[1]); if(isPM && hour !== 12) hour += 12; if(!isPM && hour === 12) hour = 0;
+        }
+        const slotDateTime = new Date();
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        for(let i=0; i<12; i++) {
+          if(selectedDateStr.includes(months[i])) {
+            slotDateTime.setMonth(i);
+            break;
+          }
+        }
+        const dayMatch = selectedDateStr.match(/(\d+)/);
+        if(dayMatch) slotDateTime.setDate(parseInt(dayMatch[1]));
+        slotDateTime.setFullYear(2026);
+        slotDateTime.setHours(hour, min, 0, 0);
+        const diffHours = (slotDateTime.getTime() - now.getTime()) / (1000*60*60);
+        if(diffHours < 3) { btn.disabled = true; btn.style.opacity = '0.4'; btn.style.cursor = 'not-allowed'; return; }
+      }
+      btn.onclick=()=>openBookingForm(t); grid.appendChild(btn); 
+    }); }
     function openBookingForm(time){ document.getElementById('modalTime').textContent=time; document.getElementById('modalDate').textContent=selectedDateStr || 'Monday, October 26, 2026'; document.getElementById('modalDuration').textContent=selectedDuration; document.getElementById('bookingModal').classList.add('active'); }
     function closeBookingForm(){ document.getElementById('bookingModal').classList.remove('active'); }
     document.getElementById('bookingModal').addEventListener('click',function(e){ if(e.target===this){ closeBookingForm(); } });
