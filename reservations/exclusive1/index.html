@@ -125,8 +125,8 @@
       .availability-text { color: #a3a3a3; }
     }
     
-    .time-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    @media (max-width: 640px) { .time-grid { grid-template-columns: 1fr; } }
+    .time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    @media (max-width: 640px) { .time-grid { grid-template-columns: repeat(2, 1fr); } }
     .time-slot-btn { padding: 14px 16px; border: 1px solid #d1d5db; background: white; border-radius: 8px; cursor: pointer; font-size: 15px; color: #111827; text-align: center; font-family: inherit; font-weight: 600; transition: all 0.15s; min-height: 48px; }
     .time-slot-btn:hover { border-color: #111827; background: #f9fafb; }
     @media (prefers-color-scheme: dark) {
@@ -345,7 +345,11 @@
     const today = new Date();
     let currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
-    const times24 = ['11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30','21:00','21:30','22:00','22:30','23:00'];
+    // Slots every 30 minutes across the full day, 12:00 AM through 11:59 PM.
+    const times24 = Array.from({ length: 48 }, (_, i) => {
+      const minutes = i * 30;
+      return String(Math.floor(minutes / 60)).padStart(2, '0') + ':' + String(minutes % 60).padStart(2, '0');
+    });
 
     function parseTime(t) { const p = t.split(':'); return { hour: parseInt(p[0], 10), min: parseInt(p[1], 10) }; }
     function formatTime(t) {
