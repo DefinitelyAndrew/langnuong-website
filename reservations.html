@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lang Nuong Exclusive Reservation | Lang Nuong Group</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; height: 100%; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #fff; color: #111827; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+    .container { max-width: 1100px; margin: 0 auto; min-height: 100vh; display: flex; }
+    .left-panel { flex: 0 0 400px; padding: 32px; border-right: 1px solid #e5e7eb; display: flex; flex-direction: column; gap: 24px; }
+    .logo { width: 48px; height: 48px; border-radius: 50%; background: #111827; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 18px; }
+    .org-name { font-size: 14px; color: #6b7280; margin-top: -12px; }
+    .event-title { font-size: 28px; font-weight: 700; margin: 0; line-height: 1.2; }
+    .description { display: flex; flex-direction: column; gap: 12px; color: #374151; font-size: 14px; }
+    .description strong { font-weight: 600; }
+    .duration-list { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0; }
+    .duration-item { padding: 4px 10px; background: #f3f4f6; border-radius: 6px; font-size: 13px; color: #374151; }
+    .location, .timezone { display: flex; align-items: center; gap: 8px; color: #374151; font-size: 14px; }
+    .location-icon { width: 16px; height: 16px; }
+    .right-panel { flex: 1; padding: 32px; display: flex; flex-direction: column; }
+    .calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .month-year { font-size: 16px; font-weight: 600; }
+    .month-nav { display: flex; gap: 8px; }
+    .nav-btn { width: 32px; height: 32px; border: 1px solid #e5e7eb; background: white; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
+    .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 32px; }
+    .weekday { text-align: center; font-size: 12px; color: #6b7280; padding: 8px 0; font-weight: 500; }
+    .day-btn { aspect-ratio: 1; border: none; background: transparent; border-radius: 50%; cursor: pointer; font-size: 14px; color: #111827; position: relative; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+    .day-btn:disabled { color: #d1d5db; cursor: not-allowed; }
+    .day-btn:not(:disabled):hover { background: #f3f4f6; }
+    .day-btn.selected { background: #111827; color: white; }
+    .day-btn.today { font-weight: 600; }
+    .today-indicator { font-size: 9px; position: absolute; bottom: 4px; }
+    .time-section { flex: 1; }
+    .time-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .selected-date { font-weight: 600; font-size: 15px; }
+    .time-format { display: flex; border: 1px solid #e5e7eb; border-radius: 6px; overflow: hidden; }
+    .format-btn { padding: 6px 12px; border: none; background: white; cursor: pointer; font-size: 13px; color: #374151; }
+    .format-btn.active { background: #f3f4f6; }
+    .time-slots { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .time-slot { padding: 12px; border: 1px solid #e5e7eb; background: white; border-radius: 8px; cursor: pointer; font-size: 14px; text-align: center; color: #111827; }
+    .time-slot:hover { border-color: #111827; }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); align-items: center; justify-content: center; z-index: 1000; }
+    .modal-overlay.active { display: flex; }
+    .modal { background: white; border-radius: 12px; max-width: 480px; width: 90%; max-height: 90vh; overflow-y: auto; padding: 32px; position: relative; }
+    .modal-header { margin-bottom: 24px; }
+    .modal-title { font-size: 24px; font-weight: 700; margin: 0 0 16px 0; }
+    .booking-info { display: flex; gap: 12px; flex-wrap: wrap; color: #374151; font-size: 14px; }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-weight: 500; margin-bottom: 6px; font-size: 14px; }
+    .form-input, .form-select, .form-textarea { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; font-family: inherit; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: #111827; }
+    .phone-group { display: flex; gap: 8px; }
+    .country-select { width: 100px; padding: 10px 8px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; }
+    .phone-input { flex: 1; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; }
+    .form-textarea { resize: vertical; min-height: 80px; }
+    .checkbox-group { display: flex; gap: 10px; margin-bottom: 16px; align-items: flex-start; }
+    .checkbox { width: 18px; height: 18px; margin-top: 2px; cursor: pointer; }
+    .checkbox-label { font-size: 14px; color: #374151; cursor: pointer; line-height: 1.5; }
+    .terms-text { font-size: 12px; color: #6b7280; margin-bottom: 24px; }
+    .terms-text a { color: #6b7280; text-decoration: underline; }
+    .modal-actions { display: flex; gap: 12px; }
+    .btn { flex: 1; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; }
+    .btn-secondary { background: white; border: 1px solid #d1d5db; color: #374151; }
+    .btn-primary { background: #111827; border: 1px solid #111827; color: white; }
+    @media (max-width: 968px) { .container { flex-direction: column; } .left-panel { flex: none; border-right: none; border-bottom: 1px solid #e5e7eb; } .time-slots { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="left-panel">
+      <div class="logo">LN</div>
+      <div class="org-name">Lang Nuong Group</div>
+      <h1 class="event-title">Lang Nuong Exclusive Reservation</h1>
+      <div class="description">
+        <div><strong>Call 9451 2966 / 9632 6039 for bookings with more than 20 people.</strong></div>
+        <div>This form is to reserve tables in the Lang Nuong Exclusive branch. You can cancel/reschedule your appointment after booking.</div>
+      </div>
+      <ul class="duration-list">
+        <li class="duration-item">1h</li><li class="duration-item">1h 30m</li><li class="duration-item">2h</li><li class="duration-item">2h 30m</li><li class="duration-item">3h</li><li class="duration-item">4h</li><li class="duration-item">5h</li>
+      </ul>
+      <div class="location">
+        <svg class="location-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+        <span>271 Jalan Besar, Singapore</span>
+      </div>
+      <div class="timezone">
+        <svg class="location-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+        <span>Asia/Singapore</span>
+      </div>
+    </div>
+    <div class="right-panel">
+      <div class="calendar-header">
+        <div class="month-year">October 2026</div>
+        <div class="month-nav">
+          <button class="nav-btn" disabled><svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/></svg></button>
+          <button class="nav-btn"><svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg></button>
+        </div>
+      </div>
+      <div class="calendar-grid">
+        <div class="weekday">MON</div><div class="weekday">TUE</div><div class="weekday">WED</div><div class="weekday">THU</div><div class="weekday">FRI</div><div class="weekday">SAT</div><div class="weekday">SUN</div>
+        <button class="day-btn" disabled>8</button><button class="day-btn" disabled>9</button><button class="day-btn" disabled>10</button><button class="day-btn" disabled>11</button><button class="day-btn" disabled>12</button><button class="day-btn" disabled>13</button><button class="day-btn" disabled>14</button>
+        <button class="day-btn" disabled>15</button><button class="day-btn" disabled>16</button><button class="day-btn" disabled>17</button><button class="day-btn" disabled>18</button><button class="day-btn" disabled>19</button><button class="day-btn" disabled>20</button><button class="day-btn" disabled>21</button>
+        <button class="day-btn" disabled>22</button><button class="day-btn" disabled>23</button><button class="day-btn" disabled>24</button><button class="day-btn today" disabled>25<span class="today-indicator">Today</span></button><button class="day-btn selected">26</button><button class="day-btn">27</button><button class="day-btn">28</button>
+        <button class="day-btn">29</button><button class="day-btn">30</button><button class="day-btn">31</button><div class="weekday" style="grid-column: 1;">NOV</div><button class="day-btn">1</button><button class="day-btn">2</button><button class="day-btn">3</button>
+        <button class="day-btn">4</button><button class="day-btn">5</button><button class="day-btn">6</button><button class="day-btn">7</button><button class="day-btn">8</button>
+      </div>
+      <div class="time-section">
+        <div class="time-header">
+          <div class="selected-date">Mon 26th</div>
+          <div class="time-format"><button class="format-btn">12h</button><button class="format-btn active">24h</button></div>
+        </div>
+        <div style="color: #6b7280; font-size: 13px; margin-bottom: 16px;">Available times for Monday, October 26, 2026</div>
+        <div class="time-slots">
+          <button class="time-slot" onclick="openBookingForm('11:45')">11:45</button><button class="time-slot" onclick="openBookingForm('12:00')">12:00</button><button class="time-slot" onclick="openBookingForm('12:15')">12:15</button><button class="time-slot" onclick="openBookingForm('12:30')">12:30</button><button class="time-slot" onclick="openBookingForm('12:45')">12:45</button><button class="time-slot" onclick="openBookingForm('13:00')">13:00</button><button class="time-slot" onclick="openBookingForm('13:15')">13:15</button><button class="time-slot" onclick="openBookingForm('13:30')">13:30</button><button class="time-slot" onclick="openBookingForm('13:45')">13:45</button><button class="time-slot" onclick="openBookingForm('14:00')">14:00</button><button class="time-slot" onclick="openBookingForm('14:15')">14:15</button><button class="time-slot" onclick="openBookingForm('14:30')">14:30</button><button class="time-slot" onclick="openBookingForm('14:45')">14:45</button><button class="time-slot" onclick="openBookingForm('15:00')">15:00</button><button class="time-slot" onclick="openBookingForm('15:15')">15:15</button><button class="time-slot" onclick="openBookingForm('15:30')">15:30</button><button class="time-slot" onclick="openBookingForm('15:45')">15:45</button><button class="time-slot" onclick="openBookingForm('16:00')">16:00</button><button class="time-slot" onclick="openBookingForm('16:15')">16:15</button><button class="time-slot" onclick="openBookingForm('16:30')">16:30</button><button class="time-slot" onclick="openBookingForm('16:45')">16:45</button><button class="time-slot" onclick="openBookingForm('17:00')">17:00</button><button class="time-slot" onclick="openBookingForm('17:15')">17:15</button><button class="time-slot" onclick="openBookingForm('17:30')">17:30</button><button class="time-slot" onclick="openBookingForm('17:45')">17:45</button><button class="time-slot" onclick="openBookingForm('18:00')">18:00</button><button class="time-slot" onclick="openBookingForm('18:15')">18:15</button><button class="time-slot" onclick="openBookingForm('18:30')">18:30</button><button class="time-slot" onclick="openBookingForm('18:45')">18:45</button><button class="time-slot" onclick="openBookingForm('19:00')">19:00</button><button class="time-slot" onclick="openBookingForm('19:15')">19:15</button><button class="time-slot" onclick="openBookingForm('19:30')">19:30</button><button class="time-slot" onclick="openBookingForm('19:45')">19:45</button><button class="time-slot" onclick="openBookingForm('20:00')">20:00</button><button class="time-slot" onclick="openBookingForm('20:15')">20:15</button><button class="time-slot" onclick="openBookingForm('20:30')">20:30</button><button class="time-slot" onclick="openBookingForm('20:45')">20:45</button><button class="time-slot" onclick="openBookingForm('21:00')">21:00</button><button class="time-slot" onclick="openBookingForm('21:15')">21:15</button><button class="time-slot" onclick="openBookingForm('21:30')">21:30</button><button class="time-slot" onclick="openBookingForm('21:45')">21:45</button><button class="time-slot" onclick="openBookingForm('22:00')">22:00</button><button class="time-slot" onclick="openBookingForm('22:15')">22:15</button><button class="time-slot" onclick="openBookingForm('22:30')">22:30</button><button class="time-slot" onclick="openBookingForm('22:45')">22:45</button><button class="time-slot" onclick="openBookingForm('23:00')">23:00</button><button class="time-slot" onclick="openBookingForm('23:15')">23:15</button><button class="time-slot" onclick="openBookingForm('23:30')">23:30</button><button class="time-slot" onclick="openBookingForm('23:45')">23:45</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="bookingModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Confirm your details</h2>
+        <div class="booking-info"><span>Monday, October 26, 2026</span><span>,</span><span id="selectedTime">11:45</span><span>3h</span></div>
+      </div>
+      <form>
+        <div class="form-group"><label class="form-label">Your name</label><input type="text" class="form-input" required></div>
+        <div class="form-group"><label class="form-label">Email address</label><input type="email" class="form-input" required></div>
+        <div class="form-group"><label class="form-label">Phone number</label><div class="phone-group"><select class="country-select"><option>+65</option></select><input type="tel" class="phone-input" required></div></div>
+        <div class="form-group"><label class="form-label">Number of Guests</label><input type="number" class="form-input" required></div>
+        <div class="form-group"><label class="form-label">Level</label><select class="form-select"><option>Level 1 (Charcoal BBQ)</option><option>Level 2 (Private Dining & VIP Rooms)</option></select></div>
+        <div class="form-group"><label class="form-label">Additional notes</label><textarea class="form-textarea"></textarea></div>
+        <div class="checkbox-group"><input type="checkbox" class="checkbox" id="check1"><label class="checkbox-label" for="check1">I have read and accept the house rules & policies</label></div>
+        <div class="checkbox-group"><input type="checkbox" class="checkbox" id="check2"><label class="checkbox-label" for="check2">I understand that Lang Nuong Vietnam will hold your table for up to 15 mins past your reservation time.</label></div>
+        <div class="terms-text">By proceeding, you agree to Cal.com's <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</div>
+        <div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="closeBookingForm()">Back</button><button type="button" class="btn btn-primary">Verify email</button></div>
+      </form>
+    </div>
+  </div>
+  <script>
+    function openBookingForm(time){ document.getElementById('selectedTime').textContent=time; document.getElementById('bookingModal').classList.add('active'); }
+    function closeBookingForm(){ document.getElementById('bookingModal').classList.remove('active'); }
+    document.getElementById('bookingModal').addEventListener('click',function(e){ if(e.target===this){ closeBookingForm(); } });
+  </script>
+</body>
+</html>
