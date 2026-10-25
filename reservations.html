@@ -41,10 +41,6 @@
     
     .calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
     .month-display { font-size: 18px; font-weight: 600; color: #111827; }
-    .nav-controls { display: flex; gap: 4px; }
-    .nav-btn { width: 40px; height: 40px; border: none; background: transparent; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #374151; padding: 0; }
-    .nav-btn:hover:not(:disabled) { background: #f3f4f6; }
-    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
     
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; margin-bottom: 40px; background: #e5e7eb; border: 1px solid #e5e7eb; border-radius: 6px; overflow: hidden; }
     .weekday-header { text-align: center; font-size: 11px; color: #6b7280; padding: 10px 0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; background: #f9fafb; }
@@ -158,33 +154,17 @@
     
     <div class="right-panel">
       <div class="calendar-header">
-        <div class="month-display">October 2026</div>
-        <div class="nav-controls">
-          <button class="nav-btn" disabled>
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
-            </svg>
-          </button>
-          <button class="nav-btn" disabled>
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-            </svg>
-          </button>
-        </div>
+        <div class="month-display" id="monthDisplay">October 2026</div>
       </div>
       
       <div class="calendar-grid">
         <div class="weekday-header">Mon</div><div class="weekday-header">Tue</div><div class="weekday-header">Wed</div><div class="weekday-header">Thu</div><div class="weekday-header">Fri</div><div class="weekday-header">Sat</div><div class="weekday-header">Sun</div>
-        <button class="day-button" disabled>1</button><button class="day-button" disabled>2</button><button class="day-button" disabled>3</button><button class="day-button" disabled>4</button><button class="day-button" disabled>5</button><button class="day-button" disabled>6</button><button class="day-button" disabled>7</button>
-        <button class="day-button" disabled>8</button><button class="day-button" disabled>9</button><button class="day-button" disabled>10</button><button class="day-button" disabled>11</button><button class="day-button" disabled>12</button><button class="day-button" disabled>13</button><button class="day-button" disabled>14</button>
-        <button class="day-button" disabled>15</button><button class="day-button" disabled>16</button><button class="day-button" disabled>17</button><button class="day-button" disabled>18</button><button class="day-button" disabled>19</button><button class="day-button" disabled>20</button><button class="day-button" disabled>21</button>
-        <button class="day-button" disabled>22</button><button class="day-button" disabled>23</button><button class="day-button" disabled>24</button><button class="day-button today" disabled>25<span class="today-label">Today</span></button><button class="day-button selected" onclick="selectDate(this, 'Monday, October 26, 2026')">26</button><button class="day-button" onclick="selectDate(this, 'Tuesday, October 27, 2026')">27</button><button class="day-button" onclick="selectDate(this, 'Wednesday, October 28, 2026')">28</button>
-        <button class="day-button" onclick="selectDate(this, 'Thursday, October 29, 2026')">29</button><button class="day-button" onclick="selectDate(this, 'Friday, October 30, 2026')">30</button><button class="day-button" onclick="selectDate(this, 'Saturday, October 31, 2026')">31</button>
       </div>
+      <div class="calendar-grid" id="calendarDays" style="margin-top: -1px;"></div>
       
-      <div class="time-selection">
+      <div class="time-selection" style="margin-top: 40px;">
         <div class="time-header">
-          <div class="date-label" id="selectedDateLabel">Mon 26th</div>
+          <div class="date-label" id="selectedDateLabel">Select a date</div>
           <div class="time-format-toggle">
             <button class="format-option" id="btn12h" onclick="setTimeFormat('12h')">12h</button>
             <button class="format-option active" id="btn24h" onclick="setTimeFormat('24h')">24h</button>
@@ -235,19 +215,58 @@
   
   <script>
     let selectedDuration = '2h';
-    let selectedDateStr = 'Monday, October 26, 2026';
+    let selectedDateStr = '';
     let timeFormat = '24h';
     
     const times24 = ['11:45','12:00','12:15','12:30','12:45','13:00','13:15','13:30','13:45','14:00','14:15','14:30','14:45','15:00','15:15','15:30','15:45','16:00','16:15','16:30','16:45','17:00','17:15','17:30','17:45','18:00','18:15','18:30','18:45','19:00','19:15','19:30','19:45','20:00','20:15','20:30','20:45','21:00','21:15','21:30','21:45','22:00','22:15','22:30','22:45','23:00','23:15','23:30','23:45'];
     const times12 = ['11:45 AM','12:00 PM','12:15 PM','12:30 PM','12:45 PM','1:00 PM','1:15 PM','1:30 PM','1:45 PM','2:00 PM','2:15 PM','2:30 PM','2:45 PM','3:00 PM','3:15 PM','3:30 PM','3:45 PM','4:00 PM','4:15 PM','4:30 PM','4:45 PM','5:00 PM','5:15 PM','5:30 PM','5:45 PM','6:00 PM','6:15 PM','6:30 PM','6:45 PM','7:00 PM','7:15 PM','7:30 PM','7:45 PM','8:00 PM','8:15 PM','8:30 PM','8:45 PM','9:00 PM','9:15 PM','9:30 PM','9:45 PM','10:00 PM','10:15 PM','10:30 PM','10:45 PM','11:00 PM','11:15 PM','11:30 PM','11:45 PM'];
     
     function selectDuration(btn, duration){ document.querySelectorAll('.duration-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); selectedDuration=duration; document.getElementById('modalDuration').textContent=duration; }
-    function selectDate(btn, dateStr){ document.querySelectorAll('.day-button').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); selectedDateStr=dateStr; document.getElementById('modalDate').textContent=dateStr; const day=dateStr.split(', ')[0].substring(0,3); document.getElementById('selectedDateLabel').textContent=day+' '+btn.textContent+'th'; }
+    function selectDate(btn, dateStr, dayLabel){ document.querySelectorAll('.day-button').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); selectedDateStr=dateStr; document.getElementById('modalDate').textContent=dateStr; document.getElementById('selectedDateLabel').textContent=dayLabel; }
     function setTimeFormat(fmt){ timeFormat=fmt; document.getElementById('btn12h').classList.toggle('active', fmt==='12h'); document.getElementById('btn24h').classList.toggle('active', fmt==='24h'); renderTimes(); }
     function renderTimes(){ const grid=document.getElementById('timeGrid'); grid.innerHTML=''; const times = timeFormat==='12h'?times12:times24; times.forEach(t=>{ const btn=document.createElement('button'); btn.className='time-slot-btn'; btn.textContent=t; btn.onclick=()=>openBookingForm(t); grid.appendChild(btn); }); }
-    function openBookingForm(time){ document.getElementById('modalTime').textContent=time; document.getElementById('modalDate').textContent=selectedDateStr; document.getElementById('modalDuration').textContent=selectedDuration; document.getElementById('bookingModal').classList.add('active'); }
+    function openBookingForm(time){ document.getElementById('modalTime').textContent=time; document.getElementById('modalDate').textContent=selectedDateStr || 'Monday, October 26, 2026'; document.getElementById('modalDuration').textContent=selectedDuration; document.getElementById('bookingModal').classList.add('active'); }
     function closeBookingForm(){ document.getElementById('bookingModal').classList.remove('active'); }
     document.getElementById('bookingModal').addEventListener('click',function(e){ if(e.target===this){ closeBookingForm(); } });
+    
+    function generateCalendar() {
+      const calendarDays = document.getElementById('calendarDays');
+      calendarDays.innerHTML = '';
+      const today = new Date(2026, 9, 25); // Oct 25, 2026
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      
+      for (let i = 0; i < 60; i++) {
+        const date = new Date(today);
+        date.setDate(today.getDate() + i);
+        const btn = document.createElement('button');
+        btn.className = 'day-button';
+        btn.textContent = date.getDate();
+        const dayName = days[date.getDay()];
+        const monthName = months[date.getMonth()];
+        const dateStr = dayName + ', ' + monthName + ' ' + date.getDate() + ', ' + date.getFullYear();
+        const label = dayName.substring(0,3) + ' ' + date.getDate() + (date.getDate() === 1 || date.getDate() === 21 || date.getDate() === 31 ? 'st' : date.getDate() === 2 || date.getDate() === 22 ? 'nd' : date.getDate() === 3 || date.getDate() === 23 ? 'rd' : 'th');
+        btn.onclick = () => selectDate(btn, dateStr, label);
+        if (i === 0) btn.classList.add('selected');
+        if (i === 0) {
+          selectedDateStr = dateStr;
+          document.getElementById('selectedDateLabel').textContent = label;
+          document.getElementById('modalDate').textContent = dateStr;
+        }
+        if (i === 0 && date.getDate() === 25) {
+          btn.classList.add('today');
+          const span = document.createElement('span');
+          span.className = 'today-label';
+          span.textContent = 'Today';
+          btn.appendChild(span);
+        }
+        calendarDays.appendChild(btn);
+      }
+      
+      document.getElementById('monthDisplay').textContent = months[today.getMonth()] + ' - ' + months[new Date(today.getFullYear(), today.getMonth(), today.getDate() + 59).getMonth()] + ' ' + today.getFullYear();
+    }
+    
+    generateCalendar();
   </script>
 </body>
 </html>
