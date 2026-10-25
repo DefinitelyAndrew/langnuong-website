@@ -10,17 +10,11 @@
     body { font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #111827; line-height: 1.5; -webkit-font-smoothing: antialiased; }
     
     .booking-container { max-width: 1100px; margin: 0 auto; min-height: 100vh; background: white; display: flex; }
-    @media (max-width: 968px) { 
-      .booking-container { flex-direction: column; } 
-    }
+    @media (max-width: 968px) { .booking-container { flex-direction: column; } }
     
     .left-panel { flex: 0 0 400px; padding: 48px 40px; border-right: 1px solid #e5e7eb; display: flex; flex-direction: column; gap: 24px; }
-    @media (max-width: 968px) { 
-      .left-panel { flex: none; border-right: none; border-bottom: 1px solid #e5e7eb; padding: 32px 24px; } 
-    }
-    @media (max-width: 640px) { 
-      .left-panel { padding: 24px 20px; } 
-    }
+    @media (max-width: 968px) { .left-panel { flex: none; border-right: none; border-bottom: 1px solid #e5e7eb; padding: 32px 24px; } }
+    @media (max-width: 640px) { .left-panel { padding: 24px 20px; } }
     
     .header-section { display: flex; flex-direction: column; gap: 16px; }
     .logo-img { width: 64px; height: auto; }
@@ -34,7 +28,7 @@
     .duration-section { display: flex; flex-direction: column; gap: 12px; }
     .duration-label { font-size: 14px; font-weight: 600; color: #111827; }
     .duration-list { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0; }
-    .duration-btn { padding: 8px 14px; background: white; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #374151; cursor: pointer; font-family: inherit; font-weight: 500; transition: all 0.15s; }
+    .duration-btn { padding: 8px 14px; background: white; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; color: #374151; cursor: pointer; font-family: inherit; font-weight: 500; transition: all 0.15s; }
     .duration-btn:hover { background: #f9fafb; border-color: #9ca3af; }
     .duration-btn.active { background: #111827; color: white; border-color: #111827; }
     
@@ -48,32 +42,32 @@
     .calendar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
     .month-display { font-size: 18px; font-weight: 600; color: #111827; }
     .nav-controls { display: flex; gap: 4px; }
-    .nav-btn { width: 40px; height: 40px; border: none; background: transparent; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #374151; padding: 0; }
+    .nav-btn { width: 40px; height: 40px; border: none; background: transparent; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #374151; padding: 0; }
     .nav-btn:hover:not(:disabled) { background: #f3f4f6; }
     .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
     
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 40px; }
-    .weekday-header { text-align: center; font-size: 12px; color: #6b7280; padding: 12px 0 16px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; }
-    .day-button { aspect-ratio: 1; border: none; background: transparent; border-radius: 50%; cursor: pointer; font-size: 15px; color: #111827; position: relative; display: flex; align-items: center; justify-content: center; flex-direction: column; font-family: inherit; transition: background 0.15s; min-height: 44px; }
-    .day-button:disabled { color: #d1d5db; cursor: not-allowed; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; margin-bottom: 40px; background: #e5e7eb; border: 1px solid #e5e7eb; border-radius: 6px; overflow: hidden; }
+    .weekday-header { text-align: center; font-size: 11px; color: #6b7280; padding: 10px 0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; background: #f9fafb; }
+    .day-button { border: none; background: white; cursor: pointer; font-size: 14px; color: #111827; position: relative; display: flex; align-items: center; justify-content: center; flex-direction: column; font-family: inherit; transition: background 0.15s; min-height: 44px; padding: 8px 0; }
+    .day-button:disabled { color: #d1d5db; cursor: not-allowed; background: #fafafa; }
     .day-button:not(:disabled):hover { background: #f3f4f6; }
     .day-button.selected { background: #111827; color: white; font-weight: 600; }
     .day-button.today { font-weight: 600; }
-    .today-label { font-size: 9px; position: absolute; bottom: 4px; color: #6b7280; }
+    .today-label { font-size: 8px; position: absolute; bottom: 2px; color: #6b7280; }
     .day-button.selected .today-label { color: rgba(255,255,255,0.85); }
     
     .time-selection { flex: 1; }
     .time-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
     .date-label { font-size: 16px; font-weight: 600; color: #111827; }
-    .time-format-toggle { display: flex; background: #f3f4f6; border-radius: 8px; padding: 3px; }
-    .format-option { padding: 6px 12px; border: none; background: transparent; border-radius: 6px; cursor: pointer; font-size: 13px; color: #374151; font-family: inherit; font-weight: 500; }
-    .format-option.active { background: white; color: #111827; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .time-format-toggle { display: flex; background: #f3f4f6; border-radius: 6px; padding: 2px; }
+    .format-option { padding: 6px 12px; border: none; background: transparent; border-radius: 4px; cursor: pointer; font-size: 13px; color: #374151; font-family: inherit; font-weight: 500; }
+    .format-option.active { background: white; color: #111827; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
     
     .availability-text { color: #6b7280; font-size: 14px; margin-bottom: 20px; }
     
     .time-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
     @media (max-width: 640px) { .time-grid { grid-template-columns: 1fr; } }
-    .time-slot-btn { padding: 14px 16px; border: 1px solid #d1d5db; background: white; border-radius: 10px; cursor: pointer; font-size: 15px; color: #111827; text-align: center; font-family: inherit; font-weight: 600; transition: all 0.15s; min-height: 48px; }
+    .time-slot-btn { padding: 14px 16px; border: 1px solid #d1d5db; background: white; border-radius: 8px; cursor: pointer; font-size: 15px; color: #111827; text-align: center; font-family: inherit; font-weight: 600; transition: all 0.15s; min-height: 48px; }
     .time-slot-btn:hover { border-color: #111827; background: #f9fafb; }
     
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
@@ -90,21 +84,21 @@
     .form-row { display: flex; flex-direction: column; gap: 8px; }
     .form-label { font-size: 14px; font-weight: 600; color: #111827; }
     .required { color: #dc2626; }
-    .form-input { width: 100%; padding: 12px 14px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 15px; font-family: inherit; color: #111827; background: white; transition: all 0.15s; min-height: 48px; }
+    .form-input { width: 100%; padding: 12px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 15px; font-family: inherit; color: #111827; background: white; transition: all 0.15s; min-height: 48px; }
     .form-input:hover { border-color: #9ca3af; }
     .form-input:focus { outline: none; border-color: #111827; box-shadow: 0 0 0 1px #111827; }
     
     .phone-container { display: flex; gap: 8px; }
-    .country-code { width: 110px; padding: 12px 10px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 15px; font-family: inherit; color: #111827; background: white; cursor: pointer; min-height: 48px; }
+    .country-code { width: 110px; padding: 12px 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 15px; font-family: inherit; color: #111827; background: white; cursor: pointer; min-height: 48px; }
     .country-code:hover { border-color: #9ca3af; }
     .country-code:focus { outline: none; border-color: #111827; box-shadow: 0 0 0 1px #111827; }
     .phone-number { flex: 1; }
     
-    .select-input { width: 100%; padding: 12px 14px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 15px; font-family: inherit; color: #111827; background: white; cursor: pointer; min-height: 48px; transition: all 0.15s; }
+    .select-input { width: 100%; padding: 12px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 15px; font-family: inherit; color: #111827; background: white; cursor: pointer; min-height: 48px; transition: all 0.15s; }
     .select-input:hover { border-color: #9ca3af; }
     .select-input:focus { outline: none; border-color: #111827; box-shadow: 0 0 0 1px #111827; }
     
-    .textarea-input { width: 100%; padding: 12px 14px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 15px; font-family: inherit; color: #111827; background: white; resize: vertical; min-height: 100px; transition: all 0.15s; }
+    .textarea-input { width: 100%; padding: 12px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 15px; font-family: inherit; color: #111827; background: white; resize: vertical; min-height: 100px; transition: all 0.15s; }
     .textarea-input:hover { border-color: #9ca3af; }
     .textarea-input:focus { outline: none; border-color: #111827; box-shadow: 0 0 0 1px #111827; }
     
@@ -116,7 +110,7 @@
     .terms-notice a { color: #6b7280; text-decoration: underline; }
     
     .modal-actions { display: flex; gap: 12px; margin-top: 32px; }
-    .modal-btn { flex: 1; padding: 13px 24px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; min-height: 48px; }
+    .modal-btn { flex: 1; padding: 13px 24px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; min-height: 48px; }
     .btn-back { background: white; border: 1px solid #d1d5db; color: #374151; }
     .btn-back:hover { background: #f9fafb; border-color: #9ca3af; }
     .btn-verify { background: #111827; border: 1px solid #111827; color: white; }
@@ -131,12 +125,10 @@
         <div class="org-name">Lang Nuong Group</div>
         <h1 class="event-title">Lang Nuong Exclusive Reservation</h1>
       </div>
-      
       <div class="description">
         <div><strong>Call 9451 2966 / 9632 6039 for bookings with more than 20 people.</strong></div>
         <div>This form is to reserve tables in the Lang Nuong Exclusive branch. You can cancel/reschedule your appointment after booking.</div>
       </div>
-      
       <div class="duration-section">
         <div class="duration-label">Duration</div>
         <div class="duration-list">
@@ -149,7 +141,6 @@
           <button class="duration-btn" onclick="selectDuration(this, '5h')">5h</button>
         </div>
       </div>
-      
       <div class="location-section">
         <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -157,7 +148,6 @@
         </svg>
         <span>271 Jalan Besar, Singapore</span>
       </div>
-      
       <div class="timezone-section">
         <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -175,7 +165,7 @@
               <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
             </svg>
           </button>
-          <button class="nav-btn">
+          <button class="nav-btn" disabled>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
             </svg>
@@ -185,23 +175,23 @@
       
       <div class="calendar-grid">
         <div class="weekday-header">Mon</div><div class="weekday-header">Tue</div><div class="weekday-header">Wed</div><div class="weekday-header">Thu</div><div class="weekday-header">Fri</div><div class="weekday-header">Sat</div><div class="weekday-header">Sun</div>
+        <button class="day-button" disabled>1</button><button class="day-button" disabled>2</button><button class="day-button" disabled>3</button><button class="day-button" disabled>4</button><button class="day-button" disabled>5</button><button class="day-button" disabled>6</button><button class="day-button" disabled>7</button>
         <button class="day-button" disabled>8</button><button class="day-button" disabled>9</button><button class="day-button" disabled>10</button><button class="day-button" disabled>11</button><button class="day-button" disabled>12</button><button class="day-button" disabled>13</button><button class="day-button" disabled>14</button>
         <button class="day-button" disabled>15</button><button class="day-button" disabled>16</button><button class="day-button" disabled>17</button><button class="day-button" disabled>18</button><button class="day-button" disabled>19</button><button class="day-button" disabled>20</button><button class="day-button" disabled>21</button>
         <button class="day-button" disabled>22</button><button class="day-button" disabled>23</button><button class="day-button" disabled>24</button><button class="day-button today" disabled>25<span class="today-label">Today</span></button><button class="day-button selected" onclick="selectDate(this, 'Monday, October 26, 2026')">26</button><button class="day-button" onclick="selectDate(this, 'Tuesday, October 27, 2026')">27</button><button class="day-button" onclick="selectDate(this, 'Wednesday, October 28, 2026')">28</button>
-        <button class="day-button" onclick="selectDate(this, 'Thursday, October 29, 2026')">29</button><button class="day-button" onclick="selectDate(this, 'Friday, October 30, 2026')">30</button><button class="day-button" onclick="selectDate(this, 'Saturday, October 31, 2026')">31</button><button class="day-button" onclick="selectDate(this, 'Sunday, November 1, 2026')">1</button><button class="day-button" onclick="selectDate(this, 'Monday, November 2, 2026')">2</button><button class="day-button" onclick="selectDate(this, 'Tuesday, November 3, 2026')">3</button><button class="day-button" onclick="selectDate(this, 'Wednesday, November 4, 2026')">4</button>
-        <button class="day-button" onclick="selectDate(this, 'Thursday, November 5, 2026')">5</button><button class="day-button" onclick="selectDate(this, 'Friday, November 6, 2026')">6</button><button class="day-button" onclick="selectDate(this, 'Saturday, November 7, 2026')">7</button><button class="day-button" onclick="selectDate(this, 'Sunday, November 8, 2026')">8</button>
+        <button class="day-button" onclick="selectDate(this, 'Thursday, October 29, 2026')">29</button><button class="day-button" onclick="selectDate(this, 'Friday, October 30, 2026')">30</button><button class="day-button" onclick="selectDate(this, 'Saturday, October 31, 2026')">31</button>
       </div>
       
       <div class="time-selection">
         <div class="time-header">
           <div class="date-label" id="selectedDateLabel">Mon 26th</div>
           <div class="time-format-toggle">
-            <button class="format-option">12h</button>
-            <button class="format-option active">24h</button>
+            <button class="format-option" id="btn12h" onclick="setTimeFormat('12h')">12h</button>
+            <button class="format-option active" id="btn24h" onclick="setTimeFormat('24h')">24h</button>
           </div>
         </div>
         <div class="availability-text">Available times</div>
-        <div class="time-grid">
+        <div class="time-grid" id="timeGrid">
           <button class="time-slot-btn" onclick="openBookingForm('11:45')">11:45</button><button class="time-slot-btn" onclick="openBookingForm('12:00')">12:00</button><button class="time-slot-btn" onclick="openBookingForm('12:15')">12:15</button><button class="time-slot-btn" onclick="openBookingForm('12:30')">12:30</button><button class="time-slot-btn" onclick="openBookingForm('12:45')">12:45</button><button class="time-slot-btn" onclick="openBookingForm('13:00')">13:00</button><button class="time-slot-btn" onclick="openBookingForm('13:15')">13:15</button><button class="time-slot-btn" onclick="openBookingForm('13:30')">13:30</button><button class="time-slot-btn" onclick="openBookingForm('13:45')">13:45</button><button class="time-slot-btn" onclick="openBookingForm('14:00')">14:00</button><button class="time-slot-btn" onclick="openBookingForm('14:15')">14:15</button><button class="time-slot-btn" onclick="openBookingForm('14:30')">14:30</button><button class="time-slot-btn" onclick="openBookingForm('14:45')">14:45</button><button class="time-slot-btn" onclick="openBookingForm('15:00')">15:00</button><button class="time-slot-btn" onclick="openBookingForm('15:15')">15:15</button><button class="time-slot-btn" onclick="openBookingForm('15:30')">15:30</button><button class="time-slot-btn" onclick="openBookingForm('15:45')">15:45</button><button class="time-slot-btn" onclick="openBookingForm('16:00')">16:00</button><button class="time-slot-btn" onclick="openBookingForm('16:15')">16:15</button><button class="time-slot-btn" onclick="openBookingForm('16:30')">16:30</button><button class="time-slot-btn" onclick="openBookingForm('16:45')">16:45</button><button class="time-slot-btn" onclick="openBookingForm('17:00')">17:00</button><button class="time-slot-btn" onclick="openBookingForm('17:15')">17:15</button><button class="time-slot-btn" onclick="openBookingForm('17:30')">17:30</button><button class="time-slot-btn" onclick="openBookingForm('17:45')">17:45</button><button class="time-slot-btn" onclick="openBookingForm('18:00')">18:00</button><button class="time-slot-btn" onclick="openBookingForm('18:15')">18:15</button><button class="time-slot-btn" onclick="openBookingForm('18:30')">18:30</button><button class="time-slot-btn" onclick="openBookingForm('18:45')">18:45</button><button class="time-slot-btn" onclick="openBookingForm('19:00')">19:00</button><button class="time-slot-btn" onclick="openBookingForm('19:15')">19:15</button><button class="time-slot-btn" onclick="openBookingForm('19:30')">19:30</button><button class="time-slot-btn" onclick="openBookingForm('19:45')">19:45</button><button class="time-slot-btn" onclick="openBookingForm('20:00')">20:00</button><button class="time-slot-btn" onclick="openBookingForm('20:15')">20:15</button><button class="time-slot-btn" onclick="openBookingForm('20:30')">20:30</button><button class="time-slot-btn" onclick="openBookingForm('20:45')">20:45</button><button class="time-slot-btn" onclick="openBookingForm('21:00')">21:00</button><button class="time-slot-btn" onclick="openBookingForm('21:15')">21:15</button><button class="time-slot-btn" onclick="openBookingForm('21:30')">21:30</button><button class="time-slot-btn" onclick="openBookingForm('21:45')">21:45</button><button class="time-slot-btn" onclick="openBookingForm('22:00')">22:00</button><button class="time-slot-btn" onclick="openBookingForm('22:15')">22:15</button><button class="time-slot-btn" onclick="openBookingForm('22:30')">22:30</button><button class="time-slot-btn" onclick="openBookingForm('22:45')">22:45</button><button class="time-slot-btn" onclick="openBookingForm('23:00')">23:00</button><button class="time-slot-btn" onclick="openBookingForm('23:15')">23:15</button><button class="time-slot-btn" onclick="openBookingForm('23:30')">23:30</button><button class="time-slot-btn" onclick="openBookingForm('23:45')">23:45</button>
         </div>
       </div>
@@ -223,26 +213,7 @@
           <div class="form-row"><label class="form-label">Phone number <span class="required">*</span></label>
             <div class="phone-container">
               <select class="country-code">
-                <option value="+65">SG +65</option>
-                <option value="+60">MY +60</option>
-                <option value="+62">ID +62</option>
-                <option value="+63">PH +63</option>
-                <option value="+66">TH +66</option>
-                <option value="+84">VN +84</option>
-                <option value="+86">CN +86</option>
-                <option value="+852">HK +852</option>
-                <option value="+853">MO +853</option>
-                <option value="+886">TW +886</option>
-                <option value="+81">JP +81</option>
-                <option value="+82">KR +82</option>
-                <option value="+61">AU +61</option>
-                <option value="+64">NZ +64</option>
-                <option value="+1">US/CA +1</option>
-                <option value="+44">UK +44</option>
-                <option value="+49">DE +49</option>
-                <option value="+33">FR +33</option>
-                <option value="+39">IT +39</option>
-                <option value="+34">ES +34</option>
+                <option value="+65">SG +65</option><option value="+60">MY +60</option><option value="+62">ID +62</option><option value="+63">PH +63</option><option value="+66">TH +66</option><option value="+84">VN +84</option><option value="+86">CN +86</option><option value="+852">HK +852</option><option value="+853">MO +853</option><option value="+886">TW +886</option><option value="+81">JP +81</option><option value="+82">KR +82</option><option value="+61">AU +61</option><option value="+64">NZ +64</option><option value="+1">US/CA +1</option><option value="+44">UK +44</option><option value="+49">DE +49</option><option value="+33">FR +33</option><option value="+39">IT +39</option><option value="+34">ES +34</option>
               </select>
               <input type="tel" class="form-input phone-number" required>
             </div>
@@ -265,8 +236,15 @@
   <script>
     let selectedDuration = '2h';
     let selectedDateStr = 'Monday, October 26, 2026';
+    let timeFormat = '24h';
+    
+    const times24 = ['11:45','12:00','12:15','12:30','12:45','13:00','13:15','13:30','13:45','14:00','14:15','14:30','14:45','15:00','15:15','15:30','15:45','16:00','16:15','16:30','16:45','17:00','17:15','17:30','17:45','18:00','18:15','18:30','18:45','19:00','19:15','19:30','19:45','20:00','20:15','20:30','20:45','21:00','21:15','21:30','21:45','22:00','22:15','22:30','22:45','23:00','23:15','23:30','23:45'];
+    const times12 = ['11:45 AM','12:00 PM','12:15 PM','12:30 PM','12:45 PM','1:00 PM','1:15 PM','1:30 PM','1:45 PM','2:00 PM','2:15 PM','2:30 PM','2:45 PM','3:00 PM','3:15 PM','3:30 PM','3:45 PM','4:00 PM','4:15 PM','4:30 PM','4:45 PM','5:00 PM','5:15 PM','5:30 PM','5:45 PM','6:00 PM','6:15 PM','6:30 PM','6:45 PM','7:00 PM','7:15 PM','7:30 PM','7:45 PM','8:00 PM','8:15 PM','8:30 PM','8:45 PM','9:00 PM','9:15 PM','9:30 PM','9:45 PM','10:00 PM','10:15 PM','10:30 PM','10:45 PM','11:00 PM','11:15 PM','11:30 PM','11:45 PM'];
+    
     function selectDuration(btn, duration){ document.querySelectorAll('.duration-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); selectedDuration=duration; document.getElementById('modalDuration').textContent=duration; }
-    function selectDate(btn, dateStr){ document.querySelectorAll('.day-button').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); selectedDateStr=dateStr; document.getElementById('modalDate').textContent=dateStr; document.getElementById('selectedDateLabel').textContent=dateStr.split(',')[0].substring(0,3)+' '+btn.textContent+'th'; }
+    function selectDate(btn, dateStr){ document.querySelectorAll('.day-button').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); selectedDateStr=dateStr; document.getElementById('modalDate').textContent=dateStr; const day=dateStr.split(', ')[0].substring(0,3); document.getElementById('selectedDateLabel').textContent=day+' '+btn.textContent+'th'; }
+    function setTimeFormat(fmt){ timeFormat=fmt; document.getElementById('btn12h').classList.toggle('active', fmt==='12h'); document.getElementById('btn24h').classList.toggle('active', fmt==='24h'); renderTimes(); }
+    function renderTimes(){ const grid=document.getElementById('timeGrid'); grid.innerHTML=''; const times = timeFormat==='12h'?times12:times24; times.forEach(t=>{ const btn=document.createElement('button'); btn.className='time-slot-btn'; btn.textContent=t; btn.onclick=()=>openBookingForm(t); grid.appendChild(btn); }); }
     function openBookingForm(time){ document.getElementById('modalTime').textContent=time; document.getElementById('modalDate').textContent=selectedDateStr; document.getElementById('modalDuration').textContent=selectedDuration; document.getElementById('bookingModal').classList.add('active'); }
     function closeBookingForm(){ document.getElementById('bookingModal').classList.remove('active'); }
     document.getElementById('bookingModal').addEventListener('click',function(e){ if(e.target===this){ closeBookingForm(); } });
