@@ -47,7 +47,7 @@
       'DTEND:' + stamp(end),
       'SUMMARY:(' + guests + (guests === 1 ? ' guest)' : ' guests)') + ' Reservation at ' + VENUE_NAME,
       'LOCATION:' + VENUE_ADDRESS,
-      'DESCRIPTION:Reference ' + row.reference + ' - ' + guests + ' guests - ' + row.duration,
+      'DESCRIPTION:Reference ' + row.reference + ' - ' + guests + ' guests',
       'END:VEVENT',
       'END:VCALENDAR'
     ].join('\r\n') + '\r\n';
@@ -69,7 +69,7 @@
     let em = endMin;
     if (eh >= 24) { eh = eh - 24; endDate[2] = endDate[2] + 1; }
     const dates = formatLocal(se.parts, se.hour, se.minute) + '/' + endDate[0] + pad(endDate[1]) + pad(endDate[2]) + 'T' + pad(eh) + pad(em) + '00';
-    const details = 'Reference ' + row.reference + ' - ' + guests + ' guests - ' + row.duration + ' - ' + VENUE_ADDRESS;
+    const details = 'Reference ' + row.reference + ' - ' + guests + ' guests - ' + VENUE_ADDRESS;
     const params = new URLSearchParams({
       action: 'TEMPLATE',
       text: title,
