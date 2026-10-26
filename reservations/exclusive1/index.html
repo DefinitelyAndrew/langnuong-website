@@ -421,12 +421,17 @@
       const h12 = hour % 12 === 0 ? 12 : hour % 12;
       return h12 + ':' + String(min).padStart(2, '0') + ' ' + suffix;
     }
-    function slotDateTime(t) {
+    function slotDateTime(date, t) {
       const { hour, min } = parseTime(t);
-      return new Date(selectedDateObj.getFullYear(), selectedDateObj.getMonth(), selectedDateObj.getDate(), hour, min, 0, 0);
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, min, 0, 0);
     }
-    function hoursUntilSlot(t) { return (slotDateTime(t).getTime() - Date.now()) / 3600000; }
-    function isBookable(t) { return !!selectedDateObj && hoursUntilSlot(t) >= MIN_LEAD_HOURS; }
+    function isSlotBookable(date, t) {
+      return (slotDateTime(date, t).getTime() - Date.now()) / 3600000 >= MIN_LEAD_HOURS;
+    }
+    function bookableSlots(date) { return times24.filter(t => isSlotBookable(date, t)); }
+    // A date with no bookable slot left is skipped in the calendar entirely.
+    function dayHasTimes(date) { return bookableSlots(date).length > 0; }
+    function isBookable(t) { return !!selectedDateObj && isSlotBookable(selectedDateObj, t); }
 
     function selectDuration(btn, duration) {
       document.querySelectorAll('.duration-btn').forEach(b => b.classList.remove('active'));
@@ -456,36 +461,42 @@
 
     function renderTimes() {
       const grid = document.getElementById('timeGrid');
+      const hint = document.getElementById('availabilityText');
       grid.innerHTML = '';
+
       if (!selectedDateObj) {
         const note = document.createElement('div');
         note.className = 'availability-text';
         note.textContent = 'Select a date to see available times.';
         grid.appendChild(note);
+        if (hint) hint.textContent = 'Available times';
         return;
       }
-      let anyBookable = false;
-      times24.forEach(t => {
+
+      // Unbookable slots are left out rather than shown greyed out, so every slot
+      // on screen can actually be booked.
+      const slots = bookableSlots(selectedDateObj);
+      if (!slots.length) {
+        const note = document.createElement('div');
+        note.className = 'availability-text';
+        note.textContent = 'No times left on this date — please pick another date.';
+        grid.appendChild(note);
+        if (hint) hint.textContent = 'Fully booked for online booking';
+        return;
+      }
+
+      slots.forEach(t => {
         const btn = document.createElement('button');
         btn.className = 'time-slot-btn';
         btn.textContent = formatTime(t);
         btn.type = 'button';
-        if (isBookable(t)) {
-          anyBookable = true;
-          btn.onclick = () => openBookingForm(t);
-        } else {
-          btn.disabled = true;
-          btn.style.opacity = '0.35';
-          btn.style.cursor = 'not-allowed';
-          btn.title = 'Bookings must be made at least ' + MIN_LEAD_HOURS + ' hours in advance';
-        }
+        btn.onclick = () => openBookingForm(t);
         grid.appendChild(btn);
       });
-      const hint = document.getElementById('availabilityText');
+
       if (hint) {
-        hint.textContent = anyBookable
-          ? 'Available times · bookings close ' + MIN_LEAD_HOURS + ' hours before each slot'
-          : 'No times left today — please pick another date';
+        hint.textContent = slots.length + (slots.length === 1 ? ' time' : ' times') +
+          ' · bookings close ' + MIN_LEAD_HOURS + ' hours before each slot';
       }
     }
 
@@ -825,8 +836,9 @@
         btn.className = 'day-button';
         btn.type = 'button';
         btn.textContent = date.getDate();
+        btn.dataset.date = isoDate(date);
 
-        if (date.getMonth() !== currentMonth.getMonth() || date < todayStart) {
+        if (date.getMonth() !== currentMonth.getMonth() || date < todayStart || !dayHasTimes(date)) {
           btn.disabled = true;
         } else {
           btn.onclick = () => selectDate(btn, date);
@@ -852,9 +864,28 @@
       return todayButton;
     }
 
-    const initialDay = generateCalendar();
-    if (initialDay) selectDate(initialDay, new Date(today.getFullYear(), today.getMonth(), today.getDate()));
-    renderTimes();
+    function firstAvailableDay(from) {
+      const start = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+      for (let i = 0; i <= 183; i++) {
+        const candidate = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+        if (dayHasTimes(candidate)) return candidate;
+      }
+      return null;
+    }
+
+    // Open on the first date that still has a bookable slot, so a day with nothing
+    // left is skipped instead of being preselected.
+    const firstDay = firstAvailableDay(today);
+    if (firstDay) {
+      currentMonth = new Date(firstDay.getFullYear(), firstDay.getMonth(), 1);
+      generateCalendar();
+      const firstButton = document.querySelector('.day-button[data-date="' + isoDate(firstDay) + '"]');
+      if (firstButton) selectDate(firstButton, firstDay);
+      else renderTimes();
+    } else {
+      generateCalendar();
+      renderTimes();
+    }
   </script>
 </body>
 </html>
