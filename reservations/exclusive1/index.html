@@ -365,18 +365,22 @@
   </div>
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1"></script>
+  <script src="../config.js" onerror="console.warn('No reservation config found, using defaults')"></script>
   <script>
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const MIN_LEAD_HOURS = 3;
 
+    const config = window.RESERVATION_CONFIG || {};
     // Same Supabase project used by account.html and shop.html; the email OTP fallback
     // relies on its Auth email provider.
-    const SUPABASE_URL = 'https://egggnxmzxbqdsqqlnvig.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_jostM0x7NIGiLikFjVHLwA_I_x0IpS8';
+    const SUPABASE_URL = config.SUPABASE_URL || 'https://egggnxmzxbqdsqqlnvig.supabase.co';
+    const SUPABASE_KEY = config.SUPABASE_KEY || 'sb_publishable_jostM0x7NIGiLikFjVHLwA_I_x0IpS8';
     // Paste a reCAPTCHA v3 site key here to enable the CAPTCHA check. While this is
     // empty (or Google's script cannot load), visitors are verified by email OTP.
-    const RECAPTCHA_SITE_KEY = '';
+    const RECAPTCHA_SITE_KEY = config.RECAPTCHA_SITE_KEY || '';
+    const CONTACT_PHONE_1 = config.CONTACT_PHONE_1 || '9451 2966';
+    const CONTACT_PHONE_2 = config.CONTACT_PHONE_2 || '9632 6039';
     const OTP_LENGTH = 6;
 
     let selectedDuration = '2h';
@@ -580,7 +584,7 @@
       if (error) {
         text.textContent = 'We could not email a code to ' + email + '.';
         showVerifyError(error.message);
-        setStatus('Call 9451 2966 / 9632 6039 to complete this booking.');
+        setStatus('Call ' + CONTACT_PHONE_1 + ' / ' + CONTACT_PHONE_2 + ' to complete this booking.');
         return;
       }
 

@@ -1,0 +1,6 @@
+# Secrets
+reservations/*/config.js
+reservations/config.js
+.env
+.env.local
+*.local
