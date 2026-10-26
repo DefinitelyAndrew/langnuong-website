@@ -237,6 +237,17 @@
     .verify-status { margin-top: 16px; font-size: 13px; color: #6b7280; }
     .link-btn { background: none; border: none; padding: 0; font: inherit; font-size: 13px; color: #374151; text-decoration: underline; cursor: pointer; align-self: flex-start; }
     .link-btn:disabled { color: #9ca3af; text-decoration: none; cursor: default; }
+
+    .success-panel { margin-top: 24px; padding: 20px; border: 1px solid #bbf7d0; border-radius: 10px; background: #f0fdf4; display: flex; flex-direction: column; gap: 10px; }
+    .success-title { font-size: 17px; font-weight: 700; color: #166534; }
+    .success-ref { font-size: 14px; color: #374151; }
+    .success-ref strong { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.06em; }
+    .success-text { font-size: 14px; color: #374151; line-height: 1.55; }
+    @media (prefers-color-scheme: dark) {
+      .success-panel { background: #06130b; border-color: #1f3d2a; }
+      .success-title { color: #4ade80; }
+      .success-ref, .success-text { color: #d4d4d4; }
+    }
     @media (prefers-color-scheme: dark) {
       .verify-panel { background: #0a0a0a; border-color: #2a2a2a; }
       .verify-text { color: #d4d4d4; }
@@ -354,6 +365,12 @@
           </div>
           <div class="verify-error" id="verifyError" role="alert"></div>
           <button type="button" class="link-btn" id="otpResendBtn">Resend code</button>
+        </div>
+        <div class="success-panel" id="successPanel" hidden>
+          <div class="success-title">Reservation confirmed</div>
+          <div class="success-ref">Reference <strong id="successRef"></strong></div>
+          <div class="success-text" id="successText"></div>
+          <button type="button" class="modal-btn btn-verify" onclick="closeBookingForm()">Done</button>
         </div>
         <div class="verify-status" id="verifyStatus" role="status"></div>
         <div class="modal-actions">
@@ -481,11 +498,18 @@
       document.getElementById('modalTime').textContent = formatTime(time);
       document.getElementById('modalDate').textContent = selectedDateStr;
       document.getElementById('modalDuration').textContent = selectedDuration;
+      activeSlotTime = time;
       resetVerification();
       document.getElementById('bookingModal').classList.add('active');
     }
 
-    function closeBookingForm() { document.getElementById('bookingModal').classList.remove('active'); resetVerification(); }
+    function closeBookingForm() {
+      document.getElementById('bookingModal').classList.remove('active');
+      document.getElementById('bookingForm').hidden = false;
+      document.querySelector('.modal-actions').hidden = false;
+      document.getElementById('successPanel').hidden = true;
+      resetVerification();
+    }
     document.getElementById('bookingModal').addEventListener('click', function (e) { if (e.target === this) { closeBookingForm(); } });
 
     // ---------- Verification: reCAPTCHA first, email OTP when it cannot load ----------
@@ -495,6 +519,8 @@
     let otpEmail = '';
     let priorSessionEmail = null;
     let resendTimer = null;
+    let activeSlotTime = '';
+    let savingBooking = false;
 
     function getSupabase() {
       if (supabaseClient) return supabaseClient;
@@ -637,7 +663,7 @@
 
       await releaseSession();
       verified = true;
-      finishBooking();
+      await completeBooking();
     }
 
     // Verifying signs the visitor into Supabase Auth; drop that session so booking a
@@ -656,9 +682,74 @@
       }
     }
 
-    function finishBooking() {
-      alert('Reservation submitted successfully!');
-      closeBookingForm();
+    function bookingReference() {
+      const stamp = Date.now().toString(36).slice(-4).toUpperCase();
+      const rand = Math.random().toString(36).slice(2, 5).toUpperCase();
+      return 'LN-' + stamp + rand;
+    }
+
+    function isoDate(date) {
+      return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+    }
+
+    function bookingPayload(reference) {
+      const notes = document.getElementById('notesInput').value.trim();
+      return {
+        reference: reference,
+        branch: 'exclusive1',
+        guest_name: document.getElementById('nameInput').value.trim(),
+        email: document.getElementById('emailInput').value.trim(),
+        phone: document.getElementById('countryCode').value + ' ' + document.getElementById('phoneInput').value.trim(),
+        guests: parseInt(document.getElementById('guestsInput').value, 10),
+        reserved_date: isoDate(selectedDateObj),
+        reserved_time: activeSlotTime,
+        duration: selectedDuration,
+        notes: notes ? notes : null
+      };
+    }
+
+    // The reservation is written to the public.reservations table; a database webhook
+    // on that table sends the confirmation email to the guest and the restaurant.
+    async function completeBooking() {
+      if (savingBooking) return;
+      const client = getSupabase();
+      const submit = document.getElementById('submitBtn');
+
+      if (!client) {
+        setStatus('Reservations are temporarily unavailable. Please call ' + CONTACT_PHONE_1 + ' / ' + CONTACT_PHONE_2 + ' to book.');
+        return;
+      }
+
+      savingBooking = true;
+      submit.disabled = true;
+      submit.textContent = 'Saving…';
+      setStatus('Saving your reservation…');
+
+      const reference = bookingReference();
+      const { error } = await client.from('reservations').insert(bookingPayload(reference));
+      savingBooking = false;
+
+      if (error) {
+        submit.disabled = false;
+        submit.textContent = 'Submit';
+        setStatus('');
+        showVerifyError('We could not save your reservation. Please try again or call ' + CONTACT_PHONE_1 + ' / ' + CONTACT_PHONE_2 + '.');
+        return;
+      }
+
+      const email = document.getElementById('emailInput').value.trim();
+      const guests = document.getElementById('guestsInput').value.trim();
+      document.getElementById('bookingForm').hidden = true;
+      document.querySelector('.modal-actions').hidden = true;
+      document.getElementById('verifyPanel').hidden = true;
+      document.getElementById('successRef').textContent = reference;
+      document.getElementById('successText').textContent =
+        'Your table for ' + guests + (guests === '1' ? ' guest' : ' guests') + ' on ' + selectedDateStr +
+        ' at ' + formatTime(activeSlotTime) + ' (' + selectedDuration + ') is booked. A confirmation has been emailed to ' +
+        email + '. Keep reference ' + reference + ' if you need to change or cancel.';
+      document.getElementById('successPanel').hidden = false;
+      clearVerifyError();
+      setStatus('');
     }
 
     async function submitBooking() {
@@ -679,7 +770,7 @@
       if (guests > 20) { alert('Number of guests cannot be more than 20'); return; }
       if (!check1 || !check2) { alert('Please accept all terms and conditions'); return; }
 
-      if (verified) { finishBooking(); return; }
+      if (verified) { await completeBooking(); return; }
 
       const submit = document.getElementById('submitBtn');
       submit.disabled = true;
@@ -691,7 +782,7 @@
         submit.disabled = false;
         submit.textContent = 'Submit';
         setStatus('');
-        finishBooking();
+        await completeBooking();
         return;
       }
 
