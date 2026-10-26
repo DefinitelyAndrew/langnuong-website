@@ -1,7 +1,8 @@
-// Copy this to reservations/config.js and fill in your values
-// This file is committed as a template, config.js should be gitignored
+// Template for reservations/config.js. Only PUBLIC values belong here, because every
+// value in this file is served to the browser. Never put secrets (reCAPTCHA secret
+// key, SMTP passwords, Supabase service_role key) in this file.
 window.RESERVATION_CONFIG = {
-  // Google reCAPTCHA v3 site key (leave empty to use OTP fallback)
+  // Google reCAPTCHA v3 SITE key (public; leave empty to always use the email OTP fallback)
   RECAPTCHA_SITE_KEY: '',
   
   // Supabase credentials (same as used in shop.html and account.html)
