@@ -215,6 +215,7 @@
     
     .modal-actions { display: flex; gap: 12px; margin-top: 32px; }
     .modal-btn { flex: 1; padding: 13px 24px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; min-height: 48px; }
+    .modal-btn:disabled { opacity: 0.55; cursor: not-allowed; }
     .btn-back { background: white; border: 1px solid #d1d5db; color: #374151; }
     .btn-back:hover { background: #f9fafb; border-color: #9ca3af; }
     .btn-verify { background: #111827; border: 1px solid #111827; color: white; }
@@ -224,6 +225,26 @@
       .btn-back:hover { background: #141414; border-color: #3a3a3a; }
       .btn-verify { background: #ffffff; border-color: #ffffff; color: #000000; }
       .btn-verify:hover { background: #e5e5e5; }
+    }
+
+    .verify-panel { margin-top: 24px; padding: 18px; border: 1px solid #e5e7eb; border-radius: 10px; background: #f9fafb; display: flex; flex-direction: column; gap: 12px; }
+    .verify-text { font-size: 14px; color: #374151; line-height: 1.55; }
+    .verify-text strong { color: #111827; }
+    .otp-container { display: flex; gap: 8px; align-items: stretch; }
+    .otp-input { flex: 1; letter-spacing: 0.35em; font-size: 17px; font-weight: 600; text-align: center; }
+    .otp-submit { flex: 0 0 auto; padding-inline: 20px; }
+    .verify-error { font-size: 13px; color: #b91c1c; }
+    .verify-status { margin-top: 16px; font-size: 13px; color: #6b7280; }
+    .link-btn { background: none; border: none; padding: 0; font: inherit; font-size: 13px; color: #374151; text-decoration: underline; cursor: pointer; align-self: flex-start; }
+    .link-btn:disabled { color: #9ca3af; text-decoration: none; cursor: default; }
+    @media (prefers-color-scheme: dark) {
+      .verify-panel { background: #0a0a0a; border-color: #2a2a2a; }
+      .verify-text { color: #d4d4d4; }
+      .verify-text strong { color: #ffffff; }
+      .verify-error { color: #f87171; }
+      .verify-status { color: #a3a3a3; }
+      .link-btn { color: #d4d4d4; }
+      .link-btn:disabled { color: #737373; }
     }
   </style>
 </head>
@@ -325,18 +346,38 @@
           <div class="checkbox-container"><input type="checkbox" class="checkbox-input" id="check1" required><label class="checkbox-label" for="check1">I have read and accept the house rules & policies <span class="required">*</span></label></div>
           <div class="checkbox-container"><input type="checkbox" class="checkbox-input" id="check2" required><label class="checkbox-label" for="check2">I understand that Lang Nuong Vietnam will hold your table for up to 15 mins past your reservation time. <span class="required">*</span></label></div>
         </form>
+        <div class="verify-panel" id="verifyPanel" hidden>
+          <div class="verify-text" id="verifyText"></div>
+          <div class="otp-container">
+            <input class="form-input otp-input" id="otpInput" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" aria-label="6-digit verification code">
+            <button type="button" class="modal-btn btn-verify otp-submit" id="otpVerifyBtn">Verify</button>
+          </div>
+          <div class="verify-error" id="verifyError" role="alert"></div>
+          <button type="button" class="link-btn" id="otpResendBtn">Resend code</button>
+        </div>
+        <div class="verify-status" id="verifyStatus" role="status"></div>
         <div class="modal-actions">
           <button type="button" class="modal-btn btn-back" onclick="closeBookingForm()">Back</button>
-          <button type="button" class="modal-btn btn-verify" onclick="submitBooking()">Submit</button>
+          <button type="button" class="modal-btn btn-verify" id="submitBtn" onclick="submitBooking()">Submit</button>
         </div>
       </div>
     </div>
   </div>
   
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1"></script>
   <script>
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const MIN_LEAD_HOURS = 3;
+
+    // Same Supabase project used by account.html and shop.html; the email OTP fallback
+    // relies on its Auth email provider.
+    const SUPABASE_URL = 'https://egggnxmzxbqdsqqlnvig.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_jostM0x7NIGiLikFjVHLwA_I_x0IpS8';
+    // Paste a reCAPTCHA v3 site key here to enable the CAPTCHA check. While this is
+    // empty (or Google's script cannot load), visitors are verified by email OTP.
+    const RECAPTCHA_SITE_KEY = '';
+    const OTP_LENGTH = 6;
 
     let selectedDuration = '2h';
     let selectedDateObj = null;
@@ -436,13 +477,187 @@
       document.getElementById('modalTime').textContent = formatTime(time);
       document.getElementById('modalDate').textContent = selectedDateStr;
       document.getElementById('modalDuration').textContent = selectedDuration;
+      resetVerification();
       document.getElementById('bookingModal').classList.add('active');
     }
 
-    function closeBookingForm() { document.getElementById('bookingModal').classList.remove('active'); }
+    function closeBookingForm() { document.getElementById('bookingModal').classList.remove('active'); resetVerification(); }
     document.getElementById('bookingModal').addEventListener('click', function (e) { if (e.target === this) { closeBookingForm(); } });
 
-    function submitBooking() {
+    // ---------- Verification: reCAPTCHA first, email OTP when it cannot load ----------
+    let supabaseClient = null;
+    let recaptchaLoader = null;
+    let verified = false;
+    let otpEmail = '';
+    let priorSessionEmail = null;
+    let resendTimer = null;
+
+    function getSupabase() {
+      if (supabaseClient) return supabaseClient;
+      if (!window.supabase || !window.supabase.createClient) return null;
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      return supabaseClient;
+    }
+
+    function setStatus(message) { document.getElementById('verifyStatus').textContent = message || ''; }
+    function showVerifyError(message) { document.getElementById('verifyError').textContent = message || ''; }
+    function clearVerifyError() { showVerifyError(''); }
+    function escapeHtml(value) { return value.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+    function resetVerification() {
+      verified = false;
+      otpEmail = '';
+      priorSessionEmail = null;
+      clearTimeout(resendTimer);
+      clearInterval(resendTimer);
+      document.getElementById('verifyPanel').hidden = true;
+      document.getElementById('verifyText').innerHTML = '';
+      document.getElementById('otpInput').value = '';
+      document.getElementById('otpVerifyBtn').disabled = false;
+      document.getElementById('otpVerifyBtn').textContent = 'Verify';
+      const resend = document.getElementById('otpResendBtn');
+      resend.disabled = false;
+      resend.textContent = 'Resend code';
+      const submit = document.getElementById('submitBtn');
+      submit.disabled = false;
+      submit.textContent = 'Submit';
+      clearVerifyError();
+      setStatus('');
+    }
+
+    function loadRecaptcha() {
+      if (recaptchaLoader) return recaptchaLoader;
+      recaptchaLoader = new Promise(resolve => {
+        let settled = false;
+        const finish = ok => { if (!settled) { settled = true; resolve(ok); } };
+        const script = document.createElement('script');
+        script.src = 'https://www.google.com/recaptcha/api.js?render=' + encodeURIComponent(RECAPTCHA_SITE_KEY);
+        script.async = true;
+        script.defer = true;
+        script.onerror = () => finish(false);
+        script.onload = () => {
+          if (!window.grecaptcha || !window.grecaptcha.ready) { finish(false); return; }
+          window.grecaptcha.ready(() => finish(true));
+        };
+        document.head.appendChild(script);
+        setTimeout(() => finish(false), 6000);
+      });
+      return recaptchaLoader;
+    }
+
+    async function tryRecaptcha() {
+      if (!RECAPTCHA_SITE_KEY) return false;
+      if (!(await loadRecaptcha())) return false;
+      try {
+        const token = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'reservation' });
+        return !!token;
+      } catch (error) {
+        return false;
+      }
+    }
+
+    async function sendOtp(email) {
+      const panel = document.getElementById('verifyPanel');
+      const text = document.getElementById('verifyText');
+      const client = getSupabase();
+      panel.hidden = false;
+      clearVerifyError();
+
+      if (!client) {
+        text.textContent = 'We could not reach the verification service, so no code was sent.';
+        showVerifyError('Please check your connection and try again, or call 9451 2966 to book.');
+        return;
+      }
+
+      otpEmail = email;
+      const { data } = await client.auth.getSession();
+      priorSessionEmail = data.session ? (data.session.user.email || null) : null;
+
+      text.innerHTML = 'Sending a ' + OTP_LENGTH + '-digit code to <strong>' + escapeHtml(email) + '</strong>…';
+      setStatus('');
+
+      const { error } = await client.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+      if (error) {
+        text.textContent = 'We could not email a code to ' + email + '.';
+        showVerifyError(error.message);
+        setStatus('Call 9451 2966 / 9632 6039 to complete this booking.');
+        return;
+      }
+
+      text.innerHTML = 'We emailed a ' + OTP_LENGTH + '-digit code to <strong>' + escapeHtml(email) + '</strong>. Enter it below to submit your reservation.';
+      startResendCooldown();
+      document.getElementById('otpInput').focus();
+    }
+
+    function startResendCooldown() {
+      const resend = document.getElementById('otpResendBtn');
+      let secondsLeft = 30;
+      clearInterval(resendTimer);
+      resend.disabled = true;
+      resend.textContent = 'Resend code (' + secondsLeft + 's)';
+      resendTimer = setInterval(() => {
+        secondsLeft -= 1;
+        if (secondsLeft <= 0) {
+          clearInterval(resendTimer);
+          resend.disabled = false;
+          resend.textContent = 'Resend code';
+          return;
+        }
+        resend.textContent = 'Resend code (' + secondsLeft + 's)';
+      }, 1000);
+    }
+
+    async function verifyOtpCode() {
+      const input = document.getElementById('otpInput');
+      const button = document.getElementById('otpVerifyBtn');
+      const code = input.value.replace(/\D/g, '');
+      clearVerifyError();
+
+      if (!otpEmail) { showVerifyError('Enter your email address first.'); return; }
+      if (code.length !== OTP_LENGTH) { showVerifyError('Enter the ' + OTP_LENGTH + '-digit code from the email.'); return; }
+
+      const client = getSupabase();
+      if (!client) { showVerifyError('Verification is unavailable right now.'); return; }
+
+      button.disabled = true;
+      button.textContent = 'Verifying…';
+      const { error } = await client.auth.verifyOtp({ email: otpEmail, token: code, type: 'email' });
+      button.disabled = false;
+      button.textContent = 'Verify';
+
+      if (error) {
+        showVerifyError(error.message || 'That code is not valid. Please try again.');
+        input.select();
+        return;
+      }
+
+      await releaseSession();
+      verified = true;
+      finishBooking();
+    }
+
+    // Verifying signs the visitor into Supabase Auth; drop that session so booking a
+    // table never silently logs someone in or out of their account.
+    async function releaseSession() {
+      const client = getSupabase();
+      if (!client) return;
+      try {
+        const { data } = await client.auth.getSession();
+        const current = data.session ? (data.session.user.email || null) : null;
+        if (!current) return;
+        if (priorSessionEmail && priorSessionEmail === current) return;
+        await client.auth.signOut({ scope: 'local' });
+      } catch (error) {
+        /* session cleanup is best effort */
+      }
+    }
+
+    function finishBooking() {
+      alert('Reservation submitted successfully!');
+      closeBookingForm();
+    }
+
+    async function submitBooking() {
       const name = document.getElementById('nameInput').value.trim();
       const email = document.getElementById('emailInput').value.trim();
       const phone = document.getElementById('phoneInput').value.trim();
@@ -460,9 +675,36 @@
       if (guests > 20) { alert('Number of guests cannot be more than 20'); return; }
       if (!check1 || !check2) { alert('Please accept all terms and conditions'); return; }
 
-      alert('Reservation submitted successfully!');
-      closeBookingForm();
+      if (verified) { finishBooking(); return; }
+
+      const submit = document.getElementById('submitBtn');
+      submit.disabled = true;
+      submit.textContent = 'Verifying…';
+      setStatus('Checking that you are human…');
+
+      if (await tryRecaptcha()) {
+        verified = true;
+        submit.disabled = false;
+        submit.textContent = 'Submit';
+        setStatus('');
+        finishBooking();
+        return;
+      }
+
+      submit.disabled = false;
+      submit.textContent = 'Submit';
+      await sendOtp(email);
     }
+
+    document.getElementById('otpVerifyBtn').addEventListener('click', verifyOtpCode);
+    document.getElementById('otpResendBtn').addEventListener('click', () => { if (otpEmail) sendOtp(otpEmail); });
+    document.getElementById('otpInput').addEventListener('input', event => {
+      event.target.value = event.target.value.replace(/\D/g, '').slice(0, OTP_LENGTH);
+      clearVerifyError();
+    });
+    document.getElementById('otpInput').addEventListener('keydown', event => {
+      if (event.key === 'Enter') { event.preventDefault(); verifyOtpCode(); }
+    });
 
     function changeMonth(delta) {
       currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + delta, 1);
