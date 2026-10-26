@@ -7,6 +7,22 @@ lives in Supabase Vault.
 
 Everything below is dashboard configuration. Only `supabase/reservations.sql` is code.
 
+## 0. One address for everything
+
+All mail uses **`langnuong.reservations@gmail.com`**:
+
+- Brevo **sender** — verify it once under **Senders** and use it for both templates
+- Supabase **Authentication → SMTP Settings → Sender email** — the OTP / magic-link sender
+- Restaurant notifications from the second webhook go to the same inbox
+
+Replies to a guest confirmation land in that inbox automatically, since it is the
+sender. The notification webhook instead sets `replyTo` to the guest's address, so staff
+can answer a booking straight from the notification email.
+
+Caveat: a `@gmail.com` sender cannot carry your own SPF/DKIM alignment, so some guest
+confirmations will land in spam or promotions. Verifying a domain you own in Brevo and
+sending from it later is the reliable fix; the address here is fine to start with.
+
 ## 1. Create the table
 
 Supabase → **SQL Editor** → paste `supabase/reservations.sql` → **Run**.
