@@ -66,7 +66,11 @@
   }
 
   function downloadCalendar(row) {
-    if (window.ReservationCalendar) window.ReservationCalendar.download(row);
+    if (window.ReservationCalendar && window.ReservationCalendar.addToGoogleCalendar) {
+      window.ReservationCalendar.addToGoogleCalendar(row);
+    } else if (window.ReservationCalendar) {
+      window.ReservationCalendar.download(row);
+    }
   }
 
   function renderSummary(row) {

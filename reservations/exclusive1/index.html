@@ -909,7 +909,13 @@
     }
 
     document.getElementById('calendarBtn').addEventListener('click', function () {
-      if (lastBooking && window.ReservationCalendar) window.ReservationCalendar.download(lastBooking);
+      if (lastBooking && window.ReservationCalendar) {
+        if (window.ReservationCalendar.addToGoogleCalendar) {
+          window.ReservationCalendar.addToGoogleCalendar(lastBooking);
+        } else {
+          window.ReservationCalendar.download(lastBooking);
+        }
+      }
     });
     document.getElementById('otpVerifyBtn').addEventListener('click', verifyOtpCode);
     document.getElementById('otpResendBtn').addEventListener('click', () => { if (otpEmail) sendOtp(otpEmail); });
