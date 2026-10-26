@@ -172,8 +172,8 @@
         timeSelect.disabled = nothing;
         saveBtn.disabled = nothing;
         $('slotNotice').textContent = nothing
-          ? 'No times available on that date. Please pick another day.'
-          : times.length + (times.length === 1 ? ' time available.' : ' times available.');
+          ? 'No timeslots available on that date. Please pick another day.'
+          : times.length + (times.length === 1 ? ' timeslot available.' : ' timeslots available.');
       }
 
       dateInput.addEventListener('change', refreshTimes);
