@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Reschedule reservation | Lang Nuong Vietnam</title>
+  <link rel="stylesheet" href="manage.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="brand">
+      <img src="../../LNGROUP.png" alt="" class="brand-logo">
+      <div>
+        <div class="brand-org">Lang Nuong Group</div>
+        <h1 class="brand-title">Reschedule reservation</h1>
+      </div>
+    </header>
+
+    <div class="card" id="loading"><p class="muted">Looking up your reservation…</p></div>
+
+    <div class="card" id="notFound" hidden>
+      <h2>We can&rsquo;t find that reservation</h2>
+      <p class="muted">This link may be incomplete or out of date. Reply to your confirmation email, or call 9632 6039 and we&rsquo;ll sort it out.</p>
+    </div>
+
+    <div class="card" id="summary" hidden>
+      <span class="badge">Current booking</span>
+      <dl class="summary-rows">
+        <div class="summary-row"><dt>Reference</dt><dd id="summaryRef">—</dd></div>
+        <div class="summary-row"><dt>When</dt><dd id="summaryWhen">—</dd></div>
+        <div class="summary-row"><dt>Duration</dt><dd id="summaryDuration">—</dd></div>
+        <div class="summary-row"><dt>Guests</dt><dd id="summaryGuests">—</dd></div>
+        <div class="summary-row"><dt>Where</dt><dd id="summaryWhere">—</dd></div>
+      </dl>
+    </div>
+
+    <div class="card" id="closed" hidden>
+      <span class="badge badge-cancelled">Cancelled</span>
+      <h2>This reservation is cancelled</h2>
+      <p class="muted">It can&rsquo;t be moved. Book a new table or call 9632 6039.</p>
+    </div>
+
+    <div class="card" id="done" hidden>
+      <span class="badge badge-ok">Moved</span>
+      <h2>Your reservation has been moved</h2>
+      <p class="muted">Your new slot is <strong id="doneWhen">—</strong>. We&rsquo;re expecting you then.</p>
+    </div>
+
+    <div class="card" id="actions" hidden>
+      <div class="field">
+        <label for="newDate">New date</label>
+        <input type="date" id="newDate">
+      </div>
+      <div class="field">
+        <label for="newTime">New time</label>
+        <select id="newTime"></select>
+      </div>
+      <p class="notice" id="slotNotice"></p>
+      <button type="button" class="btn btn-primary" id="saveBtn">Save new time</button>
+      <button type="button" class="btn" id="calendarBtn">Add to calendar</button>
+      <p class="notice">Times are Singapore time and must be at least 3 hours from now. Your guests, duration and contact details stay the same.</p>
+    </div>
+
+    <div class="error" id="error" role="alert"></div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1"></script>
+  <script src="../config.js"></script>
+  <script src="../calendar.js"></script>
+  <script src="manage.js"></script>
+  <script>Manage.mountReschedulePage();</script>
+</body>
+</html>

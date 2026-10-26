@@ -1,0 +1,106 @@
+:root { color-scheme: light dark; }
+
+* { box-sizing: border-box; }
+
+/* Cards are toggled with the hidden attribute; display:flex above/below would
+   otherwise override it and show every card at once. */
+[hidden] { display: none !important; }
+
+html, body { margin: 0; padding: 0; min-height: 100%; background: #ffffff; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #111827;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  padding: 40px 20px 64px;
+}
+
+.shell { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+
+.brand { display: flex; align-items: center; gap: 16px; }
+.brand-logo { width: 52px; height: auto; }
+.brand-org { font-size: 14px; color: #6b7280; }
+.brand-title { font-size: 26px; font-weight: 700; margin: 2px 0 0; letter-spacing: -0.01em; }
+
+.card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: #ffffff;
+}
+.card h2 { font-size: 18px; margin: 0; letter-spacing: -0.01em; }
+.muted { color: #6b7280; font-size: 14px; margin: 0; }
+
+.summary-rows { display: flex; flex-direction: column; gap: 10px; margin: 0; }
+.summary-row { display: flex; justify-content: space-between; gap: 16px; font-size: 15px; margin: 0; }
+.summary-row dt { color: #6b7280; flex: 0 0 auto; }
+.summary-row dd { margin: 0; font-weight: 600; text-align: right; }
+
+.actions { display: flex; flex-direction: column; gap: 10px; }
+.btn {
+  width: 100%;
+  padding: 13px 20px;
+  min-height: 48px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn:hover { border-color: #9ca3af; background: #f9fafb; }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn-primary { background: #111827; border-color: #111827; color: #ffffff; }
+.btn-primary:hover { background: #000000; border-color: #000000; }
+.btn-danger { background: #ffffff; border-color: #fca5a5; color: #b91c1c; }
+.btn-danger:hover { background: #fef2f2; border-color: #ef4444; }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 14px; font-weight: 600; }
+.field input, .field select {
+  width: 100%;
+  padding: 12px 14px;
+  min-height: 48px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 15px;
+  color: #111827;
+  background: #ffffff;
+}
+.field input:focus, .field select:focus { outline: none; border-color: #111827; box-shadow: 0 0 0 1px #111827; }
+
+.error { color: #b91c1c; font-size: 13px; min-height: 18px; }
+.notice { font-size: 13px; color: #6b7280; }
+
+.badge { align-self: flex-start; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 8px; border-radius: 999px; background: #f3f4f6; color: #374151; }
+.badge-cancelled { background: #fef2f2; color: #b91c1c; }
+.badge-ok { background: #f0fdf4; color: #166534; }
+
+.link-btn { background: none; border: none; padding: 0; font: inherit; font-size: 13px; color: #374151; text-decoration: underline; cursor: pointer; align-self: flex-start; }
+
+@media (prefers-color-scheme: dark) {
+  html, body { background: #000000; }
+  body { color: #ffffff; }
+  .brand-org, .muted, .summary-row dt, .notice { color: #a3a3a3; }
+  .card { background: #0a0a0a; border-color: #2a2a2a; }
+  .btn { background: #0a0a0a; border-color: #2a2a2a; color: #d4d4d4; }
+  .btn:hover { background: #141414; border-color: #3a3a3a; }
+  .btn-primary { background: #ffffff; border-color: #ffffff; color: #000000; }
+  .btn-primary:hover { background: #e5e5e5; }
+  .btn-danger { background: #1a0a0a; border-color: #7f1d1d; color: #f87171; }
+  .btn-danger:hover { background: #250d0d; border-color: #b91c1c; }
+  .field label { color: #ffffff; }
+  .field input, .field select { background: #000000; border-color: #2a2a2a; color: #ffffff; }
+  .field input:focus, .field select:focus { border-color: #ffffff; box-shadow: 0 0 0 1px #ffffff; }
+  .error { color: #f87171; }
+  .badge { background: #1a1a1a; color: #d4d4d4; }
+  .badge-cancelled { background: #250d0d; color: #f87171; }
+  .badge-ok { background: #06130b; color: #4ade80; }
+  .link-btn { color: #d4d4d4; }
+}

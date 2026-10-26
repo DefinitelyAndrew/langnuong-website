@@ -213,6 +213,10 @@
       .terms-notice a { color: #a3a3a3; }
     }
     
+    /* The panels below are toggled with the hidden attribute; without this rule their
+       display:flex would override it and they would always be visible. */
+    [hidden] { display: none !important; }
+
     .modal-actions { display: flex; gap: 12px; margin-top: 32px; }
     .modal-btn { flex: 1; padding: 13px 24px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; min-height: 48px; }
     .modal-btn:disabled { opacity: 0.55; cursor: not-allowed; }
@@ -268,7 +272,7 @@
         <h1 class="event-title">Lang Nuong Exclusive Reservation</h1>
       </div>
       <div class="description">
-        <div><strong>Call 9451 2966 / 9632 6039 for bookings with more than 20 people.</strong></div>
+        <div><strong>Call 9632 6039 for bookings with more than 20 people.</strong></div>
         <div>This form is to reserve tables in the Lang Nuong Exclusive branch. You can cancel/reschedule your appointment after booking.</div>
       </div>
       <div class="duration-section">
@@ -368,6 +372,7 @@
           <div class="success-title">Reservation confirmed</div>
           <div class="success-ref">Reference <strong id="successRef"></strong></div>
           <div class="success-text" id="successText"></div>
+          <button type="button" class="modal-btn btn-back" id="calendarBtn">Add to calendar</button>
           <button type="button" class="modal-btn btn-verify" onclick="closeBookingForm()">Done</button>
         </div>
         <div class="verify-status" id="verifyStatus" role="status"></div>
@@ -381,6 +386,7 @@
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1"></script>
   <script src="../config.js" onerror="console.warn('No reservation config found, using defaults')"></script>
+  <script src="../calendar.js"></script>
   <script>
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -394,8 +400,7 @@
     // Paste a reCAPTCHA v3 site key here to enable the CAPTCHA check. While this is
     // empty (or Google's script cannot load), visitors are verified by email OTP.
     const RECAPTCHA_SITE_KEY = config.RECAPTCHA_SITE_KEY || '';
-    const CONTACT_PHONE_1 = config.CONTACT_PHONE_1 || '9451 2966';
-    const CONTACT_PHONE_2 = config.CONTACT_PHONE_2 || '9632 6039';
+    const CONTACT_PHONE = config.CONTACT_PHONE || '9632 6039';
     const OTP_LENGTH = 6;
 
     // Country calling codes. Singapore is the default and is listed first; the rest
@@ -614,6 +619,7 @@
     let resendTimer = null;
     let activeSlotTime = '';
     let savingBooking = false;
+    let lastBooking = null;
 
     function getSupabase() {
       if (supabaseClient) return supabaseClient;
@@ -688,7 +694,7 @@
 
       if (!client) {
         text.textContent = 'We could not reach the verification service, so no code was sent.';
-        showVerifyError('Please check your connection and try again, or call 9451 2966 to book.');
+        showVerifyError('Please check your connection and try again, or call ' + CONTACT_PHONE + ' to book.');
         return;
       }
 
@@ -703,7 +709,7 @@
       if (error) {
         text.textContent = 'We could not email a code to ' + email + '.';
         showVerifyError(error.message);
-        setStatus('Call ' + CONTACT_PHONE_1 + ' / ' + CONTACT_PHONE_2 + ' to complete this booking.');
+        setStatus('Call ' + CONTACT_PHONE + ' to complete this booking.');
         return;
       }
 
@@ -785,11 +791,26 @@
       return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
     }
 
+    // 144-bit token for the Reschedule / Cancel links in the confirmation email. It is
+    // the only thing that grants access to one reservation, so it is never displayed.
+    function manageToken() {
+      const bytes = new Uint8Array(18);
+      if (window.crypto && window.crypto.getRandomValues) {
+        window.crypto.getRandomValues(bytes);
+      } else {
+        for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
+      }
+      return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+    }
+
     function bookingPayload(reference) {
       const notes = document.getElementById('notesInput').value.trim();
       return {
         reference: reference,
         branch: 'exclusive1',
+        manage_token: manageToken(),
+        reserved_label: days[selectedDateObj.getDay()] + ', ' + selectedDateObj.getDate() + ' ' +
+          months[selectedDateObj.getMonth()] + ' ' + selectedDateObj.getFullYear(),
         guest_name: document.getElementById('nameInput').value.trim(),
         email: document.getElementById('emailInput').value.trim(),
         phone: document.getElementById('countryCode').value + ' ' + document.getElementById('phoneInput').value.trim(),
@@ -809,7 +830,7 @@
       const submit = document.getElementById('submitBtn');
 
       if (!client) {
-        setStatus('Reservations are temporarily unavailable. Please call ' + CONTACT_PHONE_1 + ' / ' + CONTACT_PHONE_2 + ' to book.');
+        setStatus('Reservations are temporarily unavailable. Please call ' + CONTACT_PHONE + ' to book.');
         return;
       }
 
@@ -819,17 +840,20 @@
       setStatus('Saving your reservation…');
 
       const reference = bookingReference();
-      const { error } = await client.from('reservations').insert(bookingPayload(reference));
+      const payload = bookingPayload(reference);
+      const { error } = await client.from('reservations').insert(payload);
       savingBooking = false;
 
       if (error) {
         submit.disabled = false;
         submit.textContent = 'Submit';
-        setStatus('');
-        showVerifyError('We could not save your reservation. Please try again or call ' + CONTACT_PHONE_1 + ' / ' + CONTACT_PHONE_2 + '.');
+        // The status line sits outside the verify panel, so this stays visible on both
+        // the captcha path and the OTP path.
+        setStatus('We could not save your reservation. Please try again or call ' + CONTACT_PHONE + '.');
         return;
       }
 
+      lastBooking = payload;
       const email = document.getElementById('emailInput').value.trim();
       const guests = document.getElementById('guestsInput').value.trim();
       document.getElementById('bookingForm').hidden = true;
@@ -884,6 +908,9 @@
       await sendOtp(email);
     }
 
+    document.getElementById('calendarBtn').addEventListener('click', function () {
+      if (lastBooking && window.ReservationCalendar) window.ReservationCalendar.download(lastBooking);
+    });
     document.getElementById('otpVerifyBtn').addEventListener('click', verifyOtpCode);
     document.getElementById('otpResendBtn').addEventListener('click', () => { if (otpEmail) sendOtp(otpEmail); });
     document.getElementById('otpInput').addEventListener('input', event => {

@@ -9,7 +9,10 @@ window.RESERVATION_CONFIG = {
   SUPABASE_URL: 'https://egggnxmzxbqdsqqlnvig.supabase.co',
   SUPABASE_KEY: 'your_supabase_anon_key_here',
   
-  // Optional: Contact numbers for fallback
-  CONTACT_PHONE_1: '9451 2966',
-  CONTACT_PHONE_2: '9632 6039'
+  // Optional: contact number shown wherever booking needs a fallback
+  CONTACT_PHONE: '9632 6039',
+
+  // Optional: shown on the manage pages and in the calendar event
+  VENUE_NAME: 'Lang Nuong Vietnam',
+  VENUE_ADDRESS: '271 Jalan Besar, Singapore'
 };

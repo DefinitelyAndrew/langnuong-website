@@ -14,10 +14,18 @@ create table if not exists public.reservations (
   reserved_time text not null,
   duration      text not null,
   notes         text,
+  -- Printed form of reserved_date, e.g. "Tuesday, 27 October 2026".
+  reserved_label text,
+  -- Secret in the Reschedule / Cancel links. Guests never see it in the table.
+  manage_token  text,
   status        text not null default 'pending'
                 check (status in ('pending', 'confirmed', 'cancelled')),
-  created_at    timestamptz not null default now()
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now()
 );
+
+create unique index if not exists reservations_token_idx
+  on public.reservations (manage_token);
 
 create index if not exists reservations_slot_idx
   on public.reservations (reserved_date, reserved_time);
@@ -36,5 +44,6 @@ create policy "anyone can create a reservation"
   to anon, authenticated
   with check (status = 'pending');
 
--- No select / update / delete policies are defined on purpose: the table is only
--- readable from the Supabase dashboard, the service role, or a future staff view.
+-- No select / update / delete policies are defined on purpose. Reading and changing
+-- a single booking goes through the token functions in reservation-actions.sql, so
+-- the rest of the table stays private.
