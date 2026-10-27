@@ -5,7 +5,7 @@ window.RESERVATION_CONFIG = {
   
   // Supabase credentials
   SUPABASE_URL: 'https://egggnxmzxbqdsqqlnvig.supabase.co',
-  SUPABASE_KEY: 'sb_publishable_jostM0x7NIGiLikFjVHLwA_I_x0IpS8',
+  SUPABASE_KEY: 'sb_anon_<your-anon-key>',
   
   // Contact number shown wherever booking needs a fallback
   CONTACT_PHONE: '9632 6039'
