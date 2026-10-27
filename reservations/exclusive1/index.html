@@ -49,19 +49,6 @@
       .description strong { color: #ffffff; }
     }
     
-    .duration-section { display: flex; flex-direction: column; gap: 12px; }
-    .duration-label { font-size: 14px; font-weight: 600; color: #111827; }
-    .duration-list { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0; }
-    .duration-btn { padding: 8px 14px; background: white; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; color: #374151; cursor: pointer; font-family: inherit; font-weight: 500; transition: all 0.15s; }
-    .duration-btn:hover { background: #f9fafb; border-color: #9ca3af; }
-    .duration-btn.active { background: #111827; color: white; border-color: #111827; }
-    @media (prefers-color-scheme: dark) {
-      .duration-label { color: #ffffff; }
-      .duration-btn { background: #0a0a0a; border-color: #2a2a2a; color: #d4d4d4; }
-      .duration-btn:hover { background: #141414; border-color: #3a3a3a; }
-      .duration-btn.active { background: #ffffff; color: #000000; border-color: #ffffff; }
-    }
-    
     .location-section, .timezone-section { display: flex; align-items: center; gap: 12px; color: #374151; font-size: 15px; }
     .icon { width: 20px; height: 20px; color: #6b7280; flex-shrink: 0; }
     @media (prefers-color-scheme: dark) {
@@ -275,18 +262,6 @@
         <div><strong>Call 9632 6039 for bookings with more than 20 people.</strong></div>
         <div>This form is to reserve tables in the Lang Nuong Exclusive branch. You can cancel/reschedule your appointment after booking.</div>
       </div>
-      <div class="duration-section">
-        <div class="duration-label">Duration</div>
-        <div class="duration-list">
-          <button class="duration-btn" onclick="selectDuration(this, '1h')">1h</button>
-          <button class="duration-btn" onclick="selectDuration(this, '1h 30m')">1h 30m</button>
-          <button class="duration-btn active" onclick="selectDuration(this, '2h')">2h</button>
-          <button class="duration-btn" onclick="selectDuration(this, '2h 30m')">2h 30m</button>
-          <button class="duration-btn" onclick="selectDuration(this, '3h')">3h</button>
-          <button class="duration-btn" onclick="selectDuration(this, '4h')">4h</button>
-          <button class="duration-btn" onclick="selectDuration(this, '5h')">5h</button>
-        </div>
-      </div>
       <div class="location-section">
         <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -342,7 +317,7 @@
         <div class="modal-header">
           <h2 class="modal-title">Confirm your details</h2>
           <div class="booking-summary">
-            <span id="modalDate">Monday, October 26, 2026</span><span>•</span><span id="modalTime">11:45</span><span>•</span><span id="modalDuration">2h</span>
+            <span id="modalDate">Monday, October 26, 2026</span><span>•</span><span id="modalTime">11:45</span>
           </div>
         </div>
         <form class="form-section" id="bookingForm" novalidate>
@@ -519,13 +494,6 @@
     // A date with no bookable slot left is skipped in the calendar entirely.
     function dayHasTimes(date) { return bookableSlots(date).length > 0; }
     function isBookable(t) { return !!selectedDateObj && isSlotBookable(selectedDateObj, t); }
-
-    function selectDuration(btn, duration) {
-      document.querySelectorAll('.duration-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      selectedDuration = duration;
-      document.getElementById('modalDuration').textContent = duration;
-    }
 
     function selectDate(btn, date) {
       document.querySelectorAll('.day-button').forEach(b => b.classList.remove('selected'));
@@ -817,7 +785,7 @@
         guests: parseInt(document.getElementById('guestsInput').value, 10),
         reserved_date: isoDate(selectedDateObj),
         reserved_time: activeSlotTime,
-        duration: selectedDuration,
+        duration: '2h',
         notes: notes ? notes : null
       };
     }
