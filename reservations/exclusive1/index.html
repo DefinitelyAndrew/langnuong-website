@@ -551,7 +551,7 @@
       });
 
       if (hint) {
-        hint.textContent = slots.length + (slots.length === 1 ? ' time' : ' times') +
+        hint.textContent = slots.length + (slots.length === 1 ? ' timeslot' : ' timeslots') +
           ' · bookings close ' + MIN_LEAD_HOURS + ' hours before each slot';
       }
     }
@@ -811,9 +811,6 @@
       const payload = bookingPayload(reference);
       const { error } = await client.rpc('reservation_create', {
         p_reference: payload.reference,
-        p_branch: payload.branch,
-        p_manage_token: payload.manage_token,
-        p_reserved_label: payload.reserved_label,
         p_guest_name: payload.guest_name,
         p_email: payload.email,
         p_phone: payload.phone,
