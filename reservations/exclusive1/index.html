@@ -862,7 +862,7 @@
       document.getElementById('successRef').textContent = reference;
       document.getElementById('successText').textContent =
         'Your table for ' + guests + (guests === '1' ? ' guest' : ' guests') + ' on ' + selectedDateStr +
-        ' at ' + formatTime(activeSlotTime) + ' (' + selectedDuration + ') is booked. A confirmation has been emailed to ' +
+        ' at ' + formatTime(activeSlotTime) + ' is booked. A confirmation has been emailed to ' +
         email + '. Keep reference ' + reference + ' if you need to change or cancel.';
       document.getElementById('successPanel').hidden = false;
       clearVerifyError();
@@ -939,6 +939,7 @@
       document.getElementById('monthDisplay').textContent = months[currentMonth.getMonth()] + ' ' + currentMonth.getFullYear();
 
       const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+      const lastDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
       const startDate = new Date(firstDay);
       startDate.setDate(firstDay.getDate() - ((firstDay.getDay() + 6) % 7));
 
@@ -947,13 +948,16 @@
 
       for (let i = 0; i < 42; i++) {
         const date = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + i);
+        if (date.getMonth() !== currentMonth.getMonth()) {
+          continue;
+        }
         const btn = document.createElement('button');
         btn.className = 'day-button';
         btn.type = 'button';
         btn.textContent = date.getDate();
         btn.dataset.date = isoDate(date);
 
-        if (date.getMonth() !== currentMonth.getMonth() || date < todayStart || !dayHasTimes(date)) {
+        if (date < todayStart || !dayHasTimes(date)) {
           btn.disabled = true;
         } else {
           btn.onclick = () => selectDate(btn, date);
