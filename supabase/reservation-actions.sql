@@ -1,110 +1,14 @@
--- Lookup, cancel and reschedule for a single reservation, addressed by manage_token.
--- Run after reservations.sql (safe to re-run; also upgrades an older table).
+-- Reservation storage and confirmation email (database-side side effect).
+-- Run after supabase/reservations.sql in Supabase → SQL Editor.
 
-alter table public.reservations add column if not exists manage_token   text;
-alter table public.reservations add column if not exists reserved_label text;
-alter table public.reservations add column if not exists updated_at     timestamptz default now();
-
-create unique index if not exists reservations_token_idx
-  on public.reservations (manage_token);
-
--- All bookings are Asia/Singapore wall-clock times; compare in that zone rather than
--- the project default (UTC) so the 3-hour rule and "in the past" checks are correct.
-create or replace function public.reservation_slot_ts(p_date date, p_time text)
-returns timestamptz
-language sql
-immutable
-as $$ select (p_date + p_time::time) at time zone 'Asia/Singapore' $$;
-
-create or replace function public.reservation_get(p_token text)
-returns jsonb
-language plpgsql
-security definer
-set search_path = public
-as $$
-declare r public.reservations;
-begin
-  if p_token is null or length(p_token) < 16 then return null; end if;
-  select * into r from public.reservations where manage_token = p_token;
-  if not found then return null; end if;
-  return jsonb_build_object(
-    'reference', r.reference,
-    'branch', r.branch,
-    'guest_name', r.guest_name,
-    'guests', r.guests,
-    'reserved_date', r.reserved_date,
-    'reserved_time', r.reserved_time,
-    'duration', r.duration,
-    'notes', r.notes,
-    'status', r.status
-  );
-end;
-$$;
-
-create or replace function public.reservation_cancel(p_token text)
-returns text
-language plpgsql
-security definer
-set search_path = public
-as $$
-declare r public.reservations;
-begin
-  if p_token is null or length(p_token) < 16 then return 'not_found'; end if;
-  select * into r from public.reservations where manage_token = p_token for update;
-  if not found then return 'not_found'; end if;
-  if r.status = 'cancelled' then return 'already_cancelled'; end if;
-  if public.reservation_slot_ts(r.reserved_date, r.reserved_time) < now() then return 'in_past'; end if;
-  update public.reservations
-     set status = 'cancelled', updated_at = now()
-   where id = r.id;
-  return 'cancelled';
-end;
-$$;
-
-create or replace function public.reservation_reschedule(p_token text, p_date date, p_time text)
-returns text
-language plpgsql
-security definer
-set search_path = public
-as $$
-declare r public.reservations;
-begin
-  if p_token is null or length(p_token) < 16 then return 'not_found'; end if;
-  if p_time is null or p_time !~ '^[0-2][0-9]:[0-5][0-9]$' then return 'invalid_time'; end if;
-  select * into r from public.reservations where manage_token = p_token for update;
-  if not found then return 'not_found'; end if;
-  if r.status = 'cancelled' then return 'cancelled'; end if;
-  if public.reservation_slot_ts(p_date, p_time) < now() + interval '3 hours' then return 'too_soon'; end if;
-  update public.reservations
-     set reserved_date  = p_date,
-         reserved_time  = p_time,
-         reserved_label = to_char(p_date, 'FMDay, FMDD FMMonth YYYY'),
-         updated_at     = now()
-   where id = r.id;
-  return 'rescheduled';
-end;
-$$;
-
--- Only these three entry points are callable by a visitor; the table itself stays closed.
-revoke all on function public.reservation_get(text)                       from public;
-revoke all on function public.reservation_cancel(text)                    from public;
-revoke all on function public.reservation_reschedule(text, date, text)    from public;
-
-grant execute on function public.reservation_get(text)                     to anon, authenticated;
-grant execute on function public.reservation_cancel(text)                  to anon, authenticated;
-grant execute on function public.reservation_reschedule(text, date, text)  to anon, authenticated;
-
--- ---------------------------------------------------------------------------
--- Cancel / reschedule emails
---
 -- Fires when a row's status becomes 'cancelled' or its date/time moves, and POSTs
--- to Brevo's transactional API using the `brevo_api_key` stored in Supabase Vault.
--- The message goes to the guest only. Delivery is best-effort: any failure below is
--- logged as a warning and never blocks the cancel/reschedule itself.
+-- to Gmail's SMTP API using the `gmail_smtp_password` stored in Supabase Vault.
+-- The message goes only to the guest. Delivery is best-effort: any failure below
+-- is logged as a warning and never blocks the cancel/reschedule itself.
 --
--- Before running: create the two Brevo templates (see supabase/README.md section 6)
--- and put their IDs on the `v_template := ...` lines below.
--- ---------------------------------------------------------------------------
+-- Before running: create the two Gmail templates (see README.md section 1) and put
+-- their IDs on the `v_template := ...;` lines below.
+
 create extension if not exists pg_net with schema extensions;
 
 create or replace function public.reservation_change_email()
@@ -122,7 +26,7 @@ begin
   if new.email is null then return new; end if;
 
   if new.status = 'cancelled' and old.status is distinct from 'cancelled' then
-    v_template := 3;  -- Brevo template ID for the [Cancel] message
+    v_template := 3;  -- Gmail template ID for the [Cancel] message
     v_params := jsonb_build_object(
       'reference',  new.reference,
       'address',    '271 Jalan Besar, Singapore',
@@ -133,7 +37,7 @@ begin
     );
   elsif (new.reserved_date, new.reserved_time) is distinct from (old.reserved_date, old.reserved_time)
         and old.status is distinct from 'cancelled' then
-    v_template := 4;  -- Brevo template ID for the [Reschedule] message
+    v_template := 4;  -- Gmail template ID for the [Reschedule] message
     v_params := jsonb_build_object(
       'reference',       new.reference,
       'address',         '271 Jalan Besar, Singapore',
@@ -152,18 +56,18 @@ begin
   begin
     select decrypted_secret into v_api_key
       from vault.decrypted_secrets
-     where name = 'brevo_api_key';
+     where name = 'gmail_smtp_password';
 
     if v_api_key is null then
-      raise warning 'brevo_api_key not found in Vault; reservation email skipped';
+      raise warning 'gmail_smtp_password not found in Vault; reservation email skipped';
       return new;
     end if;
 
     perform net.http_post(
-      url     := 'https://api.brevo.com/v3/smtp/email',
+      url     := 'smtps://smtp.gmail.com:587',
       headers := jsonb_build_object(
         'Content-Type', 'application/json',
-        'api-key', v_api_key
+        'Authorization', 'Basic ' || encode(convert_from(decrypt('gmail_smtp_password', v_api_key), 'utf8'), 'base64')
       ),
       body    := jsonb_build_object(
         'to',         jsonb_build_array(jsonb_build_object('email', new.email, 'name', new.guest_name)),
