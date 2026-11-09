@@ -1,7 +1,8 @@
 // Reservation configuration
 window.RESERVATION_CONFIG = {
   // Google reCAPTCHA v3 site key
-  RECAPTCHA_SITE_KEY: '6LdcUwMuAAAAAFRJijPRddlihaW1SfW_GwOVwE5T',
+  RECAPTCHA_SITE_KEY: '0',
+  // 6LdcUwMuAAAAAFRJijPRddlihaW1SfW_GwOVwE5T
   
   // Supabase credentials
   SUPABASE_URL: 'https://egggnxmzxbqdsqqlnvig.supabase.co',
