@@ -339,7 +339,7 @@
         <div class="verify-panel" id="verifyPanel" hidden>
           <div class="verify-text" id="verifyText"></div>
           <div class="otp-container">
-            <input class="form-input otp-input" id="otpInput" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" aria-label="6-digit verification code">
+            <input class="form-input otp-input" id="otpInput" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="00000000" aria-label="8-digit verification code">
             <button type="button" class="modal-btn btn-verify otp-submit" id="otpVerifyBtn">Verify</button>
           </div>
           <div class="verify-error" id="verifyError" role="alert"></div>
@@ -378,7 +378,7 @@
     // empty (or Google's script cannot load), visitors are verified by email OTP.
     const RECAPTCHA_SITE_KEY = config.RECAPTCHA_SITE_KEY || '';
     const CONTACT_PHONE = config.CONTACT_PHONE || '9632 6039';
-    const OTP_LENGTH = 6;
+    const OTP_LENGTH = 8;
 
     // Country calling codes. Singapore is the default and is listed first; the rest
     // follow alphabetically. Add entries here if a country is missing.
@@ -674,7 +674,12 @@
       text.innerHTML = 'Sending a ' + OTP_LENGTH + '-digit code to <strong>' + escapeHtml(email) + '</strong>…';
       setStatus('');
 
-      const { error } = await client.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+      const emailRedirectTo = new URL(window.location.pathname, window.location.origin);
+      emailRedirectTo.searchParams.set('reservation-otp', '1');
+      const { error } = await client.auth.signInWithOtp({
+        email,
+        options: { shouldCreateUser: true, emailRedirectTo: emailRedirectTo.toString() }
+      });
       if (error) {
         text.textContent = 'We could not email a code to ' + email + '.';
         showVerifyError(error.message);

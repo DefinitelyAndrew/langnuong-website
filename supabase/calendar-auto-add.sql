@@ -45,44 +45,6 @@ create trigger reservations_add_to_google_calendar
   for each row
   execute function public.add_reservation_to_google_calendar();
 
--- Guest-side: email the booker a link to the calendar entry.
--- Runs after reservations_add_to_google_calendar, so the guest only gets an email
--- if the calendar add ran.
-create extension if not exists pg_net with schema extensions;
-
-create or replace function public.reservation_send_guest_email()
-returns trigger
-language plpgsql
-security definer
-set search_path = ''
-as $$
-begin
-  if new.branch <> 'exclusive1' then return new; end if;
-
-  perform net.http_post(
-    url     := 'https://egggnxmzxbqdsqqlnvig.supabase.co/functions/v1/add-reservation-to-calendar',
-    headers := jsonb_build_object(
-      'Content-Type', 'application/json'
-    ),
-    body := jsonb_build_object('reservation', jsonb_build_object(
-      'reference', new.reference,
-      'branch', new.branch,
-      'guest_name', new.guest_name,
-      'email', new.email,
-      'phone', new.phone,
-      'guests', new.guests,
-      'reserved_date', new.reserved_date,
-      'reserved_time', new.reserved_time,
-      'duration', new.duration
-    ))
-  );
-
-  return new;
-end;
-$$;
-
+-- Email delivery is configured separately in reservation-emails.sql.
 drop trigger if exists reservations_send_guest_email on public.reservations;
-create trigger reservations_send_guest_email
-  after insert on public.reservations
-  for each row
-  execute function public.reservation_send_guest_email();
+drop function if exists public.reservation_send_guest_email();

@@ -1,6 +1,5 @@
--- Trigger that adds each exclusive1 reservation to Google Calendar and emails the
--- guest a .ics file + a link to the calendar entry. Runs in the Supabase function
--- sandbox, so the action is a single Edge Function call, not two.
+-- Trigger that adds each exclusive1 reservation to Google Calendar.
+-- Guest email delivery is configured separately in reservation-emails.sql.
 create extension if not exists pg_net with schema extensions;
 
 create or replace function public.reservation_auto_add_to_calendar()
