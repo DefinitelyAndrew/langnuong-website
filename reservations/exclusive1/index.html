@@ -78,6 +78,7 @@
     .weekday-header { text-align: center; font-size: 11px; color: #6b7280; padding: 10px 0; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; background: #f9fafb; }
     .day-button { border: none; background: white; cursor: pointer; font-size: 14px; color: #111827; position: relative; display: flex; align-items: center; justify-content: center; flex-direction: column; font-family: inherit; transition: background 0.15s; min-height: 44px; padding: 8px 0; }
     .day-button:disabled { color: #d1d5db; cursor: not-allowed; background: #fafafa; }
+    .calendar-empty-day { cursor: default; }
     .day-button:not(:disabled):hover { background: #f3f4f6; }
     .day-button.selected { background: #111827; color: white; font-weight: 600; }
     .day-button.today { font-weight: 600; }
@@ -918,17 +919,19 @@
 
       const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
       const lastDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
-      const startDate = new Date(firstDay);
-      startDate.setDate(firstDay.getDate() - ((firstDay.getDay() + 6) % 7));
+      const leadingEmptyDays = (firstDay.getDay() + 6) % 7;
+      for (let i = 0; i < leadingEmptyDays; i++) {
+        const emptyDay = document.createElement('div');
+        emptyDay.className = 'day-button calendar-empty-day';
+        emptyDay.setAttribute('aria-hidden', 'true');
+        calendarDays.appendChild(emptyDay);
+      }
 
       const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
       let todayButton = null;
 
-      for (let i = 0; i < 42; i++) {
-        const date = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + i);
-        if (date.getMonth() !== currentMonth.getMonth()) {
-          continue;
-        }
+      for (let day = 1; day <= lastDay.getDate(); day++) {
+        const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
         const btn = document.createElement('button');
         btn.className = 'day-button';
         btn.type = 'button';
