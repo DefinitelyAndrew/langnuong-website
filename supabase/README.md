@@ -87,7 +87,21 @@ The table currently permits anonymous inserts, so add server-side booking rate
 limits and CAPTCHA verification before enabling these triggers on a public site;
 otherwise a direct database insert could cause an email to an arbitrary address.
 
-## 6. Verify
+## 6. Sync reservations to the restaurant calendar
+
+The `add-reservation-to-calendar` Edge Function writes `exclusive1` bookings to
+the configured Google Calendar. Share that calendar with the Google service
+account as an editor, configure `GOOGLE_SERVICE_ACCOUNT_KEY`, and deploy:
+
+```sh
+supabase functions deploy add-reservation-to-calendar
+```
+
+Then run `supabase/calendar-auto-add.sql` in the SQL Editor. It syncs new bookings
+and reservation changes, and removes events when a booking is cancelled or deleted.
+The guest's own calendar buttons are independent of this restaurant-side sync.
+
+## 7. Verify
 
 1. Request an OTP on the reservation page and confirm the six-digit code arrives.
 2. Complete a booking and check that its confirmation arrives.
