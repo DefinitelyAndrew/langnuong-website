@@ -5,6 +5,17 @@
   const cfg = window.RESERVATION_CONFIG || {};
   const VENUE_NAME = cfg.VENUE_NAME || 'Lang Nuong Vietnam';
   const VENUE_ADDRESS = cfg.VENUE_ADDRESS || '271 Jalan Besar, Singapore';
+  const BRANCHES = window.RESERVATION_BRANCHES || {};
+
+  function venueFor(row) {
+    const branch = Object.prototype.hasOwnProperty.call(BRANCHES, row.branch)
+      ? BRANCHES[row.branch]
+      : null;
+    return {
+      name: branch ? branch.calendarName : VENUE_NAME,
+      address: branch ? branch.address : VENUE_ADDRESS
+    };
+  }
 
   function pad(n) { return String(n).padStart(2, '0'); }
 
@@ -33,6 +44,7 @@
     const start = se.start;
     const end = se.end;
     const guests = Number(row.guests) || 1;
+    const venue = venueFor(row);
 
     return [
       'BEGIN:VCALENDAR',
@@ -45,8 +57,8 @@
       'DTSTAMP:' + stamp(new Date()),
       'DTSTART:' + stamp(start),
       'DTEND:' + stamp(end),
-      'SUMMARY:(' + guests + (guests === 1 ? ' guest)' : ' guests)') + ' Reservation at ' + VENUE_NAME,
-      'LOCATION:' + VENUE_ADDRESS,
+      'SUMMARY:(' + guests + (guests === 1 ? ' guest)' : ' guests)') + ' Reservation at ' + venue.name,
+      'LOCATION:' + venue.address,
       'DESCRIPTION:Reference ' + row.reference + ' - ' + guests + ' guests',
       'END:VEVENT',
       'END:VCALENDAR'
@@ -56,7 +68,8 @@
   function googleCalendarUrl(row) {
     const se = getStartEnd(row);
     const guests = Number(row.guests) || 1;
-    const title = '(' + guests + (guests === 1 ? ' guest)' : ' guests)') + ' Reservation at ' + VENUE_NAME;
+    const venue = venueFor(row);
+    const title = '(' + guests + (guests === 1 ? ' guest)' : ' guests)') + ' Reservation at ' + venue.name;
     // Format as YYYYMMDDTHHmmss for local time in Singapore (GMT+8)
     const formatLocal = function (d, hour, minute) {
       return d[0] + pad(d[1]) + pad(d[2]) + 'T' + pad(hour) + pad(minute) + '00';
@@ -69,13 +82,13 @@
     let em = endMin;
     if (eh >= 24) { eh = eh - 24; endDate[2] = endDate[2] + 1; }
     const dates = formatLocal(se.parts, se.hour, se.minute) + '/' + endDate[0] + pad(endDate[1]) + pad(endDate[2]) + 'T' + pad(eh) + pad(em) + '00';
-    const details = 'Reference ' + row.reference + ' - ' + guests + ' guests - ' + VENUE_ADDRESS;
+    const details = 'Reference ' + row.reference + ' - ' + guests + ' guests - ' + venue.address;
     const params = new URLSearchParams({
       action: 'TEMPLATE',
       text: title,
       dates: dates,
       details: details,
-      location: VENUE_ADDRESS
+      location: venue.address
     });
     return 'https://calendar.google.com/calendar/render?' + params.toString();
   }
@@ -83,7 +96,8 @@
   function outlookCalendarUrl(row) {
     const se = getStartEnd(row);
     const guests = Number(row.guests) || 1;
-    const title = '(' + guests + (guests === 1 ? ' guest)' : ' guests)') + ' Reservation at ' + VENUE_NAME;
+    const venue = venueFor(row);
+    const title = '(' + guests + (guests === 1 ? ' guest)' : ' guests)') + ' Reservation at ' + venue.name;
     const details = 'Reference ' + row.reference + ' - ' + guests + ' guests';
     const params = new URLSearchParams({
       path: '/calendar/action/compose',
@@ -92,7 +106,7 @@
       startdt: se.start.toISOString(),
       enddt: se.end.toISOString(),
       body: details,
-      location: VENUE_ADDRESS
+      location: venue.address
     });
     return 'https://outlook.live.com/calendar/0/deeplink/compose?' + params.toString();
   }

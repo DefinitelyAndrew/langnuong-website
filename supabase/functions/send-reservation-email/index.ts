@@ -18,6 +18,30 @@ interface ReservationEmailPayload {
   previous?: { reserved_date?: string; reserved_time?: string };
 }
 
+interface BranchConfig {
+  name: string;
+  address: string;
+  phone: string;
+}
+
+const BRANCHES: Record<string, BranchConfig> = {
+  exclusive1: {
+    name: "Lang Nuong Vietnam",
+    address: "271 Jalan Besar, Singapore",
+    phone: "9632 6039",
+  },
+  langnuong1980s: {
+    name: "Lang Nuong Vietnam 1980's",
+    address: "19 Hamilton Rd, Singapore 209189",
+    phone: "9451 2966",
+  },
+  bodevegetarian: {
+    name: "Bo De Vegetarian",
+    address: "16 Hamilton Rd, #01-05, Singapore 209186",
+    phone: "9451 2966",
+  },
+};
+
 function jsonResponse(body: unknown, status: number): Response {
   return new Response(JSON.stringify(body), {
     status,
@@ -50,7 +74,7 @@ function requiredText(value: string | undefined, field: string): string {
   return value.trim();
 }
 
-function reservationDetails(reservation: Reservation): string[] {
+function reservationDetails(reservation: Reservation, branch: BranchConfig): string[] {
   const date = formatDate(requiredText(reservation.reserved_date, "date"));
   const time = requiredText(reservation.reserved_time, "time").slice(0, 5);
   const guests = Number(reservation.guests);
@@ -59,7 +83,7 @@ function reservationDetails(reservation: Reservation): string[] {
     `Reference: ${requiredText(reservation.reference, "reference")}`,
     `When: ${date} at ${time} (Singapore time)`,
     `Guests: ${guests}`,
-    `Where: 271 Jalan Besar, Singapore`,
+    `Where: ${branch.address}`,
   ];
 }
 
@@ -91,9 +115,14 @@ Deno.serve(async (request) => {
   }
 
   const reservation = payload.reservation;
-  if (!reservation || reservation.branch !== "exclusive1") {
+  if (
+    !reservation ||
+    !reservation.branch ||
+    !Object.prototype.hasOwnProperty.call(BRANCHES, reservation.branch)
+  ) {
     return jsonResponse({ error: "Invalid reservation" }, 400);
   }
+  const branch = BRANCHES[reservation.branch];
   const event = payload.event;
   if (!["confirmation", "cancelled", "rescheduled"].includes(event || "")) {
     return jsonResponse({ error: "Unsupported email event" }, 400);
@@ -105,7 +134,7 @@ Deno.serve(async (request) => {
     }
 
     const name = reservation.guest_name?.trim() || "Guest";
-    const details = reservationDetails(reservation);
+    const details = reservationDetails(reservation, branch);
     const links = manageLinks(reservation);
     let subject: string;
     let text: string;
@@ -116,27 +145,27 @@ Deno.serve(async (request) => {
       const time = requiredText(reservation.reserved_time, "time").slice(0, 5);
       const guests = Number(reservation.guests);
       if (!Number.isInteger(guests) || guests < 1) throw new Error("Invalid guest count");
-      subject = `Your Lang Nuong reservation is confirmed — ${reference}`;
+      subject = `Your ${branch.name} reservation is confirmed — ${reference}`;
       text = [
         `Hi ${name},`,
         "",
-        "Thank you for choosing Lang Nuong Vietnam. Your reservation is confirmed!",
+        `Thank you for choosing ${branch.name}. Your reservation is confirmed!`,
         "",
         "Reservation details",
         `Reference: ${reference}`,
         `Date: ${date}`,
         `Time: ${time} (Singapore time)`,
         `Guests: ${guests}`,
-        "Location: 271 Jalan Besar, Singapore",
+        `Location: ${branch.address}`,
         "",
         ...links,
         "",
-        "We look forward to welcoming you. If you have any questions, call us at 9632 6039.",
+        `We look forward to welcoming you. If you have any questions, call us at ${branch.phone}.`,
         "",
-        "Lang Nuong Vietnam",
+        branch.name,
       ].join("\n");
     } else if (event === "cancelled") {
-      subject = `Reservation cancelled — ${requiredText(reservation.reference, "reference")}`;
+      subject = `${branch.name} reservation cancelled — ${requiredText(reservation.reference, "reference")}`;
       text = [
         `Hello ${name},`,
         "",
@@ -144,7 +173,7 @@ Deno.serve(async (request) => {
         "",
         ...details,
         "",
-        "Questions? Call 9632 6039.",
+        `Questions? Call ${branch.phone}.`,
       ].join("\n");
     } else {
       const oldDate = payload.previous?.reserved_date;
@@ -152,7 +181,7 @@ Deno.serve(async (request) => {
       const previousText = oldDate && oldTime
         ? `Previous time: ${formatDate(oldDate)} at ${oldTime.slice(0, 5)} (Singapore time)`
         : "";
-      subject = `Reservation rescheduled — ${requiredText(reservation.reference, "reference")}`;
+      subject = `${branch.name} reservation rescheduled — ${requiredText(reservation.reference, "reference")}`;
       text = [
         `Hello ${name},`,
         "",
@@ -162,7 +191,7 @@ Deno.serve(async (request) => {
         ...details,
         ...(links.length ? ["", ...links] : []),
         "",
-        "Questions? Call 9632 6039.",
+        `Questions? Call ${branch.phone}.`,
       ].join("\n");
     }
 

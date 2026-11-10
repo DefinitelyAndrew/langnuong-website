@@ -12,7 +12,8 @@ security definer
 set search_path = ''
 as $$
 begin
-  if new.branch = 'exclusive1' and nullif(btrim(new.manage_token), '') is null then
+  if new.branch in ('exclusive1', 'langnuong1980s', 'bodevegetarian')
+     and nullif(btrim(new.manage_token), '') is null then
     new.manage_token := replace(pg_catalog.gen_random_uuid()::text, '-', '');
   end if;
   return new;
@@ -36,7 +37,9 @@ declare
   v_secret text;
   v_previous jsonb;
 begin
-  if new.branch <> 'exclusive1' or new.email is null then
+  if new.branch is null
+     or new.branch not in ('exclusive1', 'langnuong1980s', 'bodevegetarian')
+     or new.email is null then
     return new;
   end if;
 

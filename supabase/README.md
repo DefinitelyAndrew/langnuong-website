@@ -71,16 +71,20 @@ reservation OTP flow can be identified and sent without a link:
 
 ```text
 https://definitelyandrew.github.io/langnuong-website/reservations/exclusive1/?reservation-otp=1
+https://definitelyandrew.github.io/langnuong-website/reservations/exclusive1/?reservation-otp=1&branch=langnuong1980s
+https://definitelyandrew.github.io/langnuong-website/reservations/exclusive1/?reservation-otp=1&branch=bodevegetarian
 ```
 
 ## 5. Install the reservation email trigger
 
 In **Database → Vault**, first create the `reservation_email_webhook_secret` secret.
 If `public.reservations` does not exist yet, run `supabase/reservations.sql` first.
-Then run `supabase/reservation-emails.sql` in **SQL Editor**. It generates a
-private management token for each new exclusive reservation, and installs email
-triggers for bookings, cancellations, and reschedules. It also removes the old
-SMTP/duplicate guest-email triggers.
+Then run `supabase/reservation-branches.sql` and `supabase/reservation-emails.sql`
+in **SQL Editor**. The first adds the branch-aware booking RPC; the second
+generates a private management token and sends email for Exclusive, Lang Nuong
+Vietnam 1980's, and Bo De Vegetarian bookings, cancellations, and reschedules.
+Re-run `reservation-emails.sql` when updating an existing project. It also
+removes the old SMTP/duplicate guest-email triggers.
 
 The booking flow must insert a row into `public.reservations` for the confirmation
 trigger to run. Manage links are included when the inserted row has a `manage_token`.
@@ -90,9 +94,10 @@ otherwise a direct database insert could cause an email to an arbitrary address.
 
 ## 6. Sync reservations to the restaurant calendar
 
-The `add-reservation-to-calendar` Edge Function writes `exclusive1` bookings to
-the configured Google Calendar. Share that calendar with the Google service
-account as an editor and configure `GOOGLE_SERVICE_ACCOUNT_KEY`. It uses the
+The `add-reservation-to-calendar` Edge Function routes each branch to its
+configured Google Calendar. Share the Exclusive, 1980's, and Bo De calendars
+with the Google service account as an editor and configure
+`GOOGLE_SERVICE_ACCOUNT_KEY`. It uses the
 `RESERVATION_EMAIL_WEBHOOK_SECRET` Edge Function secret and the matching
 `reservation_email_webhook_secret` Vault secret from the email setup to authorize
 the database request. Deploy with JWT verification disabled because the function
@@ -102,16 +107,20 @@ checks that shared secret itself:
 supabase functions deploy add-reservation-to-calendar --no-verify-jwt
 ```
 
-Then run `supabase/calendar-auto-add.sql` in the SQL Editor. It syncs new bookings
-and reservation changes, and removes events when a booking is cancelled or deleted.
+Then run (or re-run) `supabase/calendar-auto-add.sql` in the SQL Editor. It syncs
+new bookings and reservation changes to the matching branch calendar, and removes
+events when a booking is cancelled or deleted. Restaurant calendar events remain
+one hour; online bookings allow up to 20 guests, use 30-minute slots, and require
+at least three hours' notice.
 The guest's own calendar buttons are independent of this restaurant-side sync.
 
 ## 7. Verify
 
-1. Request an OTP on the reservation page and confirm the six-digit code arrives.
-2. Complete a booking and check that its confirmation arrives.
-3. Reschedule or cancel it and confirm the corresponding notice arrives.
-4. Check **Edge Functions → Logs** for errors from either sender.
+1. Open the Lang Nuong 1980's and Bo De reservation links from the website.
+2. Request an OTP on each page and confirm the 8-digit code arrives.
+3. Complete a booking for each branch and check its confirmation and restaurant calendar.
+4. Reschedule or cancel each booking and confirm the notice and calendar event update.
+5. Check **Edge Functions → Logs** for errors from either sender.
 
 Reservation email delivery is asynchronous and best-effort: a Gmail API failure
 does not roll back a booking. Keep OAuth secrets out of the website, SQL source,

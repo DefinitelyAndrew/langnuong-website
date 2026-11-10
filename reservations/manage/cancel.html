@@ -21,7 +21,7 @@
 
     <div class="card" id="notFound" hidden>
       <h2>We can&rsquo;t find that reservation</h2>
-      <p class="muted">This link may be incomplete or out of date. Reply to your confirmation email, or call 9632 6039 and we&rsquo;ll sort it out.</p>
+      <p class="muted">This link may be incomplete or out of date. Reply to your confirmation email, or call <span data-contact-phone>9632 6039</span> and we&rsquo;ll sort it out.</p>
     </div>
 
     <div class="card" id="summary" hidden>
@@ -38,7 +38,7 @@
     <div class="card" id="closed" hidden>
       <span class="badge badge-cancelled">Cancelled</span>
       <h2>This reservation is already cancelled</h2>
-      <p class="muted">Nothing else to do. If you&rsquo;d like a new table, book again or call 9632 6039.</p>
+      <p class="muted">Nothing else to do. If you&rsquo;d like a new table, book again or call <span data-contact-phone>9632 6039</span>.</p>
     </div>
 
     <div class="card" id="done" hidden>
@@ -62,6 +62,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1"></script>
   <script src="../config.js"></script>
+  <script src="../branches.js"></script>
   <script src="../calendar.js"></script>
   <script src="manage.js"></script>
   <script>Manage.mountCancelPage();</script>

@@ -1,4 +1,4 @@
--- Sync exclusive1 reservations with the restaurant's Google Calendar.
+-- Sync reservations with the matching restaurant's Google Calendar.
 -- Deploy add-reservation-to-calendar and configure its Google service account first.
 create extension if not exists pg_net with schema extensions;
 
@@ -14,19 +14,27 @@ declare
   v_reservation public.reservations%rowtype;
 begin
   if tg_op = 'DELETE' then
-    if old.branch <> 'exclusive1' then return old; end if;
+    if old.branch is null
+       or old.branch not in ('exclusive1', 'langnuong1980s', 'bodevegetarian') then
+      return old;
+    end if;
     v_event := 'delete';
     v_reservation := old;
   elsif tg_op = 'INSERT' then
-    if new.branch <> 'exclusive1' or new.status = 'cancelled' then return new; end if;
+    if new.branch is null
+       or new.branch not in ('exclusive1', 'langnuong1980s', 'bodevegetarian')
+       or new.status = 'cancelled' then
+      return new;
+    end if;
     v_event := 'upsert';
     v_reservation := new;
-  elsif old.branch = 'exclusive1'
-        and (new.branch <> 'exclusive1'
+  elsif old.branch in ('exclusive1', 'langnuong1980s', 'bodevegetarian')
+        and (new.branch is null
+             or new.branch not in ('exclusive1', 'langnuong1980s', 'bodevegetarian')
              or (new.status = 'cancelled' and old.status is distinct from 'cancelled')) then
     v_event := 'delete';
     v_reservation := old;
-  elsif new.branch = 'exclusive1'
+  elsif new.branch in ('exclusive1', 'langnuong1980s', 'bodevegetarian')
         and new.status <> 'cancelled'
         and (
           old.branch is distinct from new.branch

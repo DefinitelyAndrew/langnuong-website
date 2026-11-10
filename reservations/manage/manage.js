@@ -7,6 +7,7 @@
   const CONTACT_PHONE = cfg.CONTACT_PHONE || '9632 6039';
   const VENUE_NAME = cfg.VENUE_NAME || 'Lang Nuong Vietnam';
   const VENUE_ADDRESS = cfg.VENUE_ADDRESS || '271 Jalan Besar, Singapore';
+  const BRANCHES = window.RESERVATION_BRANCHES || {};
   const MIN_LEAD_HOURS = 3;
   const BOOKING_WINDOW_MONTHS = 6;
 
@@ -74,14 +75,28 @@
     }
   }
 
+  function branchFor(row) {
+    const branch = Object.prototype.hasOwnProperty.call(BRANCHES, row.branch)
+      ? BRANCHES[row.branch]
+      : null;
+    return branch || {
+      address: VENUE_ADDRESS,
+      phone: CONTACT_PHONE
+    };
+  }
+
   function renderSummary(row) {
+    const branch = branchFor(row);
     $('summaryRef').textContent = row.reference;
     $('summaryWhen').textContent = row.reserved_label && row.reserved_label.trim()
       ? row.reserved_label + ' · ' + row.reserved_time
       : formatWhen(row.reserved_date, row.reserved_time);
     $('summaryGuests').textContent = row.guests + (row.guests === 1 ? ' guest' : ' guests');
     $('summaryDuration').textContent = row.duration;
-    $('summaryWhere').textContent = VENUE_ADDRESS;
+    $('summaryWhere').textContent = branch.address;
+    document.querySelectorAll('[data-contact-phone]').forEach(function (element) {
+      element.textContent = branch.phone;
+    });
     if ($('summaryName')) $('summaryName').textContent = row.guest_name;
   }
 
@@ -139,7 +154,7 @@
           in_past: 'This reservation is in the past, so it cannot be cancelled online. Please call us.',
           not_found: 'We could not find this reservation.'
         };
-        setError('error', messages[result.data] || 'We could not cancel this reservation. Please call ' + CONTACT_PHONE + '.');
+        setError('error', messages[result.data] || 'We could not cancel this reservation. Please call ' + branchFor(row).phone + '.');
       });
     });
   }
@@ -217,7 +232,7 @@
           not_found: 'We could not find this reservation.',
           invalid_time: 'That time is not valid.'
         };
-        setError('error', messages[result.data] || 'We could not move this reservation. Please call ' + CONTACT_PHONE + '.');
+        setError('error', messages[result.data] || 'We could not move this reservation. Please call ' + branchFor(row).phone + '.');
       });
     });
   }

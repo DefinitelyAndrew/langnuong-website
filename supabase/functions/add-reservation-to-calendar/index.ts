@@ -1,11 +1,31 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { create } from "https://deno.land/x/djwt@v2.8/mod.ts";
 
-const CALENDAR_ID = "ce5fbc5e1d7e74d886c2d0ff5762580eaf7b787ddded50404cf7959e06d75277@group.calendar.google.com";
-const VENUE_NAME = "Lang Nuong Vietnam";
-const VENUE_ADDRESS = "271 Jalan Besar, Singapore";
 const RESERVATION_BLOCK_MINUTES = 60;
-const CALENDAR_API = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events`;
+
+interface BranchConfig {
+  calendarId: string;
+  venueName: string;
+  address: string;
+}
+
+const BRANCHES: Record<string, BranchConfig> = {
+  exclusive1: {
+    calendarId: "ce5fbc5e1d7e74d886c2d0ff5762580eaf7b787ddded50404cf7959e06d75277@group.calendar.google.com",
+    venueName: "Lang Nuong Vietnam",
+    address: "271 Jalan Besar, Singapore",
+  },
+  langnuong1980s: {
+    calendarId: "61632ee59f8a61cb9de7a035aef0195d83bf140f3f0451535afef70cc64b22b@group.calendar.google.com",
+    venueName: "Lang Nuong Vietnam 1980's",
+    address: "19 Hamilton Rd, Singapore 209189",
+  },
+  bodevegetarian: {
+    calendarId: "171e4655d1a90f4fbccdbb11c0922055f644eec0b0fd32294f3fcc7669842dd1@group.calendar.google.com",
+    venueName: "Bo De Vegetarian",
+    address: "16 Hamilton Rd, #01-05, Singapore 209186",
+  },
+};
 
 interface Reservation {
   reference: string;
@@ -63,12 +83,16 @@ async function requireSuccess(response: Response, operation: string): Promise<vo
   }
 }
 
-async function findEvents(accessToken: string, reference: string): Promise<CalendarEvent[]> {
+function calendarApiFor(branch: BranchConfig): string {
+  return `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(branch.calendarId)}/events`;
+}
+
+async function findEvents(accessToken: string, reference: string, calendarApi: string): Promise<CalendarEvent[]> {
   const events: CalendarEvent[] = [];
   let pageToken = "";
 
   do {
-    const url = new URL(CALENDAR_API);
+    const url = new URL(calendarApi);
     url.searchParams.set("q", `Reference ${reference}`);
     url.searchParams.set("maxResults", "2500");
     if (pageToken) url.searchParams.set("pageToken", pageToken);
@@ -93,7 +117,7 @@ async function eventIdForReference(reference: string): Promise<string> {
   return `ln${hash}`;
 }
 
-function buildEvent(reservation: Reservation) {
+function buildEvent(reservation: Reservation, branch: BranchConfig) {
   const parts = reservation.reserved_date.split("-").map(Number);
   const [hour, minute] = reservation.reserved_time.split(":").map(Number);
   if (parts.length !== 3 || !parts.every(Number.isFinite) || !Number.isFinite(hour) || !Number.isFinite(minute)) {
@@ -106,8 +130,8 @@ function buildEvent(reservation: Reservation) {
   const notes = reservation.notes?.trim();
 
   return {
-    summary: `(${guests} ${guests === 1 ? "guest)" : "guests)"} Reservation at ${VENUE_NAME}`,
-    location: VENUE_ADDRESS,
+    summary: `(${guests} ${guests === 1 ? "guest)" : "guests)"} Reservation at ${branch.venueName}`,
+    location: branch.address,
     description: [
       `Reference ${reservation.reference} - ${guests} guests - ${reservation.email || ""} - ${reservation.phone || ""}`,
       ...(notes ? [`Notes: ${notes}`] : []),
@@ -126,10 +150,10 @@ function buildEvent(reservation: Reservation) {
   };
 }
 
-async function deleteEvent(accessToken: string, eventId: string): Promise<void> {
+async function deleteEvent(accessToken: string, eventId: string, calendarApi: string): Promise<void> {
   const response = await calendarRequest(
     accessToken,
-    `${CALENDAR_API}/${encodeURIComponent(eventId)}`,
+    `${calendarApi}/${encodeURIComponent(eventId)}`,
     "DELETE",
   );
   if (!response.ok && response.status !== 404) {
@@ -141,40 +165,42 @@ async function syncEvent(
   accessToken: string,
   reservation: Reservation,
   action: "upsert" | "delete",
+  branch: BranchConfig,
 ): Promise<void> {
-  const existingEvents = await findEvents(accessToken, reservation.reference);
+  const calendarApi = calendarApiFor(branch);
+  const existingEvents = await findEvents(accessToken, reservation.reference, calendarApi);
 
   if (action === "delete") {
     if (existingEvents.length) {
-      for (const event of existingEvents) await deleteEvent(accessToken, event.id);
+      for (const event of existingEvents) await deleteEvent(accessToken, event.id, calendarApi);
     } else {
-      await deleteEvent(accessToken, await eventIdForReference(reservation.reference));
+      await deleteEvent(accessToken, await eventIdForReference(reservation.reference), calendarApi);
     }
     return;
   }
 
-  const event = buildEvent(reservation);
+  const event = buildEvent(reservation, branch);
   if (existingEvents.length) {
     await requireSuccess(
       await calendarRequest(
         accessToken,
-        `${CALENDAR_API}/${encodeURIComponent(existingEvents[0].id)}`,
+        `${calendarApi}/${encodeURIComponent(existingEvents[0].id)}`,
         "PATCH",
         event,
       ),
       "Calendar event update",
     );
-    for (const duplicate of existingEvents.slice(1)) await deleteEvent(accessToken, duplicate.id);
+    for (const duplicate of existingEvents.slice(1)) await deleteEvent(accessToken, duplicate.id, calendarApi);
     return;
   }
 
   const eventId = await eventIdForReference(reservation.reference);
-  const response = await calendarRequest(accessToken, CALENDAR_API, "POST", { ...event, id: eventId });
+  const response = await calendarRequest(accessToken, calendarApi, "POST", { ...event, id: eventId });
   if (response.status === 409) {
     await requireSuccess(
       await calendarRequest(
         accessToken,
-        `${CALENDAR_API}/${encodeURIComponent(eventId)}`,
+        `${calendarApi}/${encodeURIComponent(eventId)}`,
         "PATCH",
         event,
       ),
@@ -199,8 +225,11 @@ serve(async (req) => {
     const payload = await req.json();
     const reservation = payload.reservation as Reservation | undefined;
     const action = payload.event || "upsert";
+    const branch = reservation && Object.prototype.hasOwnProperty.call(BRANCHES, reservation.branch)
+      ? BRANCHES[reservation.branch]
+      : undefined;
 
-    if (!reservation || reservation.branch !== "exclusive1") {
+    if (!reservation || !branch) {
       return new Response(JSON.stringify({ skipped: true }), {
         headers: { "Content-Type": "application/json" },
         status: 200,
@@ -254,7 +283,7 @@ serve(async (req) => {
       throw new Error(`Failed to get Google access token (${tokenResponse.status})`);
     }
 
-    await syncEvent(tokenData.access_token, reservation, action);
+    await syncEvent(tokenData.access_token, reservation, action, branch);
     return new Response(JSON.stringify({ success: true, action }), {
       headers: { "Content-Type": "application/json" },
       status: 200,
