@@ -12,6 +12,7 @@
     * { box-sizing: border-box; }
     html, body { margin: 0; padding: 0; height: 100%; background: #ffffff; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #111827; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+    .grecaptcha-badge { visibility: hidden; }
     
     @media (prefers-color-scheme: dark) {
       html, body { background: #000000; }
@@ -51,9 +52,12 @@
     
     .location-section, .timezone-section { display: flex; align-items: center; gap: 12px; color: #374151; font-size: 15px; }
     .icon { width: 20px; height: 20px; color: #6b7280; flex-shrink: 0; }
+    .recaptcha-notice { margin: -18px 0 0 32px; color: #6b7280; font-size: 11px; line-height: 1.4; }
+    .recaptcha-notice a { color: inherit; text-decoration: underline; }
     @media (prefers-color-scheme: dark) {
       .location-section, .timezone-section { color: #d4d4d4; }
       .icon { color: #a3a3a3; }
+      .recaptcha-notice { color: #a3a3a3; }
     }
     
     .right-panel { flex: 1; padding: 48px 40px; display: flex; flex-direction: column; background: white; }
@@ -278,6 +282,11 @@
         </svg>
         <span>Asia/Singapore</span>
       </div>
+      <p class="recaptcha-notice">
+        This website is protected by reCAPTCHA. Google
+        <a href="https://policies.google.com/privacy">Privacy Policy</a> and
+        <a href="https://policies.google.com/terms">Terms of Service</a> apply.
+      </p>
     </div>
     
     <div class="right-panel">
