@@ -58,13 +58,12 @@
       </div>
       <p class="notice" id="slotNotice"></p>
       <button type="button" class="btn btn-primary" id="saveBtn">Save new time</button>
-      <select class="btn" id="calendarBtn" aria-label="Choose a calendar app">
-        <option value="">Add to calendar…</option>
-        <option value="google">Google Calendar</option>
-        <option value="apple">Apple Calendar (.ics)</option>
-        <option value="outlook">Outlook</option>
-        <option value="ics">Download .ics file</option>
-      </select>
+      <div class="calendar-options" id="calendarActions" aria-label="Add reservation to calendar">
+        <button type="button" class="btn" data-calendar-provider="google">Google Calendar</button>
+        <button type="button" class="btn" data-calendar-provider="apple">Apple Calendar</button>
+        <button type="button" class="btn" data-calendar-provider="outlook">Outlook</button>
+        <button type="button" class="btn" data-calendar-provider="ics">Download .ics</button>
+      </div>
       <p class="notice">Times are Singapore time and must be at least 3 hours from now. Your guests, duration and contact details stay the same.</p>
     </div>
 

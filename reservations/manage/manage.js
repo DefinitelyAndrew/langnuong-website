@@ -113,9 +113,9 @@
       if (row.status === 'cancelled') return;
       show('actions');
 
-      $('calendarBtn').addEventListener('change', event => {
-        addToCalendar(row, event.target.value);
-        event.target.value = '';
+      $('calendarActions').addEventListener('click', event => {
+        const button = event.target.closest('[data-calendar-provider]');
+        if (button) addToCalendar(row, button.dataset.calendarProvider);
       });
 
       $('cancelBtn').addEventListener('click', async function () {
@@ -187,9 +187,9 @@
       dateInput.addEventListener('change', refreshTimes);
       refreshTimes();
 
-      $('calendarBtn').addEventListener('change', event => {
-        addToCalendar(row, event.target.value);
-        event.target.value = '';
+      $('calendarActions').addEventListener('click', event => {
+        const button = event.target.closest('[data-calendar-provider]');
+        if (button) addToCalendar(row, button.dataset.calendarProvider);
       });
 
       saveBtn.addEventListener('click', async function () {
