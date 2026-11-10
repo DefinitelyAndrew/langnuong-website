@@ -1129,6 +1129,73 @@ img {
 
 .press-card a:hover { color: var(--gold-dark); }
 
+.media-details {
+  margin-top: 1.5rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid #e8d8c0;
+  border-radius: var(--radius);
+  background: var(--white);
+}
+
+.media-details summary {
+  color: var(--brown);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.media-details h3 {
+  margin: 1.25rem 0 .5rem;
+  color: var(--brown);
+  font-size: 1rem;
+}
+
+.media-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: .6rem 1.25rem;
+  margin: .75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.media-links a {
+  color: var(--brown);
+  font-size: .88rem;
+  text-decoration: underline;
+  text-underline-offset: .15em;
+}
+
+.media-links a:hover { color: var(--gold-dark); }
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.video-card {
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid #e8d8c0;
+  border-radius: var(--radius);
+  background: var(--white);
+}
+
+.video-card iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+}
+
+.video-card figcaption {
+  padding: .8rem 1rem;
+  color: var(--brown);
+  font-size: .88rem;
+  font-weight: 600;
+}
+
 /* =============================================
    ABOUT COLS (home page 2-col layout)
    ============================================= */

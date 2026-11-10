@@ -13,5 +13,5 @@ window.RESERVATION_CONFIG = {
 
   // Optional: shown on the manage pages and in the calendar event
   VENUE_NAME: 'Lang Nuong Vietnam BBQ & Exclusive',
-  VENUE_ADDRESS: '271A Jalan Besar, Singapore 208941'
+  VENUE_ADDRESS: '271 Jalan Besar Road, Singapore 208941'
 };

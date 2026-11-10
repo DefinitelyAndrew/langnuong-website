@@ -6,7 +6,7 @@
   const SUPABASE_KEY = cfg.SUPABASE_KEY || 'sb_publishable_jostM0x7NIGiLikFjVHLwA_I_x0IpS8';
   const CONTACT_PHONE = cfg.CONTACT_PHONE || '9632 6039';
   const VENUE_NAME = cfg.VENUE_NAME || 'Lang Nuong Vietnam BBQ & Exclusive';
-  const VENUE_ADDRESS = cfg.VENUE_ADDRESS || '271A Jalan Besar, Singapore 208941';
+  const VENUE_ADDRESS = cfg.VENUE_ADDRESS || '271 Jalan Besar Road, Singapore 208941';
   const BRANCHES = window.RESERVATION_BRANCHES || {};
   const MIN_LEAD_HOURS = 3;
   const BOOKING_WINDOW_MONTHS = 6;
