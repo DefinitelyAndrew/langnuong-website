@@ -31,6 +31,15 @@ function secretMatches(actual: string, expected: string): boolean {
   return difference === 0;
 }
 
+function privateKeyBytes(privateKeyPem: string): Uint8Array {
+  const base64 = privateKeyPem
+    .replace(/-----BEGIN PRIVATE KEY-----/g, "")
+    .replace(/-----END PRIVATE KEY-----/g, "")
+    .replace(/\s/g, "");
+  const binary = atob(base64);
+  return Uint8Array.from(binary, character => character.charCodeAt(0));
+}
+
 async function calendarRequest(
   accessToken: string,
   url: string,
@@ -203,6 +212,17 @@ serve(async (req) => {
     if (!serviceAccountKey) throw new Error("GOOGLE_SERVICE_ACCOUNT_KEY not set");
 
     const serviceAccount = JSON.parse(serviceAccountKey);
+    if (!serviceAccount.client_email || !serviceAccount.private_key) {
+      throw new Error("GOOGLE_SERVICE_ACCOUNT_KEY must be a service account JSON key");
+    }
+
+    const signingKey = await crypto.subtle.importKey(
+      "pkcs8",
+      privateKeyBytes(serviceAccount.private_key),
+      { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+      false,
+      ["sign"],
+    );
     const now = Math.floor(Date.now() / 1000);
     const jwt = await create(
       { alg: "RS256", typ: "JWT" },
@@ -213,7 +233,7 @@ serve(async (req) => {
         exp: now + 3600,
         iat: now,
       },
-      serviceAccount.private_key,
+      signingKey,
     );
 
     const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
