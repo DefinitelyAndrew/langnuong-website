@@ -31,9 +31,9 @@ begin
         and (
           old.branch is distinct from new.branch
           or old.status is distinct from new.status
-          or (old.reserved_date, old.reserved_time, old.duration, old.guests, old.email, old.phone)
+          or (old.reserved_date, old.reserved_time, old.duration, old.guests, old.email, old.phone, old.notes)
              is distinct from
-             (new.reserved_date, new.reserved_time, new.duration, new.guests, new.email, new.phone)
+             (new.reserved_date, new.reserved_time, new.duration, new.guests, new.email, new.phone, new.notes)
         ) then
     v_event := 'upsert';
     v_reservation := new;
@@ -67,7 +67,8 @@ begin
         'guests', v_reservation.guests,
         'reserved_date', v_reservation.reserved_date,
         'reserved_time', v_reservation.reserved_time,
-        'duration', v_reservation.duration
+        'duration', v_reservation.duration,
+        'notes', v_reservation.notes
       )
     )
   );

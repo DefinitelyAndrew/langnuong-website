@@ -15,6 +15,7 @@ interface Reservation {
   guests?: number;
   reserved_date: string;
   reserved_time: string;
+  notes?: string | null;
 }
 
 interface CalendarEvent {
@@ -102,11 +103,15 @@ function buildEvent(reservation: Reservation) {
   const startDate = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2], hour - 8, minute));
   const endDate = new Date(startDate.getTime() + RESERVATION_BLOCK_MINUTES * 60000);
   const guests = reservation.guests || 1;
+  const notes = reservation.notes?.trim();
 
   return {
     summary: `(${guests} ${guests === 1 ? "guest)" : "guests)"} Reservation at ${VENUE_NAME}`,
     location: VENUE_ADDRESS,
-    description: `Reference ${reservation.reference} - ${guests} guests - ${reservation.email || ""} - ${reservation.phone || ""}`,
+    description: [
+      `Reference ${reservation.reference} - ${guests} guests - ${reservation.email || ""} - ${reservation.phone || ""}`,
+      ...(notes ? [`Notes: ${notes}`] : []),
+    ].join("\n"),
     start: {
       dateTime: startDate.toISOString(),
       timeZone: "Asia/Singapore",
