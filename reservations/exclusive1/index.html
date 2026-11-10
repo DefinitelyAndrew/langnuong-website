@@ -793,6 +793,12 @@
     // on that table sends the confirmation email to the guest and the restaurant.
     async function completeBooking() {
       if (savingBooking) return;
+      if (!isBookable(activeSlotTime)) {
+        setStatus('This timeslot is no longer available. Please close this form and choose another time.');
+        renderTimes();
+        return;
+      }
+
       const client = getSupabase();
       const submit = document.getElementById('submitBtn');
 
@@ -983,6 +989,13 @@
       generateCalendar();
       renderTimes();
     }
+
+    const SLOT_REFRESH_INTERVAL_MS = 30 * 60 * 1000;
+    setInterval(renderTimes, SLOT_REFRESH_INTERVAL_MS);
+    window.addEventListener('focus', renderTimes);
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) renderTimes();
+    });
   </script>
 </body>
 </html>
