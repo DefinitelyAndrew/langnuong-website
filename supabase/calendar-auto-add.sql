@@ -10,6 +10,7 @@ set search_path = ''
 as $$
 declare
   v_event text;
+  v_secret text;
   v_reservation public.reservations%rowtype;
 begin
   if tg_op = 'DELETE' then
@@ -40,11 +41,21 @@ begin
     return new;
   end if;
 
+  select decrypted_secret into v_secret
+    from vault.decrypted_secrets
+   where name = 'reservation_email_webhook_secret';
+
+  if v_secret is null then
+    raise warning 'reservation_email_webhook_secret not found in Vault; calendar sync skipped';
+    if tg_op = 'DELETE' then return old; end if;
+    return new;
+  end if;
+
   perform net.http_post(
     url := 'https://egggnxmzxbqdsqqlnvig.supabase.co/functions/v1/add-reservation-to-calendar',
     headers := jsonb_build_object(
       'Content-Type', 'application/json',
-      'Authorization', 'Bearer ' || current_setting('app.settings.service_role_key', true)
+      'x-reservation-webhook-secret', v_secret
     ),
     body := jsonb_build_object(
       'event', v_event,

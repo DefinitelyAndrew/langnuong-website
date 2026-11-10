@@ -22,6 +22,15 @@ interface CalendarEvent {
   description?: string;
 }
 
+function secretMatches(actual: string, expected: string): boolean {
+  if (actual.length !== expected.length) return false;
+  let difference = 0;
+  for (let i = 0; i < actual.length; i++) {
+    difference |= actual.charCodeAt(i) ^ expected.charCodeAt(i);
+  }
+  return difference === 0;
+}
+
 async function calendarRequest(
   accessToken: string,
   url: string,
@@ -164,6 +173,15 @@ async function syncEvent(
 
 serve(async (req) => {
   try {
+    const expectedSecret = Deno.env.get("RESERVATION_EMAIL_WEBHOOK_SECRET");
+    const receivedSecret = req.headers.get("x-reservation-webhook-secret") || "";
+    if (!expectedSecret || !secretMatches(receivedSecret, expectedSecret)) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        headers: { "Content-Type": "application/json" },
+        status: 401,
+      });
+    }
+
     const payload = await req.json();
     const reservation = payload.reservation as Reservation | undefined;
     const action = payload.event || "upsert";

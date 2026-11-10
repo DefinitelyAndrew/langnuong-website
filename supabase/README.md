@@ -92,10 +92,14 @@ otherwise a direct database insert could cause an email to an arbitrary address.
 
 The `add-reservation-to-calendar` Edge Function writes `exclusive1` bookings to
 the configured Google Calendar. Share that calendar with the Google service
-account as an editor, configure `GOOGLE_SERVICE_ACCOUNT_KEY`, and deploy:
+account as an editor and configure `GOOGLE_SERVICE_ACCOUNT_KEY`. It uses the
+`RESERVATION_EMAIL_WEBHOOK_SECRET` Edge Function secret and the matching
+`reservation_email_webhook_secret` Vault secret from the email setup to authorize
+the database request. Deploy with JWT verification disabled because the function
+checks that shared secret itself:
 
 ```sh
-supabase functions deploy add-reservation-to-calendar
+supabase functions deploy add-reservation-to-calendar --no-verify-jwt
 ```
 
 Then run `supabase/calendar-auto-add.sql` in the SQL Editor. It syncs new bookings
