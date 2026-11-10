@@ -60,7 +60,6 @@ function reservationDetails(reservation: Reservation): string[] {
     `When: ${date} at ${time} (Singapore time)`,
     `Guests: ${guests}`,
     `Where: 271 Jalan Besar, Singapore`,
-    `Duration: ${reservation.duration || "2h"}`,
   ];
 }
 
@@ -125,9 +124,7 @@ Deno.serve(async (request) => {
         `Time: ${time} (Singapore time)`,
         `Guests: ${guests}`,
         "Location: 271 Jalan Besar, Singapore",
-        `Duration: ${reservation.duration || "2h"}`,
         "",
-        "To make changes:",
         ...(links.length ? links : []),
         ...(!links.length ? ["Please contact us to reschedule or cancel."] : []),
         "",

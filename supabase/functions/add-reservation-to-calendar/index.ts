@@ -4,6 +4,7 @@ import { create } from "https://deno.land/x/djwt@v2.8/mod.ts";
 const CALENDAR_ID = "ce5fbc5e1d7e74d886c2d0ff5762580eaf7b787ddded50404cf7959e06d75277@group.calendar.google.com";
 const VENUE_NAME = "Lang Nuong Vietnam";
 const VENUE_ADDRESS = "271 Jalan Besar, Singapore";
+const RESERVATION_BLOCK_MINUTES = 60;
 const CALENDAR_API = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events`;
 
 interface Reservation {
@@ -14,18 +15,11 @@ interface Reservation {
   guests?: number;
   reserved_date: string;
   reserved_time: string;
-  duration?: string;
 }
 
 interface CalendarEvent {
   id: string;
   description?: string;
-}
-
-function durationMinutes(duration: string): number {
-  const hours = /(\d+)\s*h/.exec(duration || "");
-  const minutes = /(\d+)\s*m/.exec(duration || "");
-  return (hours ? parseInt(hours[1]) * 60 : 0) + (minutes ? parseInt(minutes[1]) : 0);
 }
 
 async function calendarRequest(
@@ -87,9 +81,8 @@ function buildEvent(reservation: Reservation) {
     throw new Error("Invalid reservation date or time");
   }
 
-  const duration = durationMinutes(reservation.duration || "2h") || 120;
   const startDate = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2], hour - 8, minute));
-  const endDate = new Date(startDate.getTime() + duration * 60000);
+  const endDate = new Date(startDate.getTime() + RESERVATION_BLOCK_MINUTES * 60000);
   const guests = reservation.guests || 1;
 
   return {
