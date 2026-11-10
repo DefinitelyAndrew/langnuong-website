@@ -845,8 +845,7 @@
       document.getElementById('successRef').textContent = reference;
       document.getElementById('successText').textContent =
         'Your table for ' + guests + (guests === '1' ? ' guest' : ' guests') + ' on ' + selectedDateStr +
-        ' at ' + formatTime(activeSlotTime) + ' is booked. A confirmation has been emailed to ' +
-        email + '. Keep reference ' + reference + ' if you need to change or cancel.';
+        ' at ' + formatTime(activeSlotTime) + ' is booked. A confirmation has been emailed to ' + email + '.';
       document.getElementById('successPanel').hidden = false;
       clearVerifyError();
       setStatus('');
