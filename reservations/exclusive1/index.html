@@ -212,7 +212,19 @@
     .modal-actions { display: flex; gap: 12px; margin-top: 32px; }
     .modal-btn { flex: 1; padding: 13px 24px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; min-height: 48px; }
     .modal-btn:disabled { opacity: 0.55; cursor: not-allowed; }
-    .calendar-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .calendar-options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      width: 100%;
+      max-width: 400px;
+      margin-inline: auto;
+    }
+    .calendar-options .modal-btn:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+      justify-self: center;
+      width: calc(50% - 4px);
+    }
     .calendar-options .modal-btn { padding: 10px 12px; }
     .btn-back { background: white; border: 1px solid #d1d5db; color: #374151; }
     .btn-back:hover { background: #f9fafb; border-color: #9ca3af; }

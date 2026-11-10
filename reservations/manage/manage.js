@@ -128,11 +128,6 @@
       if (row.status === 'cancelled') return;
       show('actions');
 
-      $('calendarActions').addEventListener('click', event => {
-        const button = event.target.closest('[data-calendar-provider]');
-        if (button) addToCalendar(row, button.dataset.calendarProvider);
-      });
-
       $('cancelBtn').addEventListener('click', async function () {
         const button = this;
         button.disabled = true;
@@ -202,9 +197,10 @@
       dateInput.addEventListener('change', refreshTimes);
       refreshTimes();
 
+      let calendarRow = row;
       $('calendarActions').addEventListener('click', event => {
         const button = event.target.closest('[data-calendar-provider]');
-        if (button) addToCalendar(row, button.dataset.calendarProvider);
+        if (button) addToCalendar(calendarRow, button.dataset.calendarProvider);
       });
 
       saveBtn.addEventListener('click', async function () {
@@ -222,6 +218,7 @@
         if (result.data === 'rescheduled') {
           hide('summary');
           hide('actions');
+          calendarRow = Object.assign({}, row, { reserved_date: date, reserved_time: time });
           $('doneWhen').textContent = formatWhen(date, time);
           show('done');
           return;
