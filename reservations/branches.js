@@ -24,6 +24,6 @@ window.RESERVATION_BRANCHES = Object.freeze({
     bookingTitle: 'Bo De Vegetarian Reservation',
     bookingDescription: 'This form is to reserve tables at Bo De Vegetarian. You can cancel or reschedule after booking.',
     address: '16 Hamilton Rd, #01-05, Singapore 209186',
-    phone: '9451 2966'
+    phone: '9179 9368'
   }
 });

@@ -38,7 +38,7 @@ const BRANCHES: Record<string, BranchConfig> = {
   bodevegetarian: {
     name: "Bo De Vegetarian",
     address: "16 Hamilton Rd, #01-05, Singapore 209186",
-    phone: "9451 2966",
+    phone: "9179 9368",
   },
 };
 
