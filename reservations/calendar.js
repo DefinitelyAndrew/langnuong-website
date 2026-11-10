@@ -3,8 +3,8 @@
 // Times are Asia/Singapore wall clock, written as UTC instants in the file.
 (function () {
   const cfg = window.RESERVATION_CONFIG || {};
-  const VENUE_NAME = cfg.VENUE_NAME || 'Lang Nuong Vietnam';
-  const VENUE_ADDRESS = cfg.VENUE_ADDRESS || '271 Jalan Besar, Singapore';
+  const VENUE_NAME = cfg.VENUE_NAME || 'Lang Nuong Vietnam BBQ & Exclusive';
+  const VENUE_ADDRESS = cfg.VENUE_ADDRESS || '271A Jalan Besar, Singapore 208941';
   const BRANCHES = window.RESERVATION_BRANCHES || {};
 
   function venueFor(row) {

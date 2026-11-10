@@ -1,11 +1,11 @@
 window.RESERVATION_BRANCHES = Object.freeze({
   exclusive1: {
     id: 'exclusive1',
-    name: 'Lang Nuong Exclusive',
-    calendarName: 'Lang Nuong Vietnam',
-    bookingTitle: 'Lang Nuong Exclusive Reservation',
-    bookingDescription: 'This form is to reserve tables in the Lang Nuong Exclusive branch. You can cancel or reschedule after booking.',
-    address: '271 Jalan Besar, Singapore',
+    name: 'Lang Nuong Vietnam BBQ & Exclusive',
+    calendarName: 'Lang Nuong Vietnam BBQ & Exclusive',
+    bookingTitle: 'Lang Nuong Vietnam BBQ & Exclusive Reservation',
+    bookingDescription: 'This form is to reserve tables at the Lang Nuong Vietnam BBQ & Exclusive location. You can cancel or reschedule after booking.',
+    address: '271A Jalan Besar, Singapore 208941',
     phone: '9632 6039'
   },
   langnuong1980s: {

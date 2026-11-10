@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Visit Bo De Vegetarian at 16 Hamilton Road, Singapore 209186, and reserve a table online.">
+  <title>Bo De Vegetarian | Lang Nuong Vietnam Group</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="brand-page">
+  <header class="site-header">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" aria-label="Làng Nướng Vietnam home"><img src="https://langnuonggroup.com/wp-content/uploads/2024/07/LNGROUP.png" alt="Làng Nướng Vietnam"></a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="navMenu">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav-menu" id="navMenu">
+        <a href="index.html">Home</a>
+        <a href="bbq.html">Lang Nuong Vietnam BBQ &amp; Exclusive</a>
+        <a href="1980s.html">Lang Nuong Vietnam 1980's</a>
+        <a href="little-hanoi.html">Little Hanoi</a>
+        <a href="bode.html" class="active">Bo De Vegetarian</a>
+        <a href="shop.html">Shop Now</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="section-full section-light">
+      <div class="section">
+        <h1 class="serif-title section-title">Bo De Vegetarian</h1>
+        <div class="section-divider"></div>
+        <p class="section-lead">Vegetarian dining at 16 Hamilton Road, Singapore.</p>
+        <div class="info-block">
+          <h2>Visit Us</h2>
+          <p>16 Hamilton Rd, #01-05, Singapore 209186</p>
+          <p><a href="tel:+6594512966">+65 9451 2966</a></p>
+          <a href="reservations/bode/" class="btn btn-primary">Reserve a Table</a>
+        </div>
+        <div class="map-wrap">
+          <iframe
+            src="https://www.google.com/maps?q=16+Hamilton+Road,+Singapore+209186&amp;output=embed"
+            allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+            title="Bo De Vegetarian location map">
+          </iframe>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand" lang="vi">Làng Nướng Vietnam</div>
+        <p class="footer-tagline">Singapore's Original Vietnamese Grill Village</p>
+      </div>
+      <div class="footer-col">
+        <h4>Our Brands</h4>
+        <ul>
+          <li><a href="bbq.html">Lang Nuong Vietnam BBQ &amp; Exclusive</a></li>
+          <li><a href="1980s.html">Lang Nuong Vietnam 1980's</a></li>
+          <li><a href="little-hanoi.html">Little Hanoi</a></li>
+          <li><a href="bode.html">Bo De Vegetarian</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="https://wa.me/6596326039">Lang Nuong Vietnam BBQ &amp; Exclusive: +65 9632 6039</a></li>
+          <li><a href="https://wa.me/6594512966">Lang Nuong Vietnam 1980's: +65 9451 2966</a></li>
+          <li><a href="https://wa.me/6598105927">Little Hanoi: +65 9810 5927</a></li>
+          <li><a href="https://wa.me/6594512966">Bo De Vegetarian: +65 9451 2966</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © Lang Nuong Vietnam | All Rights Reserved · <a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms and Conditions</a>
+    </div>
+  </footer>
+
+  <script>
+    const toggle = document.getElementById('navToggle');
+    const menu = document.getElementById('navMenu');
+    toggle.addEventListener('click', () => {
+      toggle.classList.toggle('open');
+      menu.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', toggle.classList.contains('open'));
+    });
+  </script>
+</body>
+</html>

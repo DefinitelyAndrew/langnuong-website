@@ -12,8 +12,8 @@ interface BranchConfig {
 const BRANCHES: Record<string, BranchConfig> = {
   exclusive1: {
     calendarId: "ce5fbc5e1d7e74d886c2d0ff5762580eaf7b787ddded50404cf7959e06d75277@group.calendar.google.com",
-    venueName: "Lang Nuong Vietnam",
-    address: "271 Jalan Besar, Singapore",
+    venueName: "Lang Nuong Vietnam BBQ & Exclusive",
+    address: "271A Jalan Besar, Singapore 208941",
   },
   langnuong1980s: {
     calendarId: "61632ee59f8a61cb9de7a035aef0195d83bf140f3f0451535afef70cc64b22b@group.calendar.google.com",

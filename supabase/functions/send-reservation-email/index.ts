@@ -26,8 +26,8 @@ interface BranchConfig {
 
 const BRANCHES: Record<string, BranchConfig> = {
   exclusive1: {
-    name: "Lang Nuong Vietnam",
-    address: "271 Jalan Besar, Singapore",
+    name: "Lang Nuong Vietnam BBQ & Exclusive",
+    address: "271A Jalan Besar, Singapore 208941",
     phone: "9632 6039",
   },
   langnuong1980s: {

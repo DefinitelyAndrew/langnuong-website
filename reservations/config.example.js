@@ -12,6 +12,6 @@ window.RESERVATION_CONFIG = {
   CONTACT_PHONE: '9632 6039',
 
   // Optional: shown on the manage pages and in the calendar event
-  VENUE_NAME: 'Lang Nuong Vietnam',
-  VENUE_ADDRESS: '271 Jalan Besar, Singapore'
+  VENUE_NAME: 'Lang Nuong Vietnam BBQ & Exclusive',
+  VENUE_ADDRESS: '271A Jalan Besar, Singapore 208941'
 };
