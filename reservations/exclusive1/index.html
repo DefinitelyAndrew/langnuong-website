@@ -349,7 +349,13 @@
           <div class="success-title">Reservation confirmed</div>
           <div class="success-ref">Reference <strong id="successRef"></strong></div>
           <div class="success-text" id="successText"></div>
-          <button type="button" class="modal-btn btn-back" id="calendarBtn">Add to calendar</button>
+          <select class="modal-btn btn-back" id="calendarBtn" aria-label="Choose a calendar app">
+            <option value="">Add to calendar…</option>
+            <option value="google">Google Calendar</option>
+            <option value="apple">Apple Calendar (.ics)</option>
+            <option value="outlook">Outlook</option>
+            <option value="ics">Download .ics file</option>
+          </select>
           <button type="button" class="modal-btn btn-verify" onclick="closeBookingForm()">Done</button>
         </div>
         <div class="verify-status" id="verifyStatus" role="status"></div>
@@ -892,14 +898,11 @@
       await sendOtp(email);
     }
 
-    document.getElementById('calendarBtn').addEventListener('click', function () {
-      if (lastBooking && window.ReservationCalendar) {
-        if (window.ReservationCalendar.addToGoogleCalendar) {
-          window.ReservationCalendar.addToGoogleCalendar(lastBooking);
-        } else {
-          window.ReservationCalendar.download(lastBooking);
-        }
+    document.getElementById('calendarBtn').addEventListener('change', function () {
+      if (lastBooking && window.ReservationCalendar && this.value) {
+        window.ReservationCalendar.addToCalendar(lastBooking, this.value);
       }
+      this.value = '';
     });
     document.getElementById('otpVerifyBtn').addEventListener('click', verifyOtpCode);
     document.getElementById('otpResendBtn').addEventListener('click', () => { if (otpEmail) sendOtp(otpEmail); });

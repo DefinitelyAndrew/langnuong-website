@@ -80,9 +80,31 @@
     return 'https://calendar.google.com/calendar/render?' + params.toString();
   }
 
-  function addToGoogleCalendar(row) {
-    const url = googleCalendarUrl(row);
-    window.open(url, '_blank');
+  function outlookCalendarUrl(row) {
+    const se = getStartEnd(row);
+    const guests = Number(row.guests) || 1;
+    const title = '(' + guests + (guests === 1 ? ' guest)' : ' guests)') + ' Reservation at ' + VENUE_NAME;
+    const details = 'Reference ' + row.reference + ' - ' + guests + ' guests';
+    const params = new URLSearchParams({
+      path: '/calendar/action/compose',
+      rru: 'addevent',
+      subject: title,
+      startdt: se.start.toISOString(),
+      enddt: se.end.toISOString(),
+      body: details,
+      location: VENUE_ADDRESS
+    });
+    return 'https://outlook.live.com/calendar/0/deeplink/compose?' + params.toString();
+  }
+
+  function addToCalendar(row, provider) {
+    if (provider === 'google') {
+      window.open(googleCalendarUrl(row), '_blank');
+    } else if (provider === 'outlook') {
+      window.open(outlookCalendarUrl(row), '_blank');
+    } else if (provider === 'apple' || provider === 'ics') {
+      download(row);
+    }
   }
 
   function download(row) {
@@ -100,8 +122,9 @@
   window.ReservationCalendar = {
     build: build,
     download: download,
-    addToGoogleCalendar: addToGoogleCalendar,
+    addToCalendar: addToCalendar,
     googleCalendarUrl: googleCalendarUrl,
+    outlookCalendarUrl: outlookCalendarUrl,
     venue: { name: VENUE_NAME, address: VENUE_ADDRESS }
   };
 })();

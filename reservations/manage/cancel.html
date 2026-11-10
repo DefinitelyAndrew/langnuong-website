@@ -49,7 +49,13 @@
 
     <div class="actions" id="actions" hidden>
       <button type="button" class="btn btn-danger" id="cancelBtn">Cancel this reservation</button>
-      <button type="button" class="btn" id="calendarBtn">Add to calendar</button>
+      <select class="btn" id="calendarBtn" aria-label="Choose a calendar app">
+        <option value="">Add to calendar…</option>
+        <option value="google">Google Calendar</option>
+        <option value="apple">Apple Calendar (.ics)</option>
+        <option value="outlook">Outlook</option>
+        <option value="ics">Download .ics file</option>
+      </select>
       <p class="notice">Cancelling is immediate and can&rsquo;t be undone. To move the booking instead, use the Reschedule button in your confirmation email.</p>
     </div>
 

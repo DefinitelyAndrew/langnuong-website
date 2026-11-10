@@ -58,7 +58,13 @@
       </div>
       <p class="notice" id="slotNotice"></p>
       <button type="button" class="btn btn-primary" id="saveBtn">Save new time</button>
-      <button type="button" class="btn" id="calendarBtn">Add to calendar</button>
+      <select class="btn" id="calendarBtn" aria-label="Choose a calendar app">
+        <option value="">Add to calendar…</option>
+        <option value="google">Google Calendar</option>
+        <option value="apple">Apple Calendar (.ics)</option>
+        <option value="outlook">Outlook</option>
+        <option value="ics">Download .ics file</option>
+      </select>
       <p class="notice">Times are Singapore time and must be at least 3 hours from now. Your guests, duration and contact details stay the same.</p>
     </div>
 

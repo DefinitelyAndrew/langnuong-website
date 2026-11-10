@@ -65,10 +65,11 @@
     return DAYS[date.getDay()] + ', ' + date.getDate() + ' ' + MONTHS[date.getMonth()] + ' ' + date.getFullYear() + ' · ' + time;
   }
 
-  function downloadCalendar(row) {
-    if (window.ReservationCalendar && window.ReservationCalendar.addToGoogleCalendar) {
-      window.ReservationCalendar.addToGoogleCalendar(row);
-    } else if (window.ReservationCalendar) {
+  function addToCalendar(row, provider) {
+    if (!window.ReservationCalendar) return;
+    if (window.ReservationCalendar.addToCalendar) {
+      window.ReservationCalendar.addToCalendar(row, provider);
+    } else {
       window.ReservationCalendar.download(row);
     }
   }
@@ -112,7 +113,10 @@
       if (row.status === 'cancelled') return;
       show('actions');
 
-      $('calendarBtn').addEventListener('click', () => downloadCalendar(row));
+      $('calendarBtn').addEventListener('change', event => {
+        addToCalendar(row, event.target.value);
+        event.target.value = '';
+      });
 
       $('cancelBtn').addEventListener('click', async function () {
         const button = this;
@@ -183,7 +187,10 @@
       dateInput.addEventListener('change', refreshTimes);
       refreshTimes();
 
-      $('calendarBtn').addEventListener('click', () => downloadCalendar(row));
+      $('calendarBtn').addEventListener('change', event => {
+        addToCalendar(row, event.target.value);
+        event.target.value = '';
+      });
 
       saveBtn.addEventListener('click', async function () {
         const date = dateInput.value;
