@@ -2,6 +2,29 @@
 -- Edge Function. Create reservation_email_webhook_secret in Supabase Vault first.
 create extension if not exists pg_net with schema extensions;
 
+-- Generate the private website-management token in the database. The booking
+-- page creates reservations through an RPC, so this guarantees the token is
+-- stored even when the RPC does not accept a token argument.
+create or replace function public.ensure_reservation_manage_token()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if new.branch = 'exclusive1' and nullif(btrim(new.manage_token), '') is null then
+    new.manage_token := replace(pg_catalog.gen_random_uuid()::text, '-', '');
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists reservations_manage_token_before_insert on public.reservations;
+create trigger reservations_manage_token_before_insert
+  before insert on public.reservations
+  for each row
+  execute function public.ensure_reservation_manage_token();
+
 create or replace function public.notify_reservation_email()
 returns trigger
 language plpgsql

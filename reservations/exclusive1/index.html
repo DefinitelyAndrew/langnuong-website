@@ -771,24 +771,11 @@
       return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
     }
 
-    // 144-bit token for the Reschedule / Cancel links in the confirmation email. It is
-    // the only thing that grants access to one reservation, so it is never displayed.
-    function manageToken() {
-      const bytes = new Uint8Array(18);
-      if (window.crypto && window.crypto.getRandomValues) {
-        window.crypto.getRandomValues(bytes);
-      } else {
-        for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
-      }
-      return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
-    }
-
     function bookingPayload(reference) {
       const notes = document.getElementById('notesInput').value.trim();
       return {
         reference: reference,
         branch: 'exclusive1',
-        manage_token: manageToken(),
         reserved_label: days[selectedDateObj.getDay()] + ', ' + selectedDateObj.getDate() + ' ' +
           months[selectedDateObj.getMonth()] + ' ' + selectedDateObj.getFullYear(),
         guest_name: document.getElementById('nameInput').value.trim(),

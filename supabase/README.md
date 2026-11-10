@@ -77,9 +77,10 @@ https://definitelyandrew.github.io/langnuong-website/reservations/exclusive1/?re
 
 In **Database → Vault**, first create the `reservation_email_webhook_secret` secret.
 If `public.reservations` does not exist yet, run `supabase/reservations.sql` first.
-Then run `supabase/reservation-emails.sql` in **SQL Editor**. It installs triggers
-for new bookings, cancellations, and reschedules and removes the old SMTP/duplicate
-guest-email triggers.
+Then run `supabase/reservation-emails.sql` in **SQL Editor**. It generates a
+private management token for each new exclusive reservation, and installs email
+triggers for bookings, cancellations, and reschedules. It also removes the old
+SMTP/duplicate guest-email triggers.
 
 The booking flow must insert a row into `public.reservations` for the confirmation
 trigger to run. Manage links are included when the inserted row has a `manage_token`.

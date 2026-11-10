@@ -100,6 +100,10 @@ Deno.serve(async (request) => {
   }
 
   try {
+    if ((event === "confirmation" || event === "rescheduled") && !reservation.manage_token) {
+      throw new Error("Missing reservation manage token");
+    }
+
     const name = reservation.guest_name?.trim() || "Guest";
     const details = reservationDetails(reservation);
     const links = manageLinks(reservation);
@@ -125,8 +129,7 @@ Deno.serve(async (request) => {
         `Guests: ${guests}`,
         "Location: 271 Jalan Besar, Singapore",
         "",
-        ...(links.length ? links : []),
-        ...(!links.length ? ["Please contact us to reschedule or cancel."] : []),
+        ...links,
         "",
         "We look forward to welcoming you. If you have any questions, call us at 9632 6039.",
         "",
