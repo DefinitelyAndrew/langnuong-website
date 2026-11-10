@@ -108,16 +108,32 @@ Deno.serve(async (request) => {
     let text: string;
 
     if (event === "confirmation") {
-      subject = `Reservation confirmed — ${requiredText(reservation.reference, "reference")}`;
+      const reference = requiredText(reservation.reference, "reference");
+      const date = formatDate(requiredText(reservation.reserved_date, "date"));
+      const time = requiredText(reservation.reserved_time, "time").slice(0, 5);
+      const guests = Number(reservation.guests);
+      if (!Number.isInteger(guests) || guests < 1) throw new Error("Invalid guest count");
+      subject = `Your Lang Nuong reservation is confirmed — ${reference}`;
       text = [
-        `Hello ${name},`,
+        `Hi ${name},`,
         "",
-        "Your reservation at Lang Nuong Vietnam is confirmed.",
+        "Thank you for choosing Lang Nuong Vietnam. Your reservation is confirmed!",
         "",
-        ...details,
-        ...(links.length ? ["", ...links] : []),
+        "Reservation details",
+        `Reference: ${reference}`,
+        `Date: ${date}`,
+        `Time: ${time} (Singapore time)`,
+        `Guests: ${guests}`,
+        "Location: 271 Jalan Besar, Singapore",
+        `Duration: ${reservation.duration || "2h"}`,
         "",
-        "We look forward to seeing you. Questions? Call 9632 6039.",
+        "To make changes:",
+        ...(links.length ? links : []),
+        ...(!links.length ? ["Please contact us to reschedule or cancel."] : []),
+        "",
+        "We look forward to welcoming you. If you have any questions, call us at 9632 6039.",
+        "",
+        "Lang Nuong Vietnam",
       ].join("\n");
     } else if (event === "cancelled") {
       subject = `Reservation cancelled — ${requiredText(reservation.reference, "reference")}`;
