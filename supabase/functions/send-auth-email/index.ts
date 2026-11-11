@@ -1,5 +1,5 @@
 import { Webhook } from "https://esm.sh/standardwebhooks@1.0.0";
-import { sendGmailEmail } from "../_shared/gmail.ts";
+import { GmailDailyLimitError, sendGmailEmail, sendGmailEmails } from "../_shared/gmail.ts";
 
 interface AuthEmailPayload {
   user?: { email?: string; new_email?: string };
@@ -83,17 +83,17 @@ Deno.serve(async (request) => {
     if (action === "email_change" && newEmail && token && tokenNew) {
       const currentEmailLink = verificationLink(tokenHashNew, action, redirectTo);
       const newEmailLink = verificationLink(tokenHash, action, redirectTo);
-      await Promise.all([
-        sendGmailEmail(
-          email,
+      await sendGmailEmails([
+        {
+          to: email,
           subject,
-          `Your code to confirm this email change is ${token}.${currentEmailLink ? `\n\nOr confirm here: ${currentEmailLink}` : ""}`,
-        ),
-        sendGmailEmail(
-          newEmail,
+          text: `Your code to confirm this email change is ${token}.${currentEmailLink ? `\n\nOr confirm here: ${currentEmailLink}` : ""}`,
+        },
+        {
+          to: newEmail,
           subject,
-          `Your code to confirm this email change is ${tokenNew}.${newEmailLink ? `\n\nOr confirm here: ${newEmailLink}` : ""}`,
-        ),
+          text: `Your code to confirm this email change is ${tokenNew}.${newEmailLink ? `\n\nOr confirm here: ${newEmailLink}` : ""}`,
+        },
       ]);
     } else {
       const recipient = action === "email_change" && newEmail ? newEmail : email;
@@ -109,6 +109,9 @@ Deno.serve(async (request) => {
     }
     return jsonResponse({}, 200);
   } catch (error) {
+    if (error instanceof GmailDailyLimitError) {
+      return jsonResponse({ error: "Daily email limit reached. Please try again after midnight Singapore time." }, 429);
+    }
     console.error("Could not send Supabase Auth email:", error);
     return jsonResponse({ error: "Email delivery failed" }, 500);
   }

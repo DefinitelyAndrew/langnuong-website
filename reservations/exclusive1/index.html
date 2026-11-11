@@ -335,6 +335,22 @@
     </div>
   </div>
   
+  <div class="modal-overlay" id="choiceModal">
+    <div class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">BBQ or Exclusive?</h2>
+          <div class="booking-summary">Choose how you'd like to dine at this slot.</div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn btn-back" id="choiceBbqBtn">BBQ (book online)</button>
+          <button type="button" class="modal-btn btn-verify" id="choiceExclusiveBtn">Exclusive (WhatsApp)</button>
+        </div>
+        <div class="verify-status" id="choiceStatus" role="status"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="bookingModal">
     <div class="modal">
       <div class="modal-content">
@@ -510,9 +526,15 @@
     const today = new Date();
     let currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
-    // Slots every 30 minutes across the full day, 12:00 AM through 11:59 PM.
-    const times24 = Array.from({ length: 48 }, (_, i) => {
-      const minutes = i * 30;
+    // Slots every 30 minutes, restricted to this branch's opening hours.
+    // closeTime may be earlier than openTime (e.g. 15:00-06:00) for overnight venues.
+    function toMinutes(hhmm) { const p = hhmm.split(':'); return parseInt(p[0], 10) * 60 + parseInt(p[1], 10); }
+    const openMin = toMinutes(branch.openTime || '00:00');
+    const closeMin = toMinutes(branch.closeTime || '23:59');
+    const totalMinutes = ((closeMin - openMin + 1440) % 1440) || 1440;
+    const slotCount = Math.floor(totalMinutes / 30);
+    const times24 = Array.from({ length: slotCount }, (_, k) => {
+      const minutes = (openMin + k * 30) % 1440;
       return String(Math.floor(minutes / 60)).padStart(2, '0') + ':' + String(minutes % 60).padStart(2, '0');
     });
 
@@ -586,7 +608,11 @@
         btn.className = 'time-slot-btn';
         btn.textContent = formatTime(t);
         btn.type = 'button';
-        btn.onclick = () => openBookingForm(t);
+        btn.onclick = () => {
+          if (!isBookable(t)) { alert('This slot is no longer available.'); renderTimes(); return; }
+          if (branch.id === 'exclusive1') { openChoiceModal(t); }
+          else { openBookingForm(t); }
+        };
         grid.appendChild(btn);
       });
 
@@ -616,6 +642,25 @@
       document.getElementById('successPanel').hidden = true;
       resetVerification();
     }
+
+    function openChoiceModal(time) {
+      activeSlotTime = time;
+      document.getElementById('choiceStatus').textContent = '';
+      document.getElementById('choiceModal').classList.add('active');
+    }
+    function closeChoiceModal() {
+      document.getElementById('choiceModal').classList.remove('active');
+    }
+    document.getElementById('choiceModal').addEventListener('click', function (e) { if (e.target === this) closeChoiceModal(); });
+    document.getElementById('choiceBbqBtn').addEventListener('click', function () {
+      closeChoiceModal();
+      openBookingForm(activeSlotTime);
+    });
+    document.getElementById('choiceExclusiveBtn').addEventListener('click', function () {
+      closeChoiceModal();
+      const text = encodeURIComponent('Hi, I would like to book an Exclusive dining slot on ' + (selectedDateStr || '') + ' at ' + (activeSlotTime || '') + '.');
+      window.open('https://wa.me/6596326039?text=' + text, '_blank');
+    });
     document.getElementById('bookingModal').addEventListener('click', function (e) { if (e.target === this) { closeBookingForm(); } });
 
     // ---------- Verification: reCAPTCHA first, email OTP when it cannot load ----------
@@ -818,7 +863,6 @@
         guests: parseInt(document.getElementById('guestsInput').value, 10),
         reserved_date: isoDate(selectedDateObj),
         reserved_time: activeSlotTime,
-        duration: '2h',
         notes: notes ? notes : null
       };
     }
@@ -856,7 +900,6 @@
         p_guests: payload.guests,
         p_reserved_date: payload.reserved_date,
         p_reserved_time: payload.reserved_time,
-        p_duration: payload.duration,
         p_notes: payload.notes
       };
       const result = payload.branch === 'exclusive1'
@@ -886,7 +929,8 @@
       document.getElementById('successRef').textContent = reference;
       document.getElementById('successText').textContent =
         'Your table for ' + guests + (guests === '1' ? ' guest' : ' guests') + ' on ' + selectedDateStr +
-        ' at ' + formatTime(activeSlotTime) + ' is booked. A confirmation has been emailed to ' + email + '.';
+        ' at ' + formatTime(activeSlotTime) + ' is booked. A confirmation email will be sent to ' + email +
+        '. If the daily email limit is reached, it may arrive the following day.';
       document.getElementById('successPanel').hidden = false;
       clearVerifyError();
       setStatus('');

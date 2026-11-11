@@ -37,8 +37,9 @@ In **Project Settings → Edge Functions → Secrets**, add:
 | `RESERVATION_SITE_URL` | Optional; defaults to the current GitHub Pages site |
 | `RESERVATION_EMAIL_WEBHOOK_SECRET` | A new, long random secret |
 
-Supabase provides `SUPABASE_URL` to Edge Functions automatically; do not add it as
-a custom secret.
+Supabase provides `SUPABASE_URL` and API secret keys to Edge Functions
+automatically; do not add them as custom secrets. The RPC helper supports the
+legacy `SUPABASE_SERVICE_ROLE_KEY` and the newer `SUPABASE_SECRET_KEYS` variable.
 
 Also add `reservation_email_webhook_secret` with the same random value as
 `RESERVATION_EMAIL_WEBHOOK_SECRET` in **Database → Vault**. This lets the database
@@ -56,6 +57,16 @@ supabase functions deploy send-auth-email --no-verify-jwt
 Both functions disable Supabase JWT verification because they validate their own
 secrets: the reservation function checks its shared header secret, and the Auth
 function verifies Supabase's signed webhook.
+
+For the daily-limit update, install the SQL objects in step 5 before deploying
+these revised functions; they call the database quota RPC.
+
+The shared Gmail sender reserves each message against one atomic limit of 500
+site-generated messages per Singapore calendar day. Once reached, reservation
+confirmations, cancellation notices, and reschedule notices are queued for the
+next day. OTP and account-security emails are not queued because their codes may
+expire; those requests receive a retry-after-midnight error. Messages sent
+manually from the Gmail mailbox do not use this site's counter.
 
 ## 4. Configure Supabase Auth OTP email
 
@@ -84,7 +95,8 @@ in **SQL Editor**. The first adds the branch-aware booking RPC; the second
 generates a private management token and sends email for Exclusive, Lang Nuong
 Vietnam 1980's, and Bo De Vegetarian bookings, cancellations, and reschedules.
 Re-run `reservation-emails.sql` when updating an existing project. It also
-removes the old SMTP/duplicate guest-email triggers.
+removes the old SMTP/duplicate guest-email triggers, creates the shared daily
+quota and reservation email queue, and schedules its worker.
 
 The booking flow must insert a row into `public.reservations` for the confirmation
 trigger to run. Manage links are included when the inserted row has a `manage_token`.
@@ -114,7 +126,15 @@ one hour; online bookings allow up to 20 guests, use 30-minute slots, and requir
 at least three hours' notice.
 The guest's own calendar buttons are independent of this restaurant-side sync.
 
-## 7. Verify
+## 7. Enable the daily email limit
+
+Run (or re-run) `supabase/reservation-emails.sql` in the SQL Editor before
+deploying the updated `send-auth-email` and `send-reservation-email` functions.
+The SQL uses the existing `reservation_email_webhook_secret` Vault secret.
+Queued reservation emails begin sending after midnight Singapore time, subject
+to the next day's 500-message cap.
+
+## 8. Verify
 
 1. Open the Lang Nuong 1980's and Bo De reservation links from the website.
 2. Request an OTP on each page and confirm the 8-digit code arrives.
@@ -122,6 +142,7 @@ The guest's own calendar buttons are independent of this restaurant-side sync.
 4. Reschedule or cancel each booking and confirm the notice and calendar event update.
 5. Check **Edge Functions → Logs** for errors from either sender.
 
-Reservation email delivery is asynchronous and best-effort: a Gmail API failure
-does not roll back a booking. Keep OAuth secrets out of the website, SQL source,
-and Git.
+Reservation email delivery is asynchronous and best-effort: reaching the daily
+limit queues reservation notices for the next Singapore day, while other Gmail
+API failures do not roll back a booking. Keep OAuth secrets out of the website,
+SQL source, and Git.

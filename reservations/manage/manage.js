@@ -13,10 +13,30 @@
 
   const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const SLOT_TIMES = Array.from({ length: 48 }, (_, i) => {
-    const minutes = i * 30;
-    return String(Math.floor(minutes / 60)).padStart(2, '0') + ':' + String(minutes % 60).padStart(2, '0');
-  });
+  function toMinutes(hhmm) {
+    const parts = String(hhmm || '00:00').split(':');
+    return (parseInt(parts[0], 10) || 0) * 60 + (parseInt(parts[1], 10) || 0);
+  }
+  function slotTimes(branchId) {
+    const branch = Object.prototype.hasOwnProperty.call(BRANCHES, branchId) ? BRANCHES[branchId] : null;
+    const openMin = branch && branch.openTime ? toMinutes(branch.openTime) : 0;
+    const closeMin = branch && branch.closeTime ? toMinutes(branch.closeTime) : 24 * 60;
+    const totalMinutes = ((closeMin - openMin + 1440) % 1440) || 1440;
+    const slotCount = Math.floor(totalMinutes / 30);
+    if (!slotCount) {
+      return Array.from({ length: 48 }, (_, i) => {
+        const minutes = i * 30;
+        return String(Math.floor(minutes / 60)).padStart(2, '0') + ':' + String(minutes % 60).padStart(2, '0');
+      });
+    }
+    const out = [];
+    for (let k = 0; k < slotCount; k++) {
+      const minutes = (openMin + k * 30) % 1440;
+      out.push(String(Math.floor(minutes / 60)).padStart(2, '0') + ':' + String(minutes % 60).padStart(2, '0'));
+    }
+    return out;
+  }
+  function SLOT_TIMES_FOR(branchId) { return slotTimes(branchId); }
 
   let client = null;
   let current = null;
@@ -58,7 +78,8 @@
   }
 
   function bookableTimes(dateValue) {
-    return SLOT_TIMES.filter(t => isSlotBookable(dateValue, t));
+    const branchId = current && current.branch;
+    return slotTimes(branchId).filter(t => isSlotBookable(dateValue, t));
   }
 
   function formatWhen(dateValue, time) {
@@ -92,7 +113,6 @@
       ? row.reserved_label + ' · ' + row.reserved_time
       : formatWhen(row.reserved_date, row.reserved_time);
     $('summaryGuests').textContent = row.guests + (row.guests === 1 ? ' guest' : ' guests');
-    $('summaryDuration').textContent = row.duration;
     $('summaryWhere').textContent = branch.address;
     document.querySelectorAll('[data-contact-phone]').forEach(function (element) {
       element.textContent = branch.phone;

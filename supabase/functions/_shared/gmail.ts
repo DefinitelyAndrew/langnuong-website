@@ -1,5 +1,20 @@
+import { callSupabaseRpc } from "./supabase-rpc.ts";
+
 const GMAIL_API_URL = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send";
 const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
+
+export class GmailDailyLimitError extends Error {
+  constructor() {
+    super("The daily email limit has been reached");
+    this.name = "GmailDailyLimitError";
+  }
+}
+
+export interface GmailMessage {
+  to: string;
+  subject: string;
+  text: string;
+}
 
 function requiredEnv(name: string): string {
   const value = Deno.env.get(name);
@@ -29,9 +44,11 @@ function validateEmail(value: string): string {
   return value;
 }
 
-export async function sendGmailEmail(to: string, subject: string, text: string): Promise<void> {
+export async function sendGmailEmails(messages: GmailMessage[]): Promise<void> {
+  if (!messages.length) return;
+
   const fromEmail = validateEmail(requiredEnv("GMAIL_FROM_EMAIL"));
-  const recipient = validateEmail(to);
+  const recipients = messages.map(message => validateEmail(message.to));
   const fromName = Deno.env.get("GMAIL_FROM_NAME") || "Lang Nuong Vietnam";
   const clientId = requiredEnv("GMAIL_CLIENT_ID");
   const clientSecret = requiredEnv("GMAIL_CLIENT_SECRET");
@@ -52,26 +69,37 @@ export async function sendGmailEmail(to: string, subject: string, text: string):
     throw new Error(`Google OAuth token request failed (${tokenResponse.status})`);
   }
 
-  const mimeMessage = [
-    `From: =?UTF-8?B?${encodeBase64(fromName)}?= <${fromEmail}>`,
-    `To: ${recipient}`,
-    `Subject: =?UTF-8?B?${encodeBase64(subject)}?=`,
-    "MIME-Version: 1.0",
-    "Content-Type: text/plain; charset=UTF-8",
-    "Content-Transfer-Encoding: base64",
-    "",
-    wrapBase64(encodeBase64(text.replace(/\r?\n/g, "\r\n"))),
-  ].join("\r\n");
-
-  const response = await fetch(GMAIL_API_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${tokenData.access_token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ raw: encodeBase64Url(mimeMessage) }),
+  const reserved = await callSupabaseRpc<boolean>("claim_gmail_email_quota", {
+    p_count: messages.length,
   });
-  if (!response.ok) {
-    throw new Error(`Gmail API send failed (${response.status}): ${await response.text()}`);
-  }
+  if (!reserved) throw new GmailDailyLimitError();
+
+  await Promise.all(messages.map(async (message, index) => {
+    const mimeMessage = [
+      `From: =?UTF-8?B?${encodeBase64(fromName)}?= <${fromEmail}>`,
+      `To: ${recipients[index]}`,
+      `Subject: =?UTF-8?B?${encodeBase64(message.subject)}?=`,
+      "MIME-Version: 1.0",
+      "Content-Type: text/plain; charset=UTF-8",
+      "Content-Transfer-Encoding: base64",
+      "",
+      wrapBase64(encodeBase64(message.text.replace(/\r?\n/g, "\r\n"))),
+    ].join("\r\n");
+
+    const response = await fetch(GMAIL_API_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${tokenData.access_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ raw: encodeBase64Url(mimeMessage) }),
+    });
+    if (!response.ok) {
+      throw new Error(`Gmail API send failed (${response.status}): ${await response.text()}`);
+    }
+  }));
+}
+
+export async function sendGmailEmail(to: string, subject: string, text: string): Promise<void> {
+  await sendGmailEmails([{ to, subject, text }]);
 }

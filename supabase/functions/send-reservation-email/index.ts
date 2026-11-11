@@ -1,4 +1,5 @@
-import { sendGmailEmail } from "../_shared/gmail.ts";
+import { GmailDailyLimitError, sendGmailEmail } from "../_shared/gmail.ts";
+import { callSupabaseRpc } from "../_shared/supabase-rpc.ts";
 
 interface Reservation {
   reference?: string;
@@ -13,9 +14,17 @@ interface Reservation {
 }
 
 interface ReservationEmailPayload {
+  action?: string;
   event?: string;
   reservation?: Reservation;
   previous?: { reserved_date?: string; reserved_time?: string };
+}
+
+interface QueuedEmail {
+  id: number;
+  to_email: string;
+  subject: string;
+  body: string;
 }
 
 interface BranchConfig {
@@ -98,6 +107,42 @@ function manageLinks(reservation: Reservation): string[] {
   ];
 }
 
+async function drainReservationEmailQueue(): Promise<number> {
+  let processed = 0;
+  for (let i = 0; i < 25; i++) {
+    const messages = await callSupabaseRpc<QueuedEmail[]>("claim_reservation_email");
+    const message = messages[0];
+    if (!message) break;
+
+    try {
+      await sendGmailEmail(message.to_email, message.subject, message.body);
+    } catch (error) {
+      const dailyLimit = error instanceof GmailDailyLimitError;
+      const finished = await callSupabaseRpc<boolean>("finish_reservation_email", {
+        p_id: message.id,
+        p_success: false,
+        p_daily_limit: dailyLimit,
+        p_error: error instanceof Error ? error.message : String(error),
+      });
+      if (!finished) throw new Error(`Could not release queued reservation email ${message.id}`);
+      if (dailyLimit) break;
+      console.error(`Queued reservation email ${message.id} failed:`, error);
+      processed++;
+      continue;
+    }
+
+    const finished = await callSupabaseRpc<boolean>("finish_reservation_email", {
+      p_id: message.id,
+      p_success: true,
+      p_daily_limit: false,
+      p_error: null,
+    });
+    if (!finished) throw new Error(`Could not mark reservation email ${message.id} as sent`);
+    processed++;
+  }
+  return processed;
+}
+
 Deno.serve(async (request) => {
   if (request.method !== "POST") return jsonResponse({ error: "Method not allowed" }, 405);
 
@@ -112,6 +157,15 @@ Deno.serve(async (request) => {
     payload = await request.json();
   } catch {
     return jsonResponse({ error: "Invalid JSON" }, 400);
+  }
+
+  if (payload.action === "drain-queue") {
+    try {
+      return jsonResponse({ processed: await drainReservationEmailQueue() }, 200);
+    } catch (error) {
+      console.error("Could not drain reservation email queue:", error);
+      return jsonResponse({ error: "Reservation email queue processing failed" }, 500);
+    }
   }
 
   const reservation = payload.reservation;
@@ -195,7 +249,18 @@ Deno.serve(async (request) => {
       ].join("\n");
     }
 
-    await sendGmailEmail(requiredText(reservation.email, "email"), subject, text);
+    const recipient = requiredText(reservation.email, "email");
+    try {
+      await sendGmailEmail(recipient, subject, text);
+    } catch (error) {
+      if (!(error instanceof GmailDailyLimitError)) throw error;
+      await callSupabaseRpc<number>("enqueue_reservation_email", {
+        p_to_email: recipient,
+        p_subject: subject,
+        p_body: text,
+      });
+      return jsonResponse({ queued: true }, 202);
+    }
     return jsonResponse({ sent: true }, 200);
   } catch (error) {
     console.error("Could not send reservation email:", error);

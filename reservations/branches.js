@@ -6,7 +6,9 @@ window.RESERVATION_BRANCHES = Object.freeze({
     bookingTitle: 'Lang Nuong Vietnam BBQ & Exclusive Reservation',
     bookingDescription: 'Call 9632 6039 to reserve tables for Level 2 tables. This form is to reserve tables at the Lang Nuong Vietnam BBQ & Exclusive location. You can cancel or reschedule after booking.',
     address: '271 Jalan Besar Road, Singapore 208941',
-    phone: '9632 6039'
+    phone: '9632 6039',
+    openTime: '15:00',
+    closeTime: '06:00'
   },
   langnuong1980s: {
     id: 'langnuong1980s',
@@ -15,7 +17,9 @@ window.RESERVATION_BRANCHES = Object.freeze({
     bookingTitle: "Lang Nuong Vietnam 1980's Reservation",
     bookingDescription: "This form is to reserve tables at Lang Nuong Vietnam 1980's. You can cancel or reschedule after booking.",
     address: '19 Hamilton Rd, Singapore 209189',
-    phone: '9451 2966'
+    phone: '9451 2966',
+    openTime: '10:00',
+    closeTime: '22:00'
   },
   bodevegetarian: {
     id: 'bodevegetarian',
@@ -24,6 +28,8 @@ window.RESERVATION_BRANCHES = Object.freeze({
     bookingTitle: 'Bo De Vegetarian Reservation',
     bookingDescription: 'This form is to reserve tables at Bo De Vegetarian. You can cancel or reschedule after booking.',
     address: '16 Hamilton Rd, #01-05, Singapore 209186',
-    phone: '9179 9368'
+    phone: '9179 9368',
+    openTime: '10:00',
+    closeTime: '22:00'
   }
 });
