@@ -539,6 +539,19 @@
     });
 
     function parseTime(t) { const p = t.split(':'); return { hour: parseInt(p[0], 10), min: parseInt(p[1], 10) }; }
+    function sortSlotsForDisplay(slots) {
+      if (timeFormat !== '12h') return slots;
+      return slots.slice().sort(function (a, b) {
+        var ah = parseInt(a.split(':')[0], 10);
+        var bh = parseInt(b.split(':')[0], 10);
+        var aAm = ah < 12;
+        var bAm = bh < 12;
+        if (aAm !== bAm) return aAm ? -1 : 1;
+        var aKey = (ah % 12) * 60 + parseInt(a.split(':')[1], 10);
+        var bKey = (bh % 12) * 60 + parseInt(b.split(':')[1], 10);
+        return aKey - bKey;
+      });
+    }
     function formatTime(t) {
       if (timeFormat === '24h') return t;
       const { hour, min } = parseTime(t);
@@ -593,7 +606,7 @@
 
       // Unbookable slots are left out rather than shown greyed out, so every slot
       // on screen can actually be booked.
-      const slots = bookableSlots(selectedDateObj);
+      const slots = sortSlotsForDisplay(bookableSlots(selectedDateObj));
       if (!slots.length) {
         const note = document.createElement('div');
         note.className = 'availability-text';
