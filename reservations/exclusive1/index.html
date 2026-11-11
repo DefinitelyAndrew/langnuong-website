@@ -540,7 +540,6 @@
 
     function parseTime(t) { const p = t.split(':'); return { hour: parseInt(p[0], 10), min: parseInt(p[1], 10) }; }
     function sortSlotsForDisplay(slots) {
-      if (timeFormat !== '12h') return slots;
       return slots.slice().sort(function (a, b) {
         var ah = parseInt(a.split(':')[0], 10);
         var bh = parseInt(b.split(':')[0], 10);
