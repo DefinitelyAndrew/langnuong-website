@@ -22,6 +22,7 @@ export interface GmailMessage {
   text: string;
   html?: string;
   attachments?: GmailAttachment[];
+  bcc?: string[];
 }
 
 function requiredEnv(name: string): string {
@@ -46,10 +47,11 @@ function wrapBase64(value: string): string {
 }
 
 function validateEmail(value: string): string {
-  if (/[\r\n]/.test(value) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+  const trimmed = value.trim();
+  if (/[\r\n]/.test(trimmed) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
     throw new Error("Invalid email address");
   }
-  return value;
+  return trimmed;
 }
 
 function buildMimeMessage(
@@ -64,6 +66,8 @@ function buildMimeMessage(
     `Subject: =?UTF-8?B?${encodeBase64(message.subject)}?=`,
     "MIME-Version: 1.0",
   ];
+  const bccRecipients = (message.bcc || []).map(validateEmail);
+  if (bccRecipients.length) headers.push(`Bcc: ${bccRecipients.join(", ")}`);
   const body = message.text.replace(/\r?\n/g, "\r\n");
   const attachments = message.attachments || [];
 

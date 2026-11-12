@@ -864,6 +864,7 @@
 
     function bookingPayload(reference) {
       const notes = document.getElementById('notesInput').value.trim();
+      const marketingOptIn = document.getElementById('check3');
       return {
         reference: reference,
         branch: branch.id,
@@ -875,7 +876,8 @@
         guests: parseInt(document.getElementById('guestsInput').value, 10),
         reserved_date: isoDate(selectedDateObj),
         reserved_time: activeSlotTime,
-        notes: notes ? notes : null
+        notes: notes ? notes : null,
+        marketing_opt_in: marketingOptIn ? marketingOptIn.checked : false
       };
     }
 
@@ -912,7 +914,8 @@
         p_guests: payload.guests,
         p_reserved_date: payload.reserved_date,
         p_reserved_time: payload.reserved_time,
-        p_notes: payload.notes
+        p_notes: payload.notes,
+        p_marketing_opt_in: payload.marketing_opt_in === true
       };
       const result = payload.branch === 'exclusive1'
         ? await client.rpc('reservation_create', reservationArgs)

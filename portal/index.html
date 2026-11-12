@@ -16,8 +16,9 @@
     .portal-note { color: var(--muted); font-size: .9rem; margin-bottom: 18px; }
     .portal-form { display: flex; flex-direction: column; gap: 10px; }
     .portal-form label { font-weight: 600; font-size: .9rem; }
-    .portal-form input { padding: 12px 14px; border: 1px solid #cfc7bb; border-radius: 6px; font: inherit; background: #fff; color: var(--text); }
-    .portal-form input:focus { outline: 2px solid var(--gold-dark); outline-offset: 1px; border-color: var(--brown); }
+    .portal-form input, .portal-form textarea { padding: 12px 14px; border: 1px solid #cfc7bb; border-radius: 6px; font: inherit; background: #fff; color: var(--text); }
+    .portal-form textarea { min-height: 180px; resize: vertical; }
+    .portal-form input:focus, .portal-form textarea:focus { outline: 2px solid var(--gold-dark); outline-offset: 1px; border-color: var(--brown); }
     .portal-form .btn { margin-top: 6px; }
     .portal-status { margin-top: 16px; font-size: .9rem; color: var(--brown); min-height: 1.4em; }
     .portal-status.error { color: #a32020; }
@@ -37,6 +38,18 @@
     .status-pending { background: #fdf3d6; color: #7a5a00; }
     .status-cancelled { background: #fbe4e4; color: #9c2626; }
     .portal-empty { padding: 28px; text-align: center; color: var(--muted); }
+    .portal-section { margin-top: 36px; }
+    .portal-section h2 { font-size: 1.6rem; margin-bottom: 6px; }
+    .portal-section .portal-lead { margin-bottom: 16px; max-width: 760px; }
+    .portal-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 900px) { .portal-grid { grid-template-columns: 1fr 1.2fr; align-items: start; } }
+    .portal-panel { background: #fff; border: 1px solid #e5e0d8; border-radius: 10px; padding: 22px; box-shadow: 0 10px 30px rgba(73,34,0,.04); }
+    .portal-panel h3 { font-size: 1.1rem; margin-bottom: 8px; }
+    .subscriber-list { list-style: none; margin: 0; padding: 0; max-height: 360px; overflow: auto; border: 1px solid #eee8df; border-radius: 8px; }
+    .subscriber-list li { padding: 10px 12px; border-bottom: 1px solid #eee8df; font-size: .9rem; }
+    .subscriber-list li:last-child { border-bottom: none; }
+    .subscriber-list small { display: block; color: var(--muted); font-size: .78rem; margin-top: 2px; }
+    .subscriber-count { font-size: .9rem; color: var(--muted); margin: 10px 0 0; }
   </style>
 </head>
 <body>
@@ -93,7 +106,7 @@
             <p class="portal-user" id="portalUser"></p>
           </div>
           <div class="portal-actions">
-            <button class="btn" id="refreshBtn" type="button">Refresh</button>
+            <button class="btn" id="refreshBtn" type="button">Refresh reservations</button>
             <button class="btn" id="signOutBtn" type="button">Sign out</button>
           </div>
         </div>
@@ -113,6 +126,34 @@
             </thead>
             <tbody id="reservationRows"></tbody>
           </table>
+        </div>
+
+        <div class="portal-section">
+          <h2>Promotions &amp; news</h2>
+          <p class="portal-lead">Only guests who ticked “I would like to receive notifications (via email) on promotions and news” when making a reservation are listed here. Sending uses Bcc so recipients do not see each other’s addresses.</p>
+          <div class="portal-grid">
+            <div class="portal-panel">
+              <div class="portal-toolbar" style="margin-bottom:10px;align-items:center;">
+                <h3 style="margin:0;">Opted-in recipients</h3>
+                <button class="btn" id="refreshSubscribersBtn" type="button">Refresh list</button>
+              </div>
+              <ul class="subscriber-list" id="subscriberList"></ul>
+              <p class="subscriber-count" id="subscriberCount"></p>
+              <div class="portal-status" id="subscriberStatus" role="status"></div>
+            </div>
+            <div class="portal-panel">
+              <h3>Send email</h3>
+              <p class="portal-note" style="margin-bottom:14px;">This sends one email to all opted-in recipients (via Bcc).</p>
+              <form class="portal-form" id="marketingForm">
+                <label for="marketingSubject">Subject</label>
+                <input id="marketingSubject" type="text" required>
+                <label for="marketingMessage">Message</label>
+                <textarea id="marketingMessage" required></textarea>
+                <button class="btn btn-primary" type="submit" id="sendMarketingBtn">Send to all opted-in recipients</button>
+              </form>
+              <div class="portal-status" id="marketingStatus" role="status"></div>
+            </div>
+          </div>
         </div>
       </section>
     </div>
@@ -136,6 +177,8 @@
     const $ = id => document.getElementById(id);
     let portalEmail = '';
     let loadingReservations = false;
+    let loadingSubscribers = false;
+    let subscriberEmails = [];
 
     function showPanel(name) {
       PANELS.forEach(panel => { $(panel).hidden = panel !== name; });
@@ -143,6 +186,7 @@
 
     function setStatus(id, message, isError) {
       const element = $(id);
+      if (!element) return;
       element.textContent = message || '';
       element.classList.toggle('error', Boolean(isError));
     }
@@ -190,7 +234,7 @@
 
       $('portalUser').textContent = 'Signed in as ' + (user && user.email ? user.email : 'staff');
       showPanel('dashboardPanel');
-      await loadReservations();
+      await Promise.all([loadReservations(), loadSubscribers()]);
     }
 
     async function loadReservations() {
@@ -231,6 +275,40 @@
           '<td><span class="status-pill status-' + escapeHtml(status) + '">' + escapeHtml(status) + '</span></td>' +
           '<td><small>' + escapeHtml(reservation.reference) + '</small></td>' +
           '</tr>';
+      }).join('');
+    }
+
+    async function loadSubscribers() {
+      if (loadingSubscribers) return;
+      loadingSubscribers = true;
+      $('refreshSubscribersBtn').disabled = true;
+      setStatus('subscriberStatus', 'Loading opted-in recipients…');
+
+      const { data, error } = await client.rpc('portal_list_marketing_subscribers');
+      loadingSubscribers = false;
+      $('refreshSubscribersBtn').disabled = false;
+
+      if (error) {
+        subscriberEmails = [];
+        $('subscriberList').innerHTML = '<li class="portal-empty" style="border:none;">Could not load subscribers.</li>';
+        $('subscriberCount').textContent = '';
+        setStatus('subscriberStatus', 'Could not load subscribers: ' + error.message, true);
+        return;
+      }
+
+      subscriberEmails = (data || []).map(row => String(row.email || '').trim()).filter(Boolean);
+      setStatus('subscriberStatus', '');
+      $('subscriberCount').textContent = subscriberEmails.length + ' opted-in recipient' + (subscriberEmails.length === 1 ? '' : 's');
+
+      if (!subscriberEmails.length) {
+        $('subscriberList').innerHTML = '<li class="portal-empty" style="border:none;">No one has opted in yet.</li>';
+        return;
+      }
+
+      $('subscriberList').innerHTML = (data || []).map(row => {
+        const email = escapeHtml(row.email || '');
+        const name = row.latest_name ? '<small>' + escapeHtml(row.latest_name) + '</small>' : '';
+        return '<li>' + email + name + '</li>';
       }).join('');
     }
 
@@ -287,6 +365,46 @@
       await enterPortal((data && data.user) || (data && data.session && data.session.user));
     });
 
+    $('marketingForm').addEventListener('submit', async event => {
+      event.preventDefault();
+      const subject = $('marketingSubject').value.trim();
+      const text = $('marketingMessage').value.trim();
+      if (!subject || !text) return;
+      if (!subscriberEmails.length) {
+        setStatus('marketingStatus', 'There are no opted-in recipients to send to.', true);
+        return;
+      }
+      if (!window.confirm('Send this email to ' + subscriberEmails.length + ' opted-in recipient(s)?')) return;
+
+      $('sendMarketingBtn').disabled = true;
+      setStatus('marketingStatus', 'Sending…');
+
+      try {
+        const { data } = await client.auth.getSession();
+        const token = data && data.session ? data.session.access_token : '';
+        const response = await fetch(SUPABASE_URL + '/functions/v1/send-portal-marketing-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token,
+            'apikey': SUPABASE_KEY
+          },
+          body: JSON.stringify({ subject, text })
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(result.error || 'Email delivery failed');
+        }
+        setStatus('marketingStatus', 'Sent to ' + (result.sent || subscriberEmails.length) + ' recipient(s).');
+        $('marketingSubject').value = '';
+        $('marketingMessage').value = '';
+      } catch (error) {
+        setStatus('marketingStatus', error && error.message ? error.message : 'Email delivery failed', true);
+      } finally {
+        $('sendMarketingBtn').disabled = false;
+      }
+    });
+
     $('backToEmail').addEventListener('click', () => {
       setStatus('loginStatus', '');
       showPanel('loginPanel');
@@ -300,10 +418,12 @@
     $('signOutBtn').addEventListener('click', async () => {
       await clearSession();
       portalEmail = '';
+      subscriberEmails = [];
       showPanel('loginPanel');
     });
 
     $('refreshBtn').addEventListener('click', loadReservations);
+    $('refreshSubscribersBtn').addEventListener('click', loadSubscribers);
 
     (async function init() {
       const { data } = await client.auth.getSession();
