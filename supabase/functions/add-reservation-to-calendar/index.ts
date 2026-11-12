@@ -16,7 +16,7 @@ const BRANCHES: Record<string, BranchConfig> = {
     address: "271 Jalan Besar Road, Singapore 208941",
   },
   langnuong1980s: {
-    calendarId: "61632ee59f8a61cb9de7a035aef0195d83bf140f3f0451535afef70cc64b22b@group.calendar.google.com",
+    calendarId: "61632ee59f8a61cb9de7a035aef0195d83bf140f3f0451535afef70cc64b22b6@group.calendar.google.com",
     venueName: "Lang Nuong Vietnam 1980's",
     address: "19 Hamilton Rd, Singapore 209189",
   },

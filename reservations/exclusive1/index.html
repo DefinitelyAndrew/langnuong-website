@@ -396,7 +396,7 @@
           <button type="button" class="modal-btn btn-verify" onclick="closeBookingForm()">Done</button>
         </div>
         <div class="verify-status" id="verifyStatus" role="status"></div>
-        <div class="modal-actions">
+        <div class="modal-actions" id="bookingActions">
           <button type="button" class="modal-btn btn-back" onclick="closeBookingForm()">Back</button>
           <button type="button" class="modal-btn btn-verify" id="submitBtn" onclick="submitBooking()">Submit</button>
         </div>
@@ -650,7 +650,7 @@
     function closeBookingForm() {
       document.getElementById('bookingModal').classList.remove('active');
       document.getElementById('bookingForm').hidden = false;
-      document.querySelector('.modal-actions').hidden = false;
+      document.getElementById('bookingActions').hidden = false;
       document.getElementById('successPanel').hidden = true;
       resetVerification();
     }
@@ -936,7 +936,7 @@
       const email = document.getElementById('emailInput').value.trim();
       const guests = document.getElementById('guestsInput').value.trim();
       document.getElementById('bookingForm').hidden = true;
-      document.querySelector('.modal-actions').hidden = true;
+      document.getElementById('bookingActions').hidden = true;
       document.getElementById('verifyPanel').hidden = true;
       document.getElementById('successRef').textContent = reference;
       document.getElementById('successText').textContent =
