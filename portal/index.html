@@ -30,7 +30,9 @@
     .portal-table-wrap { overflow-x: auto; border: 1px solid #e5e0d8; border-radius: 10px; background: #fff; }
     table.portal-table { width: 100%; border-collapse: collapse; font-size: .88rem; min-width: 900px; }
     .portal-table th, .portal-table td { text-align: left; padding: 12px 14px; border-bottom: 1px solid #eee8df; vertical-align: top; }
-    .portal-table th { background: #faf6ef; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: #6b5a45; }
+    .portal-table th { background: #faf6ef; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: #6b5a45; white-space: nowrap; }
+    .sort-btn { background: none; border: none; padding: 0; margin: 0; font: inherit; color: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer; }
+    .sort-btn:hover { color: var(--brown); }
     .portal-table tr:last-child td { border-bottom: none; }
     .portal-table td small { display: block; color: var(--muted); font-size: .78rem; margin-top: 2px; }
     .status-pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: .72rem; font-weight: 600; text-transform: capitalize; }
@@ -115,12 +117,12 @@
           <table class="portal-table">
             <thead>
               <tr>
-                <th>When</th>
+                <th><button class="sort-btn" type="button" data-sort="when">When <span aria-hidden="true">↕️</span></button></th>
                 <th>Guest</th>
                 <th>Contact</th>
-                <th>Guests</th>
-                <th>Branch</th>
-                <th>Status</th>
+                <th><button class="sort-btn" type="button" data-sort="guests">Guests <span aria-hidden="true">↕️</span></button></th>
+                <th><button class="sort-btn" type="button" data-sort="branch">Branch <span aria-hidden="true">↕️</span></button></th>
+                <th><button class="sort-btn" type="button" data-sort="status">Status <span aria-hidden="true">↕️</span></button></th>
                 <th>Reference</th>
               </tr>
             </thead>
@@ -186,6 +188,7 @@
     let subscriberEmails = [];
     let reservationsData = [];
     let reservationPage = 1;
+    let reservationSort = { key: 'when', dir: 'desc' };
     const RESERVATIONS_PER_PAGE = 8;
 
     function showPanel(name) {
@@ -243,6 +246,31 @@
       $('portalUser').textContent = 'Signed in as ' + (user && user.email ? user.email : 'staff');
       showPanel('dashboardPanel');
       await Promise.all([loadReservations(), loadSubscribers()]);
+    }
+
+    function sortReservations() {
+      const dir = reservationSort.dir === 'asc' ? 1 : -1;
+      reservationsData.sort((a, b) => {
+        let av, bv;
+        switch (reservationSort.key) {
+          case 'guests':
+            av = Number(a.guests) || 0; bv = Number(b.guests) || 0; break;
+          case 'status':
+            av = String(a.status || '').toLowerCase(); bv = String(b.status || '').toLowerCase(); break;
+          case 'branch':
+            av = String(BRANCH_LABELS[a.branch] || a.branch || '').toLowerCase();
+            bv = String(BRANCH_LABELS[b.branch] || b.branch || '').toLowerCase();
+            break;
+          case 'when':
+          default:
+            av = String(a.reserved_date || '') + 'T' + String(a.reserved_time || '');
+            bv = String(b.reserved_date || '') + 'T' + String(b.reserved_time || '');
+            break;
+        }
+        if (av < bv) return -1 * dir;
+        if (av > bv) return 1 * dir;
+        return 0;
+      });
     }
 
     function renderReservationsPage() {
@@ -305,6 +333,7 @@
       setStatus('dashboardStatus', '');
       reservationsData = data || [];
       reservationPage = 1;
+      sortReservations();
       renderReservationsPage();
     }
 
@@ -465,6 +494,20 @@
         reservationPage += 1;
         renderReservationsPage();
       }
+    });
+    document.querySelectorAll('[data-sort]').forEach(button => {
+      button.addEventListener('click', () => {
+        const key = button.getAttribute('data-sort');
+        if (reservationSort.key === key) {
+          reservationSort.dir = reservationSort.dir === 'asc' ? 'desc' : 'asc';
+        } else {
+          reservationSort.key = key;
+          reservationSort.dir = key === 'when' ? 'desc' : 'asc';
+        }
+        reservationPage = 1;
+        sortReservations();
+        renderReservationsPage();
+      });
     });
     $('refreshSubscribersBtn').addEventListener('click', loadSubscribers);
 
