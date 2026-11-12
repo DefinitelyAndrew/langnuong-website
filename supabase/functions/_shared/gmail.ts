@@ -10,10 +10,18 @@ export class GmailDailyLimitError extends Error {
   }
 }
 
+export interface GmailAttachment {
+  filename: string;
+  content: string;
+  contentType: string;
+}
+
 export interface GmailMessage {
   to: string;
   subject: string;
   text: string;
+  html?: string;
+  attachments?: GmailAttachment[];
 }
 
 function requiredEnv(name: string): string {
@@ -42,6 +50,76 @@ function validateEmail(value: string): string {
     throw new Error("Invalid email address");
   }
   return value;
+}
+
+function buildMimeMessage(
+  message: GmailMessage,
+  recipient: string,
+  fromEmail: string,
+  fromName: string,
+): string {
+  const headers = [
+    `From: =?UTF-8?B?${encodeBase64(fromName)}?= <${fromEmail}>`,
+    `To: ${recipient}`,
+    `Subject: =?UTF-8?B?${encodeBase64(message.subject)}?=`,
+    "MIME-Version: 1.0",
+  ];
+  const body = message.text.replace(/\r?\n/g, "\r\n");
+  const attachments = message.attachments || [];
+
+  const plainPart = [
+    "Content-Type: text/plain; charset=UTF-8",
+    "Content-Transfer-Encoding: base64",
+    "",
+    wrapBase64(encodeBase64(body)),
+  ].join("\r\n");
+
+  let bodyPart = plainPart;
+  if (message.html) {
+    const altBoundary = "----=_LangNuongAlt_" + crypto.randomUUID();
+    const htmlPart = [
+      "Content-Type: text/html; charset=UTF-8",
+      "Content-Transfer-Encoding: base64",
+      "",
+      wrapBase64(encodeBase64(message.html.replace(/\r?\n/g, "\r\n"))),
+    ].join("\r\n");
+    bodyPart = [
+      `Content-Type: multipart/alternative; boundary="${altBoundary}"`,
+      "",
+      `--${altBoundary}`,
+      plainPart,
+      `--${altBoundary}`,
+      htmlPart,
+      `--${altBoundary}--`,
+    ].join("\r\n");
+  }
+
+  if (!attachments.length) {
+    return [...headers, bodyPart].join("\r\n");
+  }
+
+  const boundary = "----=_LangNuong_" + crypto.randomUUID();
+  const parts = [
+    ...headers,
+    `Content-Type: multipart/mixed; boundary="${boundary}"`,
+    "",
+    `--${boundary}`,
+    bodyPart,
+  ];
+
+  for (const attachment of attachments) {
+    parts.push(
+      `--${boundary}`,
+      `Content-Type: ${attachment.contentType}; charset=UTF-8; name="${attachment.filename}"`,
+      "Content-Transfer-Encoding: base64",
+      `Content-Disposition: attachment; filename="${attachment.filename}"`,
+      "",
+      wrapBase64(encodeBase64(attachment.content)),
+    );
+  }
+
+  parts.push(`--${boundary}--`);
+  return parts.join("\r\n");
 }
 
 export async function sendGmailEmails(messages: GmailMessage[]): Promise<void> {
@@ -75,16 +153,7 @@ export async function sendGmailEmails(messages: GmailMessage[]): Promise<void> {
   if (!reserved) throw new GmailDailyLimitError();
 
   await Promise.all(messages.map(async (message, index) => {
-    const mimeMessage = [
-      `From: =?UTF-8?B?${encodeBase64(fromName)}?= <${fromEmail}>`,
-      `To: ${recipients[index]}`,
-      `Subject: =?UTF-8?B?${encodeBase64(message.subject)}?=`,
-      "MIME-Version: 1.0",
-      "Content-Type: text/plain; charset=UTF-8",
-      "Content-Transfer-Encoding: base64",
-      "",
-      wrapBase64(encodeBase64(message.text.replace(/\r?\n/g, "\r\n"))),
-    ].join("\r\n");
+    const mimeMessage = buildMimeMessage(message, recipients[index], fromEmail, fromName);
 
     const response = await fetch(GMAIL_API_URL, {
       method: "POST",
@@ -100,6 +169,12 @@ export async function sendGmailEmails(messages: GmailMessage[]): Promise<void> {
   }));
 }
 
-export async function sendGmailEmail(to: string, subject: string, text: string): Promise<void> {
-  await sendGmailEmails([{ to, subject, text }]);
+export async function sendGmailEmail(
+  to: string,
+  subject: string,
+  text: string,
+  attachments?: GmailAttachment[],
+  html?: string,
+): Promise<void> {
+  await sendGmailEmails([{ to, subject, text, attachments, html }]);
 }

@@ -13,6 +13,12 @@ interface Reservation {
   manage_token?: string | null;
 }
 
+interface ReservationAttachment {
+  filename: string;
+  content: string;
+  contentType: string;
+}
+
 interface ReservationEmailPayload {
   action?: string;
   event?: string;
@@ -81,6 +87,67 @@ function formatDate(value: string): string {
 function requiredText(value: string | undefined, field: string): string {
   if (!value || !value.trim()) throw new Error(`Missing reservation ${field}`);
   return value.trim();
+}
+
+function pad2(value: number): string {
+  return String(value).padStart(2, "0");
+}
+
+function icsStamp(date: Date): string {
+  return date.getUTCFullYear() + pad2(date.getUTCMonth() + 1) + pad2(date.getUTCDate()) +
+    "T" + pad2(date.getUTCHours()) + pad2(date.getUTCMinutes()) + "00Z";
+}
+
+function durationMinutes(value?: string): number {
+  const hours = /(\d+)\s*h/.exec(value || "");
+  const minutes = /(\d+)\s*m/.exec(value || "");
+  return (hours ? Number(hours[1]) * 60 : 0) + (minutes ? Number(minutes[1]) : 0);
+}
+
+function buildIcs(reservation: Reservation, branch: BranchConfig): string {
+  const parts = requiredText(reservation.reserved_date, "date").split("-").map(Number);
+  const [hour, minute] = requiredText(reservation.reserved_time, "time").slice(0, 5).split(":").map(Number);
+  // Singapore is UTC+8 year round, the same convention as the guest calendar file.
+  const start = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2], hour - 8, minute));
+  const end = new Date(start.getTime() + (durationMinutes(reservation.duration) || 120) * 60000);
+  const guests = Number(reservation.guests) || 1;
+  const reference = requiredText(reservation.reference, "reference");
+
+  return [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Lang Nuong Group//Reservations//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    "BEGIN:VEVENT",
+    `UID:${reference}@langnuong`,
+    `DTSTAMP:${icsStamp(new Date())}`,
+    `DTSTART:${icsStamp(start)}`,
+    `DTEND:${icsStamp(end)}`,
+    `SUMMARY:(${guests} ${guests === 1 ? "guest)" : "guests)"} Reservation at ${branch.name}`,
+    `LOCATION:${branch.address}`,
+    `DESCRIPTION:Reference ${reference} - ${guests} guests`,
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\r\n") + "\r\n";
+}
+
+function escapeHtml(value: string): string {
+  const entities: Record<string, string> = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  };
+  return value.replace(/[&<>"']/g, character => entities[character]);
+}
+
+function htmlBody(text: string): string {
+  return '<!doctype html><html><body style="margin:0;padding:0;background:#ffffff;">' +
+    '<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.5;color:#111827;white-space:pre-wrap;">' +
+    escapeHtml(text) +
+    "</div></body></html>";
 }
 
 function reservationDetails(reservation: Reservation, branch: BranchConfig): string[] {
@@ -192,6 +259,7 @@ Deno.serve(async (request) => {
     const links = manageLinks(reservation);
     let subject: string;
     let text: string;
+    let attachments: ReservationAttachment[] | undefined;
 
     if (event === "confirmation") {
       const reference = requiredText(reservation.reference, "reference");
@@ -218,6 +286,11 @@ Deno.serve(async (request) => {
         "",
         branch.name,
       ].join("\n");
+      attachments = [{
+        filename: `${reference}.ics`,
+        content: buildIcs(reservation, branch),
+        contentType: "text/calendar",
+      }];
     } else if (event === "cancelled") {
       subject = `${branch.name} reservation cancelled — ${requiredText(reservation.reference, "reference")}`;
       text = [
@@ -247,11 +320,16 @@ Deno.serve(async (request) => {
         "",
         `Questions? Call ${branch.phone}.`,
       ].join("\n");
+      attachments = [{
+        filename: `${requiredText(reservation.reference, "reference")}.ics`,
+        content: buildIcs(reservation, branch),
+        contentType: "text/calendar",
+      }];
     }
 
     const recipient = requiredText(reservation.email, "email");
     try {
-      await sendGmailEmail(recipient, subject, text);
+      await sendGmailEmail(recipient, subject, text, attachments, htmlBody(text));
     } catch (error) {
       if (!(error instanceof GmailDailyLimitError)) throw error;
       await callSupabaseRpc<number>("enqueue_reservation_email", {
