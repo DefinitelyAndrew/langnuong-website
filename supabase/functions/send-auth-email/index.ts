@@ -67,12 +67,10 @@ Deno.serve(async (request) => {
     ? new URL(redirectTo).searchParams.get("portal-otp") === "1"
     : false;
 
-  // Portal codes are only delivered to allowlisted staff emails. The portal is the
-  // only non-reservation flow that uses email OTP, so treat every magic-link code as
-  // a portal code even when Supabase falls back to the site URL because the portal
-  // redirect was not allowlisted. This runs before any email is sent.
-  const requiresPortalAllowlist = isPortalOtp || (action === "magiclink" && !isReservationOtp);
-  if (requiresPortalAllowlist) {
+  // Portal codes are only delivered to allowlisted staff emails. Reservation OTPs
+  // are exempt so customer bookings keep working; only the portal redirect triggers
+  // the allowlist check. This runs before any email is sent.
+  if (isPortalOtp) {
     let allowed = false;
     try {
       allowed = await callSupabaseRpc<boolean>("portal_email_allowed", { p_email: email });
