@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Restricted staff portal for Lang Nuong Vietnam reservations.">
+  <title>Staff Portal | Lang Nuong Vietnam</title>
+  <link rel="stylesheet" href="../style.css?v=20260915-26">
+  <style>
+    .portal-page { max-width: 1120px; margin: 0 auto; padding: 48px 24px 72px; }
+    .portal-page h1 { font-size: clamp(2rem, 4vw, 2.75rem); line-height: 1.15; margin-bottom: 8px; }
+    .portal-lead { color: var(--muted); margin-bottom: 28px; max-width: 640px; }
+    .portal-card { background: #fff; border: 1px solid #e5e0d8; border-radius: 10px; padding: 28px; box-shadow: 0 10px 30px rgba(73,34,0,.06); max-width: 520px; }
+    .portal-card h2 { font-size: 1.35rem; margin-bottom: 6px; }
+    .portal-note { color: var(--muted); font-size: .9rem; margin-bottom: 18px; }
+    .portal-form { display: flex; flex-direction: column; gap: 10px; }
+    .portal-form label { font-weight: 600; font-size: .9rem; }
+    .portal-form input { padding: 12px 14px; border: 1px solid #cfc7bb; border-radius: 6px; font: inherit; background: #fff; color: var(--text); }
+    .portal-form input:focus { outline: 2px solid var(--gold-dark); outline-offset: 1px; border-color: var(--brown); }
+    .portal-form .btn { margin-top: 6px; }
+    .portal-status { margin-top: 16px; font-size: .9rem; color: var(--brown); min-height: 1.4em; }
+    .portal-status.error { color: #a32020; }
+    .portal-back { margin-top: 12px; background: none; border: none; padding: 0; font: inherit; font-size: .88rem; color: var(--brown); text-decoration: underline; cursor: pointer; }
+    .portal-toolbar { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
+    .portal-toolbar h2 { font-size: 1.6rem; }
+    .portal-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .portal-user { font-size: .88rem; color: var(--muted); }
+    .portal-table-wrap { overflow-x: auto; border: 1px solid #e5e0d8; border-radius: 10px; background: #fff; }
+    table.portal-table { width: 100%; border-collapse: collapse; font-size: .88rem; min-width: 900px; }
+    .portal-table th, .portal-table td { text-align: left; padding: 12px 14px; border-bottom: 1px solid #eee8df; vertical-align: top; }
+    .portal-table th { background: #faf6ef; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: #6b5a45; }
+    .portal-table tr:last-child td { border-bottom: none; }
+    .portal-table td small { display: block; color: var(--muted); font-size: .78rem; margin-top: 2px; }
+    .status-pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: .72rem; font-weight: 600; text-transform: capitalize; }
+    .status-confirmed { background: #e4f4e8; color: #1b6b32; }
+    .status-pending { background: #fdf3d6; color: #7a5a00; }
+    .status-cancelled { background: #fbe4e4; color: #9c2626; }
+    .portal-empty { padding: 28px; text-align: center; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-inner">
+      <a href="../index.html" class="nav-logo" aria-label="Làng Nướng Vietnam home">
+        <img src="https://langnuonggroup.com/wp-content/uploads/2024/07/LNGROUP.png" alt="Làng Nướng Vietnam">
+      </a>
+      <nav class="nav-menu">
+        <a href="../index.html">Home</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section-full section-light vietnamese-pattern">
+    <div class="portal-page">
+      <span class="hero-eyebrow">Staff access</span>
+      <h1>Reservation portal</h1>
+      <p class="portal-lead">This page is restricted. A one-time code is sent only to approved staff email addresses.</p>
+
+      <section class="portal-card" id="loginPanel">
+        <h2>Sign in</h2>
+        <p class="portal-note">Enter your staff email address. We will send a one-time code if the address is approved.</p>
+        <form class="portal-form" id="emailForm">
+          <label for="portalEmail">Email address</label>
+          <input id="portalEmail" type="email" autocomplete="email" required>
+          <button class="btn btn-primary" type="submit" id="sendCodeBtn">Send code</button>
+        </form>
+        <div class="portal-status" id="loginStatus" role="status"></div>
+      </section>
+
+      <section class="portal-card" id="verifyPanel" hidden>
+        <h2>Enter your code</h2>
+        <p class="portal-note" id="verifyNote">We sent a one-time code to your email.</p>
+        <form class="portal-form" id="codeForm">
+          <label for="portalCode">One-time code</label>
+          <input id="portalCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="00000000" required>
+          <button class="btn btn-primary" type="submit" id="verifyBtn">Verify</button>
+        </form>
+        <div class="portal-status" id="verifyStatus" role="status"></div>
+        <button class="portal-back" id="backToEmail" type="button">Use a different email</button>
+      </section>
+
+      <section class="portal-card" id="deniedPanel" hidden>
+        <h2>Access denied</h2>
+        <p class="portal-note">This email is not approved for the staff portal. Contact the restaurant owner if you need access.</p>
+        <button class="btn btn-primary" id="deniedSignOut" type="button">Sign out</button>
+      </section>
+
+      <section id="dashboardPanel" hidden>
+        <div class="portal-toolbar">
+          <div>
+            <h2>Reservations</h2>
+            <p class="portal-user" id="portalUser"></p>
+          </div>
+          <div class="portal-actions">
+            <button class="btn" id="refreshBtn" type="button">Refresh</button>
+            <button class="btn" id="signOutBtn" type="button">Sign out</button>
+          </div>
+        </div>
+        <div class="portal-status" id="dashboardStatus" role="status"></div>
+        <div class="portal-table-wrap">
+          <table class="portal-table">
+            <thead>
+              <tr>
+                <th>When</th>
+                <th>Guest</th>
+                <th>Contact</th>
+                <th>Guests</th>
+                <th>Branch</th>
+                <th>Status</th>
+                <th>Reference</th>
+              </tr>
+            </thead>
+            <tbody id="reservationRows"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-bottom">© Lang Nuong Vietnam | All Rights Reserved · <a href="../privacy.html">Privacy Policy</a> · <a href="../terms.html">Terms and Conditions</a></div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1"></script>
+  <script>
+    const SUPABASE_URL = 'https://egggnxmzxbqdsqqlnvig.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_jostM0x7NIGiLikFjVHLwA_I_x0IpS8';
+    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const BRANCH_LABELS = {
+      exclusive1: 'BBQ & Exclusive',
+      langnuong1980s: "1980's",
+      bodevegetarian: 'Bo De'
+    };
+    const PANELS = ['loginPanel', 'verifyPanel', 'deniedPanel', 'dashboardPanel'];
+    const $ = id => document.getElementById(id);
+    let portalEmail = '';
+    let loadingReservations = false;
+
+    function showPanel(name) {
+      PANELS.forEach(panel => { $(panel).hidden = panel !== name; });
+    }
+
+    function setStatus(id, message, isError) {
+      const element = $(id);
+      element.textContent = message || '';
+      element.classList.toggle('error', Boolean(isError));
+    }
+
+    function escapeHtml(value) {
+      return String(value == null ? '' : value).replace(/[&<>"']/g, character => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[character]));
+    }
+
+    function portalRedirectUrl() {
+      const path = window.location.pathname.replace(/index\.html$/, '');
+      return window.location.origin + path + '?portal-otp=1';
+    }
+
+    function formatDate(value) {
+      const parts = String(value || '').split('-').map(Number);
+      if (parts.length !== 3 || parts.some(part => !Number.isFinite(part))) return String(value || '');
+      const date = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+      return new Intl.DateTimeFormat('en-SG', {
+        weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC'
+      }).format(date);
+    }
+
+    async function clearSession() {
+      try {
+        await client.auth.signOut({ scope: 'local' });
+      } catch (error) {
+        /* signing out is best effort */
+      }
+    }
+
+    async function enterPortal(user) {
+      const { data, error } = await client.rpc('portal_check_access');
+      if (error) {
+        showPanel('loginPanel');
+        setStatus('loginStatus', 'Could not verify portal access: ' + error.message, true);
+        return;
+      }
+      if (data !== true) {
+        await clearSession();
+        showPanel('deniedPanel');
+        return;
+      }
+
+      $('portalUser').textContent = 'Signed in as ' + (user && user.email ? user.email : 'staff');
+      showPanel('dashboardPanel');
+      await loadReservations();
+    }
+
+    async function loadReservations() {
+      if (loadingReservations) return;
+      loadingReservations = true;
+      $('refreshBtn').disabled = true;
+      setStatus('dashboardStatus', 'Loading reservations…');
+
+      const { data, error } = await client.rpc('portal_list_reservations', { p_limit: 200 });
+      loadingReservations = false;
+      $('refreshBtn').disabled = false;
+
+      if (error) {
+        setStatus('dashboardStatus', 'Could not load reservations: ' + error.message, true);
+        return;
+      }
+
+      setStatus('dashboardStatus', '');
+      const rows = $('reservationRows');
+      if (!data || !data.length) {
+        rows.innerHTML = '<tr><td colspan="7" class="portal-empty">No reservations yet.</td></tr>';
+        return;
+      }
+
+      rows.innerHTML = data.map(reservation => {
+        const status = String(reservation.status || '');
+        const time = String(reservation.reserved_time || '').slice(0, 5);
+        const branch = BRANCH_LABELS[reservation.branch] || reservation.branch || '';
+        const notes = reservation.notes
+          ? '<small>' + escapeHtml(reservation.notes) + '</small>'
+          : '';
+        return '<tr>' +
+          '<td>' + escapeHtml(formatDate(reservation.reserved_date)) + '<small>' + escapeHtml(time) + '</small></td>' +
+          '<td>' + escapeHtml(reservation.guest_name) + notes + '</td>' +
+          '<td>' + escapeHtml(reservation.email) + '<small>' + escapeHtml(reservation.phone) + '</small></td>' +
+          '<td>' + escapeHtml(reservation.guests) + '</td>' +
+          '<td>' + escapeHtml(branch) + '</td>' +
+          '<td><span class="status-pill status-' + escapeHtml(status) + '">' + escapeHtml(status) + '</span></td>' +
+          '<td><small>' + escapeHtml(reservation.reference) + '</small></td>' +
+          '</tr>';
+      }).join('');
+    }
+
+    $('emailForm').addEventListener('submit', async event => {
+      event.preventDefault();
+      const email = $('portalEmail').value.trim().toLowerCase();
+      if (!email) return;
+
+      $('sendCodeBtn').disabled = true;
+      setStatus('loginStatus', 'Sending code…');
+
+      const { error } = await client.auth.signInWithOtp({
+        email,
+        options: { shouldCreateUser: true, emailRedirectTo: portalRedirectUrl() }
+      });
+
+      $('sendCodeBtn').disabled = false;
+
+      if (error) {
+        // Keep this generic so the page does not reveal which addresses are approved.
+        setStatus('loginStatus', 'We could not send a code to that address. Portal access is limited to approved staff emails.', true);
+        return;
+      }
+
+      portalEmail = email;
+      $('verifyNote').textContent = 'We sent a one-time code to ' + email + '.';
+      $('portalCode').value = '';
+      setStatus('loginStatus', '');
+      setStatus('verifyStatus', '');
+      showPanel('verifyPanel');
+      $('portalCode').focus();
+    });
+
+    $('codeForm').addEventListener('submit', async event => {
+      event.preventDefault();
+      const token = $('portalCode').value.replace(/\D/g, '');
+      if (token.length < 6) {
+        setStatus('verifyStatus', 'Enter the code from the email.', true);
+        return;
+      }
+
+      $('verifyBtn').disabled = true;
+      setStatus('verifyStatus', 'Verifying…');
+
+      const { data, error } = await client.auth.verifyOtp({ email: portalEmail, token, type: 'email' });
+      $('verifyBtn').disabled = false;
+
+      if (error) {
+        setStatus('verifyStatus', error.message || 'That code is not valid. Please try again.', true);
+        return;
+      }
+
+      setStatus('verifyStatus', '');
+      await enterPortal((data && data.user) || (data && data.session && data.session.user));
+    });
+
+    $('backToEmail').addEventListener('click', () => {
+      setStatus('loginStatus', '');
+      showPanel('loginPanel');
+    });
+
+    $('deniedSignOut').addEventListener('click', async () => {
+      await clearSession();
+      showPanel('loginPanel');
+    });
+
+    $('signOutBtn').addEventListener('click', async () => {
+      await clearSession();
+      portalEmail = '';
+      showPanel('loginPanel');
+    });
+
+    $('refreshBtn').addEventListener('click', loadReservations);
+
+    (async function init() {
+      const { data } = await client.auth.getSession();
+      if (data.session && data.session.user) {
+        await enterPortal(data.session.user);
+      } else {
+        showPanel('loginPanel');
+      }
+      if (new URLSearchParams(window.location.search).has('portal-otp')) {
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    })();
+  </script>
+</body>
+</html>

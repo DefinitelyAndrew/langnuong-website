@@ -1,5 +1,6 @@
 import { Webhook } from "https://esm.sh/standardwebhooks@1.0.0";
 import { GmailDailyLimitError, sendGmailEmail, sendGmailEmails } from "../_shared/gmail.ts";
+import { callSupabaseRpc } from "../_shared/supabase-rpc.ts";
 
 interface AuthEmailPayload {
   user?: { email?: string; new_email?: string };
@@ -62,6 +63,24 @@ Deno.serve(async (request) => {
   const isReservationOtp = redirectTo
     ? new URL(redirectTo).searchParams.get("reservation-otp") === "1"
     : false;
+  const isPortalOtp = redirectTo
+    ? new URL(redirectTo).searchParams.get("portal-otp") === "1"
+    : false;
+
+  // Portal codes are only delivered to allowlisted staff emails. This runs before
+  // any email is sent, so an unapproved address never receives a usable code.
+  if (isPortalOtp) {
+    let allowed = false;
+    try {
+      allowed = await callSupabaseRpc<boolean>("portal_email_allowed", { p_email: email });
+    } catch (error) {
+      console.error("Portal allowlist check failed:", error);
+      return jsonResponse({ error: "Could not verify portal access" }, 500);
+    }
+    if (!allowed) {
+      return jsonResponse({ error: "This email is not authorized for the portal" }, 403);
+    }
+  }
   const subjects: Record<string, string> = {
     signup: "Verify your Lang Nuong email",
     invite: "Your Lang Nuong verification code",

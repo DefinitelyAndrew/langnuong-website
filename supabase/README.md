@@ -84,7 +84,11 @@ reservation OTP flow can be identified and sent without a link:
 https://definitelyandrew.github.io/langnuong-website/reservations/exclusive1/?reservation-otp=1
 https://definitelyandrew.github.io/langnuong-website/reservations/exclusive1/?reservation-otp=1&branch=langnuong1980s
 https://definitelyandrew.github.io/langnuong-website/reservations/exclusive1/?reservation-otp=1&branch=bodevegetarian
+https://definitelyandrew.github.io/langnuong-website/portal/?portal-otp=1
 ```
+
+The last URL is for the staff portal. Its OTP is only delivered when the
+recipient is listed in `public.portal_allowed_emails` (see step 5).
 
 ## 5. Install the reservation email trigger
 
@@ -94,6 +98,8 @@ Then run `supabase/reservation-branches.sql` and `supabase/reservation-emails.sq
 in **SQL Editor**. The first adds the branch-aware booking RPC; the second
 generates a private management token and sends email for Exclusive, Lang Nuong
 Vietnam 1980's, and Bo De Vegetarian bookings, cancellations, and reschedules.
+For the staff portal, also run `supabase/portal-access.sql` and add the approved
+staff addresses to `public.portal_allowed_emails`.
 Re-run `reservation-emails.sql` when updating an existing project. It also
 removes the old SMTP/duplicate guest-email triggers, creates the shared daily
 quota and reservation email queue, and schedules its worker.
