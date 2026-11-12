@@ -556,6 +556,9 @@ img {
 
 /* --- Vietnamese decorative SVG pattern --- */
 .vietnamese-pattern {
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
   background-image: url("assets/vietnamese-pattern.svg");
   background-size: cover;
   background-position: center;
@@ -568,6 +571,7 @@ img {
   inset: 0;
   background: rgba(240,218,189,.55);
   pointer-events: none;
+  z-index: -1;
 }
 
 /* Traditional Vietnamese section treatments */
@@ -590,6 +594,15 @@ img {
 /* White background sections */
 .section-white {
   background-color: var(--white);
+}
+
+/* Legal pages: keep body text crisp black */
+.legal-page,
+.legal-page h1,
+.legal-page h2,
+.legal-page p,
+.legal-page li {
+  color: var(--black);
 }
 
 /* Vietnamese warm content section for dark headings */
