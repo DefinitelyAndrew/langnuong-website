@@ -127,6 +127,11 @@
             <tbody id="reservationRows"></tbody>
           </table>
         </div>
+        <div class="portal-actions" id="reservationPager" style="margin-top:12px;align-items:center;justify-content:flex-end;" hidden>
+          <button class="btn" id="prevReservationsBtn" type="button">Previous</button>
+          <span class="portal-user" id="reservationPageInfo" style="min-width:120px;text-align:center;"></span>
+          <button class="btn" id="nextReservationsBtn" type="button">Next</button>
+        </div>
 
         <div class="portal-section">
           <h2>Promotions &amp; news</h2>
@@ -179,6 +184,9 @@
     let loadingReservations = false;
     let loadingSubscribers = false;
     let subscriberEmails = [];
+    let reservationsData = [];
+    let reservationPage = 1;
+    const RESERVATIONS_PER_PAGE = 8;
 
     function showPanel(name) {
       PANELS.forEach(panel => { $(panel).hidden = panel !== name; });
@@ -237,29 +245,21 @@
       await Promise.all([loadReservations(), loadSubscribers()]);
     }
 
-    async function loadReservations() {
-      if (loadingReservations) return;
-      loadingReservations = true;
-      $('refreshBtn').disabled = true;
-      setStatus('dashboardStatus', 'Loading reservations…');
-
-      const { data, error } = await client.rpc('portal_list_reservations', { p_limit: 200 });
-      loadingReservations = false;
-      $('refreshBtn').disabled = false;
-
-      if (error) {
-        setStatus('dashboardStatus', 'Could not load reservations: ' + error.message, true);
-        return;
-      }
-
-      setStatus('dashboardStatus', '');
+    function renderReservationsPage() {
       const rows = $('reservationRows');
-      if (!data || !data.length) {
+      const pager = $('reservationPager');
+      if (!reservationsData.length) {
         rows.innerHTML = '<tr><td colspan="7" class="portal-empty">No reservations yet.</td></tr>';
+        pager.hidden = true;
         return;
       }
 
-      rows.innerHTML = data.map(reservation => {
+      const totalPages = Math.max(1, Math.ceil(reservationsData.length / RESERVATIONS_PER_PAGE));
+      reservationPage = Math.min(Math.max(1, reservationPage), totalPages);
+      const start = (reservationPage - 1) * RESERVATIONS_PER_PAGE;
+      const pageItems = reservationsData.slice(start, start + RESERVATIONS_PER_PAGE);
+
+      rows.innerHTML = pageItems.map(reservation => {
         const status = String(reservation.status || '');
         const time = String(reservation.reserved_time || '').slice(0, 5);
         const branch = BRANCH_LABELS[reservation.branch] || reservation.branch || '';
@@ -276,6 +276,36 @@
           '<td><small>' + escapeHtml(reservation.reference) + '</small></td>' +
           '</tr>';
       }).join('');
+
+      pager.hidden = totalPages <= 1;
+      $('reservationPageInfo').textContent = 'Page ' + reservationPage + ' of ' + totalPages;
+      $('prevReservationsBtn').disabled = reservationPage <= 1;
+      $('nextReservationsBtn').disabled = reservationPage >= totalPages;
+    }
+
+    async function loadReservations() {
+      if (loadingReservations) return;
+      loadingReservations = true;
+      $('refreshBtn').disabled = true;
+      setStatus('dashboardStatus', 'Loading reservations…');
+
+      const { data, error } = await client.rpc('portal_list_reservations', { p_limit: 200 });
+      loadingReservations = false;
+      $('refreshBtn').disabled = false;
+
+      if (error) {
+        reservationsData = [];
+        reservationPage = 1;
+        $('reservationPager').hidden = true;
+        $('reservationRows').innerHTML = '';
+        setStatus('dashboardStatus', 'Could not load reservations: ' + error.message, true);
+        return;
+      }
+
+      setStatus('dashboardStatus', '');
+      reservationsData = data || [];
+      reservationPage = 1;
+      renderReservationsPage();
     }
 
     async function loadSubscribers() {
@@ -423,6 +453,19 @@
     });
 
     $('refreshBtn').addEventListener('click', loadReservations);
+    $('prevReservationsBtn').addEventListener('click', () => {
+      if (reservationPage > 1) {
+        reservationPage -= 1;
+        renderReservationsPage();
+      }
+    });
+    $('nextReservationsBtn').addEventListener('click', () => {
+      const totalPages = Math.max(1, Math.ceil(reservationsData.length / RESERVATIONS_PER_PAGE));
+      if (reservationPage < totalPages) {
+        reservationPage += 1;
+        renderReservationsPage();
+      }
+    });
     $('refreshSubscribersBtn').addEventListener('click', loadSubscribers);
 
     (async function init() {
