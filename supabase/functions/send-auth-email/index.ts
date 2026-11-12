@@ -60,12 +60,23 @@ Deno.serve(async (request) => {
   const redirectTo = payload.email_data?.redirect_to;
   if (!email) return jsonResponse({ error: "Hook payload has no recipient email" }, 400);
 
-  const isReservationOtp = redirectTo
-    ? new URL(redirectTo).searchParams.get("reservation-otp") === "1"
-    : false;
-  const isPortalOtp = redirectTo
-    ? new URL(redirectTo).searchParams.get("portal-otp") === "1"
-    : false;
+  // Supabase may hand us a relative or otherwise odd redirect_to. Parse defensively
+  // so a malformed value can never crash the whole hook (which would silently stop
+  // every email, including reservation OTPs).
+  function redirectHasParam(name: string): boolean {
+    if (!redirectTo) return false;
+    try {
+      return new URL(redirectTo).searchParams.get(name) === "1";
+    } catch {
+      try {
+        return new URL(redirectTo, "http://localhost").searchParams.get(name) === "1";
+      } catch {
+        return redirectTo.includes(`${name}=1`);
+      }
+    }
+  }
+  const isReservationOtp = redirectHasParam("reservation-otp");
+  const isPortalOtp = redirectHasParam("portal-otp");
 
   // Portal codes are only delivered to allowlisted staff emails. Reservation OTPs
   // are exempt so customer bookings keep working; only the portal redirect triggers
