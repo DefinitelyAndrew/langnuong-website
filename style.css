@@ -834,7 +834,7 @@ img {
   .brands-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
-/* Card — layered image, white border, white content area */
+/* Card — image on top, content below */
 .brand-card {
   position: relative;
   border: 1px solid #e0d8c8;
@@ -842,24 +842,29 @@ img {
   overflow: hidden;
   background: var(--white);
   box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-card-media {
   display: block;
-}
-
-.brand-card-layer {
-  position: absolute;
-  inset: 0;
-  background: var(--white);
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
+  background: #f3ede2;
 }
 
-.brand-card-layer img {
+.brand-card-media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
   transition: transform .5s ease;
 }
 
-.brand-card:hover .brand-card-layer img {
+.brand-card:hover .brand-card-media img,
+.brand-card-media:focus-visible img {
   transform: scale(1.04);
 }
 
@@ -889,6 +894,16 @@ img {
   margin-bottom: .4rem;
 }
 
+.brand-card-name a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand-card-name a:hover,
+.brand-card-name a:focus-visible {
+  text-decoration: underline;
+}
+
 .brand-card-desc {
   font-size: .88rem;
   color: #555555;
@@ -905,12 +920,19 @@ img {
   display: inline-flex;
   align-items: center;
   gap: .35rem;
+  margin-right: .9rem;
+  margin-bottom: .25rem;
 }
 
 .brand-card-cta::after {
   content: "→";
   font-size: .85rem;
   line-height: 1;
+}
+
+.brand-card-cta:hover,
+.brand-card-cta:focus-visible {
+  text-decoration: underline;
 }
 
 /* =============================================
