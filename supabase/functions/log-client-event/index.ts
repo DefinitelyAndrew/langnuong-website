@@ -41,6 +41,14 @@ function text(value: unknown, fallback = ""): string {
   return result || fallback;
 }
 
+function headerValue(request: Request, names: string[]): string {
+  for (const name of names) {
+    const value = request.headers.get(name);
+    if (value && value.trim() && value.trim() !== "unknown") return decodeURIComponent(value.trim());
+  }
+  return "";
+}
+
 async function signedInEmail(request: Request): Promise<string> {
   const auth = request.headers.get("Authorization") || "";
   const token = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
@@ -65,7 +73,7 @@ Deno.serve(async (request) => {
   if (request.method !== "POST") return jsonResponse({ error: "Method not allowed" }, 405);
   if (!isAllowedOrigin(request)) return jsonResponse({ error: "Forbidden" }, 403);
 
-  let body: { event?: string; outcome?: string; branch?: string; page?: string; detail?: string };
+  let body: Record<string, unknown>;
   try {
     body = await request.json();
   } catch {
@@ -74,6 +82,40 @@ Deno.serve(async (request) => {
 
   const event = text(body.event).toLowerCase();
   const detail = text(body.detail).slice(0, 500);
+
+  // Page views carry a device summary from the shared on-page beacon.
+  if (event === "visit") {
+    const page = text(body.page, "/").slice(0, 300);
+    const referrer = text(body.referrer, "Direct / none").slice(0, 300);
+    const country = headerValue(request, ["cf-ipcountry", "x-vercel-ip-country", "x-country"]);
+    const city = headerValue(request, ["cf-ipcity", "cf-city", "x-vercel-ip-city"]);
+    const session = text(body.session).slice(0, 64);
+
+    await sendDiscordLog("DISCORD_WEBHOOK_VISITS", `Site visit — ${page}`, [
+      { name: "Page", value: page },
+      ...(text(body.title) ? [{ name: "Title", value: text(body.title).slice(0, 200) }] : []),
+      { name: "Referrer", value: referrer },
+      { name: "Device", value: text(body.device, "Unknown").slice(0, 32), inline: true },
+      { name: "Browser", value: text(body.browser, "Unknown").slice(0, 64), inline: true },
+      { name: "OS", value: text(body.os, "Unknown").slice(0, 64), inline: true },
+      { name: "Screen", value: text(body.screen, "—").slice(0, 64), inline: true },
+      { name: "Viewport", value: text(body.viewport, "—").slice(0, 64), inline: true },
+      { name: "Touch", value: text(body.touch, "—").slice(0, 8), inline: true },
+      { name: "Language", value: text(body.language, "—").slice(0, 32), inline: true },
+      { name: "Timezone", value: text(body.timezone, "—").slice(0, 64), inline: true },
+      { name: "Platform", value: text(body.platform, "—").slice(0, 64), inline: true },
+      ...(country || city
+        ? [{ name: "Location", value: [city, country].filter(Boolean).join(", "), inline: true }]
+        : []),
+      { name: "Connection", value: text(body.connection, "—").slice(0, 64), inline: true },
+      { name: "CPU / RAM", value: [text(body.cores) ? `${text(body.cores)} cores` : "", text(body.memory)].filter(Boolean).join(" · ") || "—", inline: true },
+      ...(session
+        ? [{ name: "Session", value: `${session}${body.newSession ? " (new)" : ""}`, inline: true }]
+        : []),
+    ], 0x3b82f6);
+
+    return jsonResponse({ ok: true }, 200);
+  }
 
   // Successful staff portal sign-ins are an admin-panel audit event. The caller's
   // Supabase session is verified and the portal allowlist is re-checked server side.
