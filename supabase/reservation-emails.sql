@@ -297,6 +297,8 @@ begin
         'branch', new.branch,
         'guest_name', new.guest_name,
         'email', new.email,
+        'phone', new.phone,
+        'notes', new.notes,
         'guests', new.guests,
         'reserved_date', new.reserved_date,
         'reserved_time', new.reserved_time,

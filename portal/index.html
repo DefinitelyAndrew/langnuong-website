@@ -230,6 +230,29 @@
       }
     }
 
+    // Best-effort audit trail: successful staff sign-ins are posted to the admin log.
+    async function logPortalLogin(email) {
+      try {
+        const { data } = await client.auth.getSession();
+        const token = data && data.session ? data.session.access_token : '';
+        if (!token) return;
+        await fetch(SUPABASE_URL + '/functions/v1/log-client-event', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token,
+            'apikey': SUPABASE_KEY
+          },
+          body: JSON.stringify({
+            event: 'portal-login',
+            page: window.location.pathname,
+            detail: email ? 'Signed in as ' + email : ''
+          }),
+          keepalive: true
+        });
+      } catch (error) {}
+    }
+
     async function enterPortal(user) {
       const { data, error } = await client.rpc('portal_check_access');
       if (error) {
@@ -421,6 +444,7 @@
       }
 
       setStatus('verifyStatus', '');
+      logPortalLogin((data && data.user && data.user.email) || portalEmail);
       await enterPortal((data && data.user) || (data && data.session && data.session.user));
     });
 

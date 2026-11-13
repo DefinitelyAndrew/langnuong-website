@@ -1,5 +1,6 @@
 import { GmailDailyLimitError, sendGmailEmail } from "../_shared/gmail.ts";
 import { callSupabaseRpc } from "../_shared/supabase-rpc.ts";
+import { sendDiscordLog } from "../_shared/discord.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -128,12 +129,29 @@ Deno.serve(async (request) => {
       subject,
       text,
     }]);
+    await sendDiscordLog("DISCORD_WEBHOOK_MARKETING", "Promotion email sent", [
+      { name: "Sent by", value: staffEmail },
+      { name: "Subject", value: subject },
+      { name: "Recipients", value: String(recipients.length), inline: true },
+      { name: "Preview", value: text.slice(0, 400) },
+    ], 0x22c55e);
     return jsonResponse({ ok: true, sent: recipients.length }, 200);
   } catch (error) {
     if (error instanceof GmailDailyLimitError) {
+      await sendDiscordLog("DISCORD_WEBHOOK_MARKETING", "Promotion email failed — daily limit", [
+        { name: "Sent by", value: staffEmail },
+        { name: "Subject", value: subject, inline: true },
+        { name: "Recipients", value: String(recipients.length), inline: true },
+      ], 0xf59e0b);
       return jsonResponse({ error: "Daily email limit reached. Please try again after midnight Singapore time." }, 429);
     }
     console.error("Could not send marketing email:", error);
+    await sendDiscordLog("DISCORD_WEBHOOK_MARKETING", "Promotion email failed", [
+      { name: "Sent by", value: staffEmail },
+      { name: "Subject", value: subject, inline: true },
+      { name: "Recipients", value: String(recipients.length), inline: true },
+      { name: "Error", value: error instanceof Error ? error.message : String(error) },
+    ], 0xdc2626);
     return jsonResponse({ error: "Email delivery failed" }, 500);
   }
 });

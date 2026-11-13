@@ -1,6 +1,7 @@
 import { Webhook } from "https://esm.sh/standardwebhooks@1.0.0";
 import { GmailDailyLimitError, sendGmailEmail, sendGmailEmails } from "../_shared/gmail.ts";
 import { callSupabaseRpc } from "../_shared/supabase-rpc.ts";
+import { sendDiscordLog } from "../_shared/discord.ts";
 
 interface AuthEmailPayload {
   user?: { email?: string; new_email?: string };
@@ -90,6 +91,10 @@ Deno.serve(async (request) => {
       return jsonResponse({ error: "Could not verify portal access" }, 500);
     }
     if (!allowed) {
+      await sendDiscordLog("DISCORD_WEBHOOK_OTP", "Portal OTP blocked — email not allowlisted", [
+        { name: "Email", value: email },
+        { name: "Action", value: action, inline: true },
+      ], 0xdc2626);
       return jsonResponse({ error: "This email is not authorized for the portal" }, 403);
     }
   }
@@ -138,12 +143,32 @@ Deno.serve(async (request) => {
         : `This is a security notification about your Lang Nuong account (${action}). If you did not make this change, please contact us at 9632 6039.`;
       await sendGmailEmail(recipient, subject, text);
     }
+    const purpose = isReservationOtp
+      ? "Reservation verification"
+      : isPortalOtp
+      ? "Portal staff login"
+      : "Account email";
+    await sendDiscordLog("DISCORD_WEBHOOK_OTP", `OTP sent — ${purpose}`, [
+      { name: "Recipient", value: action === "email_change" && newEmail ? `${email} → ${newEmail}` : email },
+      { name: "Purpose", value: purpose, inline: true },
+      { name: "Action", value: action, inline: true },
+    ], 0x22c55e);
     return jsonResponse({}, 200);
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
     if (error instanceof GmailDailyLimitError) {
+      await sendDiscordLog("DISCORD_WEBHOOK_OTP", "OTP failed — daily email limit reached", [
+        { name: "Recipient", value: email },
+        { name: "Action", value: action, inline: true },
+      ], 0xf59e0b);
       return jsonResponse({ error: "Daily email limit reached. Please try again after midnight Singapore time." }, 429);
     }
     console.error("Could not send Supabase Auth email:", error);
+    await sendDiscordLog("DISCORD_WEBHOOK_OTP", "OTP failed — email delivery error", [
+      { name: "Recipient", value: email },
+      { name: "Action", value: action, inline: true },
+      { name: "Error", value: message },
+    ], 0xdc2626);
     return jsonResponse({ error: "Email delivery failed" }, 500);
   }
 });

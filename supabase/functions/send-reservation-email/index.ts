@@ -1,11 +1,14 @@
 import { GmailDailyLimitError, sendGmailEmail } from "../_shared/gmail.ts";
 import { callSupabaseRpc } from "../_shared/supabase-rpc.ts";
+import { BRANCH_WEBHOOKS, sendDiscordLog } from "../_shared/discord.ts";
 
 interface Reservation {
   reference?: string;
   branch?: string;
   guest_name?: string;
   email?: string;
+  phone?: string;
+  notes?: string;
   guests?: number;
   reserved_date?: string;
   reserved_time?: string;
@@ -82,6 +85,17 @@ function formatDate(value: string): string {
     year: "numeric",
     timeZone: "UTC",
   }).format(date);
+}
+
+// Used for Discord logs only, so a malformed date must never break the email.
+function describeWhen(reservation: Reservation): string {
+  try {
+    const date = formatDate(requiredText(reservation.reserved_date, "date"));
+    const time = requiredText(reservation.reserved_time, "time").slice(0, 5);
+    return `${date} at ${time} (SGT)`;
+  } catch {
+    return [reservation.reserved_date, reservation.reserved_time].filter(Boolean).join(" ") || "—";
+  }
 }
 
 function requiredText(value: string | undefined, field: string): string {
@@ -194,6 +208,11 @@ async function drainReservationEmailQueue(): Promise<number> {
       if (!finished) throw new Error(`Could not release queued reservation email ${message.id}`);
       if (dailyLimit) break;
       console.error(`Queued reservation email ${message.id} failed:`, error);
+      await sendDiscordLog("DISCORD_WEBHOOK_RESERVATION_EMAIL", "Queued reservation email failed", [
+        { name: "To", value: message.to_email },
+        { name: "Subject", value: message.subject },
+        { name: "Error", value: error instanceof Error ? error.message : String(error) },
+      ], 0xdc2626);
       processed++;
       continue;
     }
@@ -205,6 +224,10 @@ async function drainReservationEmailQueue(): Promise<number> {
       p_error: null,
     });
     if (!finished) throw new Error(`Could not mark reservation email ${message.id} as sent`);
+    await sendDiscordLog("DISCORD_WEBHOOK_RESERVATION_EMAIL", "Queued reservation email sent", [
+      { name: "To", value: message.to_email },
+      { name: "Subject", value: message.subject },
+    ], 0x22c55e);
     processed++;
   }
   return processed;
@@ -328,6 +351,36 @@ Deno.serve(async (request) => {
     }
 
     const recipient = requiredText(reservation.email, "email");
+    const eventLabel = event === "confirmation"
+      ? "Confirmation"
+      : event === "cancelled"
+      ? "Cancellation"
+      : "Reschedule";
+    const emailFields = [
+      { name: "Reference", value: reservation.reference || "—", inline: true },
+      { name: "Branch", value: branch.name, inline: true },
+      { name: "To", value: recipient },
+    ];
+
+    // A confirmation event is always a freshly inserted reservation, so this is
+    // the "new reservation" alert for the branch team.
+    if (event === "confirmation") {
+      await sendDiscordLog(
+        BRANCH_WEBHOOKS[reservation.branch] || "DISCORD_WEBHOOK_EXCLUSIVE",
+        `New reservation — ${branch.name}`,
+        [
+          { name: "Reference", value: reservation.reference || "—", inline: true },
+          { name: "Guests", value: String(reservation.guests ?? "—"), inline: true },
+          { name: "When", value: describeWhen(reservation), inline: true },
+          { name: "Guest", value: reservation.guest_name || "Guest", inline: true },
+          { name: "Phone", value: reservation.phone || "—", inline: true },
+          { name: "Email", value: recipient },
+          ...(reservation.notes ? [{ name: "Notes", value: reservation.notes }] : []),
+        ],
+        0x22c55e,
+      );
+    }
+
     try {
       await sendGmailEmail(recipient, subject, text, attachments, htmlBody(text));
     } catch (error) {
@@ -337,11 +390,19 @@ Deno.serve(async (request) => {
         p_subject: subject,
         p_body: text,
       });
+      await sendDiscordLog("DISCORD_WEBHOOK_RESERVATION_EMAIL", `${eventLabel} email queued (daily limit)`, emailFields, 0xf59e0b);
       return jsonResponse({ queued: true }, 202);
     }
+    await sendDiscordLog("DISCORD_WEBHOOK_RESERVATION_EMAIL", `${eventLabel} email sent`, emailFields, 0x22c55e);
     return jsonResponse({ sent: true }, 200);
   } catch (error) {
     console.error("Could not send reservation email:", error);
+    await sendDiscordLog("DISCORD_WEBHOOK_RESERVATION_EMAIL", "Reservation email failed", [
+      { name: "Reference", value: reservation.reference || "—", inline: true },
+      { name: "Event", value: payload.event || "—", inline: true },
+      { name: "To", value: reservation.email || "—" },
+      { name: "Error", value: error instanceof Error ? error.message : String(error) },
+    ], 0xdc2626);
     return jsonResponse({ error: "Email delivery failed" }, 500);
   }
 });

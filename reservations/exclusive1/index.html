@@ -739,13 +739,37 @@
       return recaptchaLoader;
     }
 
+    // Best-effort telemetry: reCAPTCHA usage/results are mirrored to Discord.
+    function logRecaptcha(outcome, detail) {
+      if (!RECAPTCHA_SITE_KEY) return;
+      try {
+        fetch(SUPABASE_URL + '/functions/v1/log-client-event', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            event: 'recaptcha',
+            outcome: outcome,
+            branch: branchId,
+            page: window.location.pathname,
+            detail: detail || ''
+          }),
+          keepalive: true
+        }).catch(function () {});
+      } catch (error) {}
+    }
+
     async function tryRecaptcha() {
       if (!RECAPTCHA_SITE_KEY) return false;
-      if (!(await loadRecaptcha())) return false;
+      if (!(await loadRecaptcha())) {
+        logRecaptcha('unavailable', 'Google reCAPTCHA script did not load');
+        return false;
+      }
       try {
         const token = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'reservation' });
+        logRecaptcha(token ? 'passed' : 'failed', token ? '' : 'No token returned');
         return !!token;
       } catch (error) {
+        logRecaptcha('failed', (error && error.message) || 'reCAPTCHA execute() failed');
         return false;
       }
     }
