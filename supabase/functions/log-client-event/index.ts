@@ -91,7 +91,7 @@ Deno.serve(async (request) => {
     const city = headerValue(request, ["cf-ipcity", "cf-city", "x-vercel-ip-city"]);
     const session = text(body.session).slice(0, 64);
 
-    await sendDiscordLog("DISCORD_WEBHOOK_VISITS", `Site visit — ${page}`, [
+    await sendDiscordLog("visits", `Site visit — ${page}`, [
       { name: "Page", value: page },
       ...(text(body.title) ? [{ name: "Title", value: text(body.title).slice(0, 200) }] : []),
       { name: "Referrer", value: referrer },
@@ -133,7 +133,7 @@ Deno.serve(async (request) => {
       console.error("Portal access check failed:", error);
       return jsonResponse({ error: "Could not verify portal access" }, 500);
     }
-    await sendDiscordLog("DISCORD_WEBHOOK_MARKETING", "Admin panel sign-in", [
+    await sendDiscordLog("marketing", "Admin panel sign-in", [
       { name: "Staff", value: email },
       { name: "Page", value: text(body.page, "/portal/").slice(0, 200), inline: true },
       ...(detail ? [{ name: "Detail", value: detail }] : []),
@@ -145,7 +145,7 @@ Deno.serve(async (request) => {
 
   const outcome = text(body.outcome, "unknown").toLowerCase().slice(0, 32);
   await sendDiscordLog(
-    "DISCORD_WEBHOOK_RECAPTCHA",
+    "recaptcha",
     `reCAPTCHA ${outcome}`,
     [
       { name: "Outcome", value: outcome, inline: true },

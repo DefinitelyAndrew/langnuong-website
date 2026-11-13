@@ -129,7 +129,7 @@ Deno.serve(async (request) => {
       subject,
       text,
     }]);
-    await sendDiscordLog("DISCORD_WEBHOOK_MARKETING", "Promotion email sent", [
+    await sendDiscordLog("marketing", "Promotion email sent", [
       { name: "Sent by", value: staffEmail },
       { name: "Subject", value: subject },
       { name: "Recipients", value: String(recipients.length), inline: true },
@@ -138,7 +138,7 @@ Deno.serve(async (request) => {
     return jsonResponse({ ok: true, sent: recipients.length }, 200);
   } catch (error) {
     if (error instanceof GmailDailyLimitError) {
-      await sendDiscordLog("DISCORD_WEBHOOK_MARKETING", "Promotion email failed — daily limit", [
+      await sendDiscordLog("marketing", "Promotion email failed — daily limit", [
         { name: "Sent by", value: staffEmail },
         { name: "Subject", value: subject, inline: true },
         { name: "Recipients", value: String(recipients.length), inline: true },
@@ -146,7 +146,7 @@ Deno.serve(async (request) => {
       return jsonResponse({ error: "Daily email limit reached. Please try again after midnight Singapore time." }, 429);
     }
     console.error("Could not send marketing email:", error);
-    await sendDiscordLog("DISCORD_WEBHOOK_MARKETING", "Promotion email failed", [
+    await sendDiscordLog("marketing", "Promotion email failed", [
       { name: "Sent by", value: staffEmail },
       { name: "Subject", value: subject, inline: true },
       { name: "Recipients", value: String(recipients.length), inline: true },

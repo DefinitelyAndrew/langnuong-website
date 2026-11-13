@@ -91,7 +91,7 @@ Deno.serve(async (request) => {
       return jsonResponse({ error: "Could not verify portal access" }, 500);
     }
     if (!allowed) {
-      await sendDiscordLog("DISCORD_WEBHOOK_OTP", "Portal OTP blocked — email not allowlisted", [
+      await sendDiscordLog("otp", "Portal OTP blocked — email not allowlisted", [
         { name: "Email", value: email },
         { name: "Action", value: action, inline: true },
       ], 0xdc2626);
@@ -148,7 +148,7 @@ Deno.serve(async (request) => {
       : isPortalOtp
       ? "Portal staff login"
       : "Account email";
-    await sendDiscordLog("DISCORD_WEBHOOK_OTP", `OTP sent — ${purpose}`, [
+    await sendDiscordLog("otp", `OTP sent — ${purpose}`, [
       { name: "Recipient", value: action === "email_change" && newEmail ? `${email} → ${newEmail}` : email },
       { name: "Purpose", value: purpose, inline: true },
       { name: "Action", value: action, inline: true },
@@ -157,14 +157,14 @@ Deno.serve(async (request) => {
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     if (error instanceof GmailDailyLimitError) {
-      await sendDiscordLog("DISCORD_WEBHOOK_OTP", "OTP failed — daily email limit reached", [
+      await sendDiscordLog("otp", "OTP failed — daily email limit reached", [
         { name: "Recipient", value: email },
         { name: "Action", value: action, inline: true },
       ], 0xf59e0b);
       return jsonResponse({ error: "Daily email limit reached. Please try again after midnight Singapore time." }, 429);
     }
     console.error("Could not send Supabase Auth email:", error);
-    await sendDiscordLog("DISCORD_WEBHOOK_OTP", "OTP failed — email delivery error", [
+    await sendDiscordLog("otp", "OTP failed — email delivery error", [
       { name: "Recipient", value: email },
       { name: "Action", value: action, inline: true },
       { name: "Error", value: message },
