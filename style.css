@@ -853,12 +853,14 @@ img {
   aspect-ratio: 4 / 3;
   overflow: hidden;
   background: #f3ede2;
+  flex-shrink: 0;
 }
 
 .brand-card-media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   display: block;
   transition: transform .5s ease;
 }
@@ -870,6 +872,9 @@ img {
 
 .brand-card-body {
   padding: 1.1rem 1.2rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .brand-card-tag {
@@ -909,6 +914,7 @@ img {
   color: #555555;
   line-height: 1.6;
   margin-bottom: .9rem;
+  flex: 1;
 }
 
 .brand-card-cta {
@@ -922,6 +928,7 @@ img {
   gap: .35rem;
   margin-right: .9rem;
   margin-bottom: .25rem;
+  align-self: flex-start;
 }
 
 .brand-card-cta::after {
