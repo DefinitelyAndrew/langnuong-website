@@ -1376,6 +1376,42 @@ img {
   text-align: center;
 }
 
+.site-status-wrap {
+  display: inline-block;
+}
+
+.site-status-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  color: #FFFFFF;
+  text-decoration: none;
+  vertical-align: middle;
+}
+
+.site-status-link:hover,
+.site-status-link:focus-visible {
+  text-decoration: underline;
+}
+
+.site-status-dot {
+  width: .55rem;
+  height: .55rem;
+  border-radius: 50%;
+  background: #9ca3af;
+  display: inline-block;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 2px rgba(255,255,255,.18);
+}
+
+.site-status--none .site-status-dot { background: #22c55e; }
+.site-status--minor .site-status-dot { background: #f59e0b; }
+.site-status--major .site-status-dot { background: #f97316; }
+.site-status--critical .site-status-dot { background: #ef4444; }
+.site-status--maintenance .site-status-dot { background: #3b82f6; }
+.site-status--loading .site-status-dot { background: #9ca3af; }
+.site-status--unknown .site-status-dot { background: #9ca3af; }
+
 /* =========================
    GALLERY CAROUSEL
    ========================= */
