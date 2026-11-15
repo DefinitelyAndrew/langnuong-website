@@ -162,6 +162,35 @@
             </div>
           </div>
         </div>
+
+        <div class="portal-section">
+          <h2>Short links</h2>
+          <p class="portal-lead">Create short links like <code>/go/?c=your-code</code> that redirect to any page. Use them in social posts, QR codes or messages.</p>
+          <div class="portal-grid">
+            <div class="portal-panel">
+              <h3>Create short link</h3>
+              <form class="portal-form" id="shortlinkForm">
+                <label for="shortlinkDest">Destination URL</label>
+                <input id="shortlinkDest" type="url" placeholder="https://…" required>
+                <label for="shortlinkSlug">Custom code (optional)</label>
+                <input id="shortlinkSlug" type="text" placeholder="e.g. promo" pattern="[A-Za-z0-9_-]{2,63}">
+                <label for="shortlinkLabel">Label (optional)</label>
+                <input id="shortlinkLabel" type="text" placeholder="e.g. Instagram bio">
+                <button class="btn btn-primary" type="submit" id="createShortlinkBtn">Create short link</button>
+              </form>
+              <div class="portal-status" id="shortlinkCreateStatus" role="status"></div>
+            </div>
+            <div class="portal-panel">
+              <div class="portal-toolbar" style="margin-bottom:10px;align-items:center;">
+                <h3 style="margin:0;">Your short links</h3>
+                <button class="btn" id="refreshShortlinksBtn" type="button">Refresh</button>
+              </div>
+              <ul class="subscriber-list" id="shortlinkList"></ul>
+              <p class="subscriber-count" id="shortlinkCount"></p>
+              <div class="portal-status" id="shortlinkStatus" role="status"></div>
+            </div>
+          </div>
+        </div>
       </section>
     </div>
   </main>
@@ -187,6 +216,8 @@
     let loadingReservations = false;
     let loadingSubscribers = false;
     let subscriberEmails = [];
+    let loadingShortlinks = false;
+    let shortlinksData = [];
     let reservationsData = [];
     let reservationPage = 1;
     let reservationSort = { key: 'when', dir: 'desc' };
@@ -254,6 +285,55 @@
       } catch (error) {}
     }
 
+    function shortlinkUrl(slug) {
+      return window.location.origin + '/langnuong-website/go/?c=' + encodeURIComponent(slug);
+    }
+
+    async function loadShortlinks() {
+      if (loadingShortlinks) return;
+      loadingShortlinks = true;
+      $('refreshShortlinksBtn').disabled = true;
+      setStatus('shortlinkStatus', 'Loading short links…');
+
+      const { data, error } = await client.rpc('portal_list_shortlinks', { p_limit: 200 });
+      loadingShortlinks = false;
+      $('refreshShortlinksBtn').disabled = false;
+
+      if (error) {
+        shortlinksData = [];
+        $('shortlinkList').innerHTML = '<li class="portal-empty" style="border:none;">Could not load short links.</li>';
+        $('shortlinkCount').textContent = '';
+        setStatus('shortlinkStatus', 'Could not load short links: ' + error.message, true);
+        return;
+      }
+
+      shortlinksData = data || [];
+      setStatus('shortlinkStatus', '');
+      $('shortlinkCount').textContent = shortlinksData.length + ' short link' + (shortlinksData.length === 1 ? '' : 's');
+
+      if (!shortlinksData.length) {
+        $('shortlinkList').innerHTML = '<li class="portal-empty" style="border:none;">No short links yet.</li>';
+        return;
+      }
+
+      $('shortlinkList').innerHTML = shortlinksData.map(row => {
+        const slug = String(row.slug || '');
+        const url = shortlinkUrl(slug);
+        const label = row.label ? '<small>' + escapeHtml(row.label) + '</small>' : '';
+        const dest = escapeHtml(row.destination_url || '');
+        const clicks = Number(row.clicks) || 0;
+        return '<li>' +
+          '<div><strong>' + escapeHtml(slug) + '</strong>' + label +
+          '<small><a href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(url) + '</a></small>' +
+          '<small>→ ' + dest + '</small>' +
+          '<small>' + clicks + ' click' + (clicks === 1 ? '' : 's') + '</small></div>' +
+          '<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">' +
+          '<button class="btn" type="button" data-copy-shortlink="' + escapeHtml(slug) + '">Copy link</button>' +
+          '<button class="btn" type="button" data-delete-shortlink="' + escapeHtml(slug) + '">Delete</button>' +
+          '</div></li>';
+      }).join('');
+    }
+
     async function enterPortal(user) {
       const { data, error } = await client.rpc('portal_check_access');
       if (error) {
@@ -269,7 +349,7 @@
 
       $('portalUser').textContent = 'Signed in as ' + (user && user.email ? user.email : 'staff');
       showPanel('dashboardPanel');
-      await Promise.all([loadReservations(), loadSubscribers()]);
+      await Promise.all([loadReservations(), loadSubscribers(), loadShortlinks()]);
     }
 
     function sortReservations() {
@@ -499,10 +579,82 @@
       showPanel('loginPanel');
     });
 
+    $('shortlinkForm').addEventListener('submit', async event => {
+      event.preventDefault();
+      const dest = $('shortlinkDest').value.trim();
+      const slug = $('shortlinkSlug').value.trim();
+      const label = $('shortlinkLabel').value.trim();
+      if (!dest) return;
+
+      $('createShortlinkBtn').disabled = true;
+      setStatus('shortlinkCreateStatus', 'Creating short link…');
+
+      const { data, error } = await client.rpc('portal_create_shortlink', {
+        p_destination_url: dest,
+        p_slug: slug || null,
+        p_label: label || null
+      });
+      $('createShortlinkBtn').disabled = false;
+
+      if (error) {
+        setStatus('shortlinkCreateStatus', error.message || 'Could not create short link.', true);
+        return;
+      }
+
+      const row = Array.isArray(data) ? data[0] : data;
+      const createdSlug = row && row.slug ? String(row.slug) : slug;
+      setStatus('shortlinkCreateStatus', 'Short link created: ' + shortlinkUrl(createdSlug));
+      $('shortlinkDest').value = '';
+      $('shortlinkSlug').value = '';
+      $('shortlinkLabel').value = '';
+      await loadShortlinks();
+    });
+
+    $('shortlinkList').addEventListener('click', async event => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+
+      const copySlug = target.getAttribute('data-copy-shortlink');
+      if (copySlug) {
+        const url = shortlinkUrl(copySlug);
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(url);
+          } else {
+            const temp = document.createElement('textarea');
+            temp.value = url;
+            temp.style.position = 'fixed';
+            temp.style.opacity = '0';
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+          }
+          setStatus('shortlinkStatus', 'Copied: ' + url);
+        } catch (error) {
+          setStatus('shortlinkStatus', 'Could not copy automatically. Link: ' + url, true);
+        }
+        return;
+      }
+
+      const deleteSlug = target.getAttribute('data-delete-shortlink');
+      if (deleteSlug) {
+        if (!window.confirm('Delete short link "' + deleteSlug + '"?')) return;
+        const { error } = await client.rpc('portal_delete_shortlink', { p_slug: deleteSlug });
+        if (error) {
+          setStatus('shortlinkStatus', error.message || 'Could not delete short link.', true);
+          return;
+        }
+        setStatus('shortlinkStatus', 'Deleted short link "' + deleteSlug + '".');
+        await loadShortlinks();
+      }
+    });
+
     $('signOutBtn').addEventListener('click', async () => {
       await clearSession();
       portalEmail = '';
       subscriberEmails = [];
+      shortlinksData = [];
       showPanel('loginPanel');
     });
 
@@ -535,6 +687,7 @@
       });
     });
     $('refreshSubscribersBtn').addEventListener('click', loadSubscribers);
+    $('refreshShortlinksBtn').addEventListener('click', loadShortlinks);
 
     (async function init() {
       const { data } = await client.auth.getSession();
