@@ -153,8 +153,9 @@ begin
 end;
 $$;
 
-revoke all on function public.shortlink_resolve(text) from public, authenticated;
+revoke all on function public.shortlink_resolve(text) from public;
 grant execute on function public.shortlink_resolve(text) to anon;
+grant execute on function public.shortlink_resolve(text) to authenticated;
 
 -- After running or re-running this file, refresh the API schema cache:
 -- notify pgrst, 'reload schema';
