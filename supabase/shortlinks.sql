@@ -47,6 +47,7 @@ $$;
 revoke all on function public.portal_list_shortlinks(integer) from public, anon;
 grant execute on function public.portal_list_shortlinks(integer) to authenticated;
 
+drop function if exists public.portal_create_shortlink(text, text, text);
 create or replace function public.portal_create_shortlink(
   p_destination_url text,
   p_slug text,
