@@ -929,17 +929,20 @@ img {
   margin-right: .9rem;
   margin-bottom: .25rem;
   align-self: flex-start;
+  text-decoration: none;
 }
 
 .brand-card-cta::after {
   content: "→";
   font-size: .85rem;
   line-height: 1;
+  display: inline-block;
+  transition: transform 0.2s ease;
 }
 
-.brand-card-cta:hover,
-.brand-card-cta:focus-visible {
-  text-decoration: underline;
+.brand-card-cta:hover::after,
+.brand-card-cta:focus-visible::after {
+  transform: translateX(4px);
 }
 
 /* =============================================
@@ -978,6 +981,29 @@ img {
 .gallery-grid a:hover img {
   transform: scale(1.1);
   filter: brightness(.85);
+}
+
+/* =============================================
+   LINK ARROWS (page-directing)
+   ============================================= */
+.link-arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+  margin-left: 0.2em;
+}
+
+a:hover .link-arrow,
+a:focus-visible .link-arrow,
+button:hover .link-arrow,
+button:focus-visible .link-arrow {
+  transform: translateX(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link-arrow,
+  .brand-card-cta::after {
+    transition: none;
+  }
 }
 
 /* =============================================
