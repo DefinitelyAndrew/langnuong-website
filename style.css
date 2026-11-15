@@ -1376,14 +1376,19 @@ img {
   text-align: center;
 }
 
-.footer-bottom a:not(.site-status-link) {
+.footer-bottom,
+.footer-bottom a,
+.footer-bottom .site-status-link,
+.footer-bottom .site-status-text {
   color: #FFFFFF;
+}
+
+.footer-bottom a:not(.site-status-link) {
   text-decoration: underline;
 }
 
 .footer-bottom a:not(.site-status-link):hover,
 .footer-bottom a:not(.site-status-link):focus-visible {
-  color: #FFFFFF;
   opacity: .85;
 }
 
@@ -1396,7 +1401,6 @@ img {
   display: inline-flex;
   align-items: center;
   gap: .4rem;
-  color: #FFFFFF;
   text-decoration: none;
   vertical-align: middle;
 }
