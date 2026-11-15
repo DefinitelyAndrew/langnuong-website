@@ -1,6 +1,19 @@
 (function () {
   var STATUS_URL = 'https://langnuong.statuspage.io/api/v2/status.json';
-  var PAGE_URL = 'https://langnuong.statuspage.io';
+  var STATUS_PAGE = 'https://langnuong.statuspage.io/';
+  var RETURN_KEY = 'langnuong_status_return';
+
+  function bridgeUrl() {
+    var path = window.location.pathname;
+    var idx = path.indexOf('/langnuong-website');
+    var base = idx >= 0 ? path.slice(0, idx) + '/langnuong-website/' : '/';
+    return window.location.origin + base + 'status/?from=' + encodeURIComponent(window.location.href);
+  }
+
+  function rememberPage() {
+    try { sessionStorage.setItem(RETURN_KEY, window.location.href); } catch (e) {}
+    try { localStorage.setItem(RETURN_KEY, window.location.href); } catch (e) {}
+  }
 
   var LABELS = {
     none: 'All Systems Operational',
@@ -16,11 +29,17 @@
     var label = description || LABELS[state] || LABELS.unknown;
     wrap.innerHTML =
       '<a class="site-status-link site-status--' + state +
-      '" href="' + PAGE_URL + '" target="_blank" rel="noopener noreferrer" aria-label="System status: ' +
+      '" href="' + bridgeUrl().replace(/"/g, '&quot;') + '" aria-label="System status: ' +
       label.replace(/"/g, '&quot;') + '">' +
       '<span class="site-status-dot" aria-hidden="true"></span>' +
       '<span class="site-status-text">' + label + '</span>' +
       '</a>';
+    var link = wrap.querySelector('a.site-status-link');
+    if (link) {
+      link.addEventListener('click', function () {
+        rememberPage();
+      });
+    }
   }
 
   function init() {

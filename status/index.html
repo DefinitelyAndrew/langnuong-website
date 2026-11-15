@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Status | Lang Nuong</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    body { min-height: 100vh; display: grid; place-items: center; background: #faf6ef; margin: 0; font-family: system-ui, -apple-system, sans-serif; }
+    .status-card { background: #fff; border: 1px solid #e5e0d8; border-radius: 12px; padding: 28px 30px; max-width: 520px; width: calc(100% - 32px); text-align: center; }
+    .status-card h1 { font-size: 1.25rem; margin: 0 0 8px; color: #492200; }
+    .status-card p { margin: 0; color: #555; }
+  </style>
+</head>
+<body>
+  <main class="status-card" aria-live="polite">
+    <h1 id="statusTitle">Opening status…</h1>
+    <p id="statusMessage">Please wait a moment.</p>
+  </main>
+
+  <script>
+    (function () {
+      var STATUS_PAGE = 'https://langnuong.statuspage.io/';
+      var FALLBACK = 'https://langnuonggroup.com/';
+      var KEY = 'langnuong_status_return';
+
+      var params = new URLSearchParams(window.location.search);
+      var isBack = params.has('back') || params.has('return_to_site');
+      var from = params.get('from') || '';
+
+      var title = document.getElementById('statusTitle');
+      var message = document.getElementById('statusMessage');
+
+      function isSafeUrl(url) {
+        try {
+          var parsed = new URL(url);
+          return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+        } catch (error) {
+          return false;
+        }
+      }
+
+      function storeReturn(url) {
+        if (!isSafeUrl(url)) return;
+        try { sessionStorage.setItem(KEY, url); } catch (e) {}
+        try { localStorage.setItem(KEY, url); } catch (e) {}
+      }
+
+      function readReturn() {
+        var stored = '';
+        try { stored = sessionStorage.getItem(KEY) || ''; } catch (e) {}
+        if (!stored) {
+          try { stored = localStorage.getItem(KEY) || ''; } catch (e) {}
+        }
+        return isSafeUrl(stored) ? stored : '';
+      }
+
+      if (isBack) {
+        var target = readReturn() || FALLBACK;
+        title.textContent = 'Returning…';
+        message.textContent = 'Taking you back.';
+        window.location.replace(target);
+        return;
+      }
+
+      var ref = document.referrer || '';
+      if (ref.indexOf('statuspage.io') !== -1) ref = '';
+      var returnTo = isSafeUrl(from) ? from : (isSafeUrl(ref) ? ref : '');
+      if (returnTo) storeReturn(returnTo);
+
+      title.textContent = 'Opening system status…';
+      message.textContent = 'Redirecting you to the status page.';
+      window.location.replace(STATUS_PAGE);
+    })();
+  </script>
+  <script src="../analytics.js" defer></script>
+</body>
+</html>
