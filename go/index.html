@@ -59,7 +59,8 @@
       var client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
       client.rpc('shortlink_resolve', { p_slug: slug }).then(function (result) {
         if (result.error) {
-          fail('Short links are not available right now. The short-link setup may not have been run in the database yet.');
+          var errText = result.error && result.error.message ? ' (' + result.error.message + ')' : '';
+          fail('Short links are not available right now.' + errText);
           return;
         }
         var dest = typeof result.data === 'string' ? result.data : '';
