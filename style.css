@@ -1376,6 +1376,17 @@ img {
   text-align: center;
 }
 
+.footer-bottom a:not(.site-status-link) {
+  color: #FFFFFF;
+  text-decoration: underline;
+}
+
+.footer-bottom a:not(.site-status-link):hover,
+.footer-bottom a:not(.site-status-link):focus-visible {
+  color: #FFFFFF;
+  opacity: .85;
+}
+
 .site-status-wrap {
   display: inline-block;
 }
