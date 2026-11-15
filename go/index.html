@@ -59,18 +59,22 @@
       var client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
       client.rpc('shortlink_resolve', { p_slug: slug }).then(function (result) {
         if (result.error) {
-          fail('We could not resolve this short link right now.');
+          fail('Short links are not available right now. The short-link setup may not have been run in the database yet.');
           return;
         }
         var dest = typeof result.data === 'string' ? result.data : '';
-        if (!dest || !isSafeUrl(dest)) {
-          fail('This short link is missing or no longer available.');
+        if (!dest) {
+          fail('No short link was found for "' + slug + '".');
+          return;
+        }
+        if (!isSafeUrl(dest)) {
+          fail('This short link points to an invalid destination.');
           return;
         }
         message.textContent = 'Taking you to ' + dest;
         window.location.replace(dest);
       }).catch(function () {
-        fail('We could not resolve this short link right now.');
+        fail('Short links are not available right now. Please try again later.');
       });
     })();
   </script>

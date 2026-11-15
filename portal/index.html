@@ -172,10 +172,10 @@
               <form class="portal-form" id="shortlinkForm">
                 <label for="shortlinkDest">Destination URL</label>
                 <input id="shortlinkDest" type="url" placeholder="https://…" required>
-                <label for="shortlinkSlug">Custom code (optional)</label>
-                <input id="shortlinkSlug" type="text" placeholder="e.g. promo" pattern="[A-Za-z0-9_-]{2,63}">
-                <label for="shortlinkLabel">Label (optional)</label>
-                <input id="shortlinkLabel" type="text" placeholder="e.g. Instagram bio">
+                <label for="shortlinkSlug">Custom code</label>
+                <input id="shortlinkSlug" type="text" placeholder="e.g. promo" pattern="[A-Za-z0-9_-]{2,63}" required>
+                <label for="shortlinkLabel">Label</label>
+                <input id="shortlinkLabel" type="text" placeholder="e.g. Instagram bio" required>
                 <button class="btn btn-primary" type="submit" id="createShortlinkBtn">Create short link</button>
               </form>
               <div class="portal-status" id="shortlinkCreateStatus" role="status"></div>
@@ -584,15 +584,18 @@
       const dest = $('shortlinkDest').value.trim();
       const slug = $('shortlinkSlug').value.trim();
       const label = $('shortlinkLabel').value.trim();
-      if (!dest) return;
+      if (!dest || !slug || !label) {
+        setStatus('shortlinkCreateStatus', 'Destination URL, custom code and label are all required.', true);
+        return;
+      }
 
       $('createShortlinkBtn').disabled = true;
       setStatus('shortlinkCreateStatus', 'Creating short link…');
 
       const { data, error } = await client.rpc('portal_create_shortlink', {
         p_destination_url: dest,
-        p_slug: slug || null,
-        p_label: label || null
+        p_slug: slug,
+        p_label: label
       });
       $('createShortlinkBtn').disabled = false;
 

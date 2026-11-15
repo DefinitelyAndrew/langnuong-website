@@ -49,8 +49,8 @@ grant execute on function public.portal_list_shortlinks(integer) to authenticate
 
 create or replace function public.portal_create_shortlink(
   p_destination_url text,
-  p_slug text default null,
-  p_label text default null
+  p_slug text,
+  p_label text
 )
 returns table (slug text, destination_url text)
 language plpgsql
@@ -62,7 +62,6 @@ declare
   v_dest text;
   v_label text;
   v_email text;
-  v_tries int := 0;
 begin
   v_email := coalesce(auth.jwt() ->> 'email', '');
   if not public.portal_email_allowed(v_email) then
@@ -81,47 +80,26 @@ begin
   end if;
 
   v_label := nullif(btrim(coalesce(p_label, '')), '');
-  if v_label is not null and char_length(v_label) > 120 then
+  if v_label is null then
+    raise exception 'Label is required';
+  end if;
+  if char_length(v_label) > 120 then
     raise exception 'Label is too long';
   end if;
 
   v_slug := lower(btrim(coalesce(p_slug, '')));
-  if v_slug = '' then
-    v_slug := null;
+  if v_slug = '' or v_slug is null then
+    raise exception 'Custom code is required';
   end if;
-  if v_slug is not null then
-    if v_slug !~ '^[a-z0-9][a-z0-9_-]{1,62}$' then
-      raise exception 'Slug may use letters, numbers, - and _, and must be 2-63 characters';
-    end if;
-    insert into public.portal_shortlinks (slug, destination_url, label, created_by)
-    values (v_slug, v_dest, v_label, v_email)
-    returning portal_shortlinks.slug, portal_shortlinks.destination_url
-      into slug, destination_url;
-    return next;
-    return;
+  if v_slug !~ '^[a-z0-9][a-z0-9_-]{1,62}$' then
+    raise exception 'Custom code may use letters, numbers, - and _, and must be 2-63 characters';
   end if;
 
-  -- Generate a random slug; retry on the rare collision.
-  loop
-    v_tries := v_tries + 1;
-    v_slug := substr(replace(replace(encode(gen_random_bytes(6), 'base64'), '+', ''), '/', ''), 1, 8);
-    v_slug := lower(regexp_replace(v_slug, '[^a-z0-9]', '', 'g'));
-    if char_length(v_slug) < 6 then
-      v_slug := substr(md5(random()::text || clock_timestamp()::text), 1, 8);
-    end if;
-    begin
-      insert into public.portal_shortlinks (slug, destination_url, label, created_by)
-      values (v_slug, v_dest, v_label, v_email)
-      returning portal_shortlinks.slug, portal_shortlinks.destination_url
-        into slug, destination_url;
-      return next;
-      return;
-    exception when unique_violation then
-      if v_tries >= 8 then
-        raise exception 'Could not generate a unique short link. Try a custom slug.';
-      end if;
-    end;
-  end loop;
+  insert into public.portal_shortlinks (slug, destination_url, label, created_by)
+  values (v_slug, v_dest, v_label, v_email)
+  returning portal_shortlinks.slug, portal_shortlinks.destination_url
+    into slug, destination_url;
+  return next;
 end;
 $$;
 
@@ -177,5 +155,5 @@ $$;
 revoke all on function public.shortlink_resolve(text) from public, authenticated;
 grant execute on function public.shortlink_resolve(text) to anon;
 
--- Refresh API schema cache after running this file.
+-- After running or re-running this file, refresh the API schema cache:
 -- notify pgrst, 'reload schema';
