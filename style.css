@@ -1388,7 +1388,8 @@ img {
 }
 
 .site-status-wrap {
-  display: inline-block;
+  display: block;
+  margin-top: .35rem;
 }
 
 .site-status-link {
